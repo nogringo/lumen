@@ -8,6 +8,7 @@ import 'package:ndk/entities.dart' as ndk show NwcWallet, WalletType;
 import 'package:ndk/ndk.dart' show Ndk, NwcConnection, NwcMethod;
 
 import '../wallet.dart';
+import 'nwc_transaction.dart';
 import 'nwc_uri.dart';
 
 /// Lightning wallets connected over Nostr Wallet Connect (NIP-47).
@@ -144,6 +145,32 @@ final class NwcWalletSource implements WalletSource {
     }
   }
 
+  Future<List<Transaction>> _fetchTransactions(String id, int limit) async {
+    final ndk.NwcWallet wallet;
+    try {
+      wallet = await _connected(id).timeout(_timeout);
+    } catch (_) {
+      throw const ActivityException(ActivityError.unreachable);
+    }
+    final connection = wallet.connection!;
+    final permissions = connection.permissions;
+    if (permissions.isNotEmpty &&
+        !permissions.contains(NwcMethod.LIST_TRANSACTIONS.name)) {
+      throw const ActivityException(ActivityError.noPermission);
+    }
+
+    try {
+      final response = await _ndk.nwc
+          .listTransactions(connection, limit: limit, unpaid: false)
+          .timeout(_timeout);
+      return response.transactions.map(nwcTransaction).nonNulls.toList()
+        ..sort((a, b) => b.at.compareTo(a.at));
+    } catch (_) {
+      await _dropConnection(wallet);
+      throw const ActivityException(ActivityError.unreachable);
+    }
+  }
+
   /// Listens for the wallet's payment notifications, and also looks the
   /// invoice up regularly since not every wallet sends them.
   Stream<void> _watchPayment(String id, Invoice invoice) {
@@ -276,6 +303,10 @@ final class _NwcWallet implements Wallet {
   @override
   Stream<void> watchPayment(Invoice invoice) =>
       _source._watchPayment(id, invoice);
+
+  @override
+  Future<List<Transaction>> fetchTransactions({int limit = 10}) =>
+      _source._fetchTransactions(id, limit);
 
   @override
   Future<void> rename(String name) async {

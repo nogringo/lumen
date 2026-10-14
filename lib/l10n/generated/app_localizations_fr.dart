@@ -263,4 +263,82 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get close => 'Fermer';
+
+  @override
+  String get recentActivity => 'Activité récente';
+
+  @override
+  String get activityLoading => 'Chargement de l\'activité';
+
+  @override
+  String get noActivity => 'Aucun paiement pour l\'instant.';
+
+  @override
+  String get activityUnreachable =>
+      'Lumen n\'a pas pu charger l\'activité de ce portefeuille.';
+
+  @override
+  String get activityNoPermission =>
+      'Cette connexion ne peut pas lister les transactions. Dans votre portefeuille, créez une nouvelle connexion qui autorise la liste des transactions.';
+
+  @override
+  String activityNotShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'L\'activité de $count portefeuilles n\'est pas affichée : elle n\'a pas pu être chargée.',
+      one: 'L\'activité d\'1 portefeuille n\'est pas affichée : elle n\'a pas pu être chargée.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionReceived => 'Reçu';
+
+  @override
+  String get transactionSent => 'Envoyé';
+
+  @override
+  String amountReceived(String amount) {
+    return 'reçu $amount sats';
+  }
+
+  @override
+  String amountSent(String amount) {
+    return 'envoyé $amount sats';
+  }
+
+  @override
+  String transactionWalletWhen(String wallet, String when) {
+    return '$wallet, $when';
+  }
+
+  @override
+  String get justNow => 'À l\'instant';
+
+  @override
+  String minutesAgo(int minutes) {
+    return 'Il y a $minutes min';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return 'Il y a $hours h';
+  }
+
+  @override
+  String get yesterday => 'Hier';
+
+  @override
+  String get columnDescription => 'Description';
+
+  @override
+  String get columnWallet => 'Portefeuille';
+
+  @override
+  String get columnDate => 'Date';
+
+  @override
+  String get columnAmount => 'Montant';
 }

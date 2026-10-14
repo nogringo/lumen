@@ -11,6 +11,7 @@ workspace:
   - packages/lumen_wallets
 
 dependencies:
+  clock: ^1.1.3
   flutter:
     sdk: flutter
   flutter_localizations:

@@ -328,5 +328,114 @@
   "close": "Close",
   "@close": {
     "description": "Tooltip and accessible name of the dialog close button."
+  },
+  "recentActivity": "Recent activity",
+  "@recentActivity": {
+    "description": "Heading of the latest transactions on Home and on a wallet screen."
+  },
+  "activityLoading": "Loading activity",
+  "@activityLoading": {
+    "description": "Accessible label of the spinner shown while transactions load."
+  },
+  "noActivity": "No payments yet.",
+  "@noActivity": {
+    "description": "Shown under Recent activity when the wallets have no transactions."
+  },
+  "activityUnreachable": "Lumen could not load the activity of this wallet.",
+  "@activityUnreachable": {
+    "description": "Shown on a wallet screen when its transactions could not be read."
+  },
+  "activityNoPermission": "This connection cannot list transactions. In your wallet, create a new connection that allows listing transactions.",
+  "@activityNoPermission": {
+    "description": "Shown on a wallet screen when its connection lacks the permission to list transactions."
+  },
+  "activityNotShown": "{count, plural, =1{Activity from 1 wallet is not shown: it could not be loaded.} other{Activity from {count} wallets is not shown: it could not be loaded.}}",
+  "@activityNotShown": {
+    "description": "Note under Recent activity on Home when some wallets are left out of it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "transactionReceived": "Received",
+  "@transactionReceived": {
+    "description": "Title of an incoming payment that has no description."
+  },
+  "transactionSent": "Sent",
+  "@transactionSent": {
+    "description": "Title of an outgoing payment that has no description."
+  },
+  "amountReceived": "received {amount} sats",
+  "@amountReceived": {
+    "description": "Incoming amount read by screen readers instead of +amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "amountSent": "sent {amount} sats",
+  "@amountSent": {
+    "description": "Outgoing amount read by screen readers instead of -amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionWalletWhen": "{wallet}, {when}",
+  "@transactionWalletWhen": {
+    "description": "Under a payment on Home: the wallet it went through, then when.",
+    "placeholders": {
+      "wallet": {
+        "type": "String"
+      },
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "When a payment happened, less than a minute ago."
+  },
+  "minutesAgo": "{minutes} min ago",
+  "@minutesAgo": {
+    "description": "When a payment happened, less than an hour ago.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours} h ago",
+  "@hoursAgo": {
+    "description": "When a payment happened, earlier today.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "When a payment happened, the day before today."
+  },
+  "columnDescription": "Description",
+  "@columnDescription": {
+    "description": "Column header of the activity table on desktop."
+  },
+  "columnWallet": "Wallet",
+  "@columnWallet": {
+    "description": "Column header of the activity table on desktop."
+  },
+  "columnDate": "Date",
+  "@columnDate": {
+    "description": "Column header of the activity table on desktop."
+  },
+  "columnAmount": "Amount",
+  "@columnAmount": {
+    "description": "Column header of the activity table on desktop."
   }
 }

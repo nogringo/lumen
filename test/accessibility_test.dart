@@ -13,8 +13,20 @@ void main() {
   tearDownAll(() => sources.dispose());
 
   List<FakeWallet> twoWallets() => [
-    FakeWallet('home', 'Home node', balance: 152300),
-    FakeWallet('offline', 'Offline node', error: BalanceError.unreachable),
+    FakeWallet('home', 'Home node', balance: 152300)
+      ..transactions = [
+        tx(
+          'zap',
+          sats: 21000,
+          incoming: true,
+          minutesAgo: 2,
+          description: 'Zap from bob',
+        ),
+        tx('coffee', sats: 5400, minutesAgo: 30, description: 'Coffee'),
+        tx('paid', sats: 40000, incoming: true, days: 1),
+      ],
+    FakeWallet('offline', 'Offline node', error: BalanceError.unreachable)
+      ..activityError = ActivityError.unreachable,
   ];
 
   Future<void> expectGuidelines(WidgetTester tester) async {
@@ -169,6 +181,81 @@ void main() {
     expect(total.flagsCollection.isLiveRegion, isTrue);
     expect(total.getSemanticsData().customSemanticsActionIds, isNotEmpty);
     handle.dispose();
+  });
+
+  testWidgets('an activity row reads as one item with its direction', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLumen(tester, sources, wallets: twoWallets());
+
+    expect(
+      find.bySemanticsLabel(
+        RegExp(r'^Coffee\nHome node, 30 min ago\nsent 5,400 sats$'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.bySemanticsLabel(
+        RegExp(r'^Received\nHome node, Yesterday\nreceived 40,000 sats$'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.text('Activity from 1 wallet is not shown: it could not be loaded.'),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
+  testWidgets('activity times keep up while the screen stays open', (
+    tester,
+  ) async {
+    final wallet = FakeWallet('home', 'Home node')
+      ..transactions = [tx('zap', incoming: true)];
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    expect(find.text('Home node, Just now'), findsOneWidget);
+
+    await tester.pump(const Duration(minutes: 1));
+    expect(find.text('Home node, 1 min ago'), findsOneWidget);
+  });
+
+  testWidgets('desktop activity is a table with column headers', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await pumpLumen(tester, sources, wallets: twoWallets(), size: desktopSize);
+
+    expect(find.byType(Table), findsOneWidget);
+    for (final header in ['Description', 'Wallet', 'Date', 'Amount']) {
+      final node = tester.getSemantics(find.text(header));
+      expect(node.role, SemanticsRole.columnHeader, reason: header);
+    }
+    expect(find.bySemanticsLabel('received 21,000 sats'), findsOneWidget);
+    handle.dispose();
+  }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+
+  testWidgets('a wallet without activity permission says how to fix it', (
+    tester,
+  ) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: [
+        FakeWallet('ro', 'Read only', balance: 10)
+          ..activityError = ActivityError.noPermission,
+      ],
+    );
+
+    await tester.tap(find.text('Read only'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text(
+        'This connection cannot list transactions. In your wallet, create a new connection that allows listing transactions.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('the short Add link is announced as Add wallet', (tester) async {

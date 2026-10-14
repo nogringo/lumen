@@ -34,6 +34,47 @@ class ReceiveException implements Exception {
   String toString() => 'ReceiveException(${error.name})';
 }
 
+enum ActivityError {
+  /// The wallet or its relays did not answer.
+  unreachable,
+
+  /// The wallet answered, but this connection may not list transactions.
+  noPermission,
+}
+
+class ActivityException implements Exception {
+  const ActivityException(this.error);
+
+  final ActivityError error;
+
+  @override
+  String toString() => 'ActivityException(${error.name})';
+}
+
+enum TransactionDirection { incoming, outgoing }
+
+/// A settled payment into or out of one wallet.
+final class Transaction {
+  const Transaction({
+    required this.id,
+    required this.direction,
+    required this.sats,
+    required this.at,
+    this.description,
+  });
+
+  /// Unique within its wallet, such as the payment hash.
+  final String id;
+  final TransactionDirection direction;
+  final int sats;
+
+  /// When the payment settled.
+  final DateTime at;
+  final String? description;
+
+  bool get isIncoming => direction == TransactionDirection.incoming;
+}
+
 /// A Lightning invoice that pays into one wallet.
 final class Invoice {
   const Invoice({
@@ -67,6 +108,10 @@ abstract interface class Wallet {
   /// Emits once when [invoice] is paid, then closes. Cancelling the
   /// subscription stops watching.
   Stream<void> watchPayment(Invoice invoice);
+
+  /// The latest settled transactions, newest first. Throws an
+  /// [ActivityException] when they cannot be read.
+  Future<List<Transaction>> fetchTransactions({int limit = 10});
 
   Future<void> rename(String name);
 

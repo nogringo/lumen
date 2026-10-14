@@ -8,6 +8,7 @@ import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
+import '../widgets/activity.dart';
 import '../widgets/amount.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/wallet_actions.dart';
@@ -79,6 +80,8 @@ class WalletScreen extends StatelessWidget {
               ],
               const SizedBox(height: 24),
               WalletActions(wallet: wallet),
+              const SizedBox(height: 24),
+              RecentActivity(wallet: wallet),
             ],
           ),
         ),

@@ -511,6 +511,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// Heading of the latest transactions on Home and on a wallet screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get recentActivity;
+
+  /// Accessible label of the spinner shown while transactions load.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading activity'**
+  String get activityLoading;
+
+  /// Shown under Recent activity when the wallets have no transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet.'**
+  String get noActivity;
+
+  /// Shown on a wallet screen when its transactions could not be read.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not load the activity of this wallet.'**
+  String get activityUnreachable;
+
+  /// Shown on a wallet screen when its connection lacks the permission to list transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection cannot list transactions. In your wallet, create a new connection that allows listing transactions.'**
+  String get activityNoPermission;
+
+  /// Note under Recent activity on Home when some wallets are left out of it.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Activity from 1 wallet is not shown: it could not be loaded.} other{Activity from {count} wallets is not shown: it could not be loaded.}}'**
+  String activityNotShown(int count);
+
+  /// Title of an incoming payment that has no description.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get transactionReceived;
+
+  /// Title of an outgoing payment that has no description.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get transactionSent;
+
+  /// Incoming amount read by screen readers instead of +amount.
+  ///
+  /// In en, this message translates to:
+  /// **'received {amount} sats'**
+  String amountReceived(String amount);
+
+  /// Outgoing amount read by screen readers instead of -amount.
+  ///
+  /// In en, this message translates to:
+  /// **'sent {amount} sats'**
+  String amountSent(String amount);
+
+  /// Under a payment on Home: the wallet it went through, then when.
+  ///
+  /// In en, this message translates to:
+  /// **'{wallet}, {when}'**
+  String transactionWalletWhen(String wallet, String when);
+
+  /// When a payment happened, less than a minute ago.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// When a payment happened, less than an hour ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min ago'**
+  String minutesAgo(int minutes);
+
+  /// When a payment happened, earlier today.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h ago'**
+  String hoursAgo(int hours);
+
+  /// When a payment happened, the day before today.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// Column header of the activity table on desktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get columnDescription;
+
+  /// Column header of the activity table on desktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get columnWallet;
+
+  /// Column header of the activity table on desktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get columnDate;
+
+  /// Column header of the activity table on desktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get columnAmount;
 }
 
 class _AppLocalizationsDelegate

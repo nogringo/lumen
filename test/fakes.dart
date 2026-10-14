@@ -2,10 +2,11 @@
 
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/app.dart';
-import 'package:lumen/wallets/balance_store.dart';
+import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:ndk/data_layer/repositories/wallets/mem_wallets_repo.dart';
@@ -27,6 +28,9 @@ class FakeWallet implements Wallet {
   BalanceError? error;
   int fetchCount = 0;
   bool removed = false;
+
+  List<Transaction> transactions = [];
+  ActivityError? activityError;
 
   ReceiveError? receiveError;
   Duration invoiceLifetime = const Duration(hours: 1);
@@ -66,11 +70,35 @@ class FakeWallet implements Wallet {
     ..close();
 
   @override
+  Future<List<Transaction>> fetchTransactions({int limit = 10}) async {
+    await Future<void>.delayed(Duration.zero);
+    if (activityError case final error?) throw ActivityException(error);
+    return transactions.take(limit).toList();
+  }
+
+  @override
   Future<void> rename(String name) async => this.name = name;
 
   @override
   Future<void> remove() async => removed = true;
 }
+
+Transaction tx(
+  String id, {
+  int sats = 1000,
+  bool incoming = false,
+  int minutesAgo = 0,
+  int days = 0,
+  String? description,
+}) => Transaction(
+  id: id,
+  direction: incoming
+      ? TransactionDirection.incoming
+      : TransactionDirection.outgoing,
+  sats: sats,
+  at: clock.now().subtract(Duration(days: days, minutes: minutesAgo)),
+  description: description,
+);
 
 class FakeSource implements WalletSource {
   FakeSource(this.wallets);
@@ -89,11 +117,11 @@ WalletSources memorySources() => WalletSources.create(
 
 Future<WalletsController> loadedController(
   List<Wallet> wallets, {
-  BalanceStore? store,
+  WalletCache? cache,
 }) async {
   final controller = WalletsController([
     FakeSource(wallets),
-  ], store: store ?? MemoryBalanceStore());
+  ], cache: cache ?? MemoryWalletCache());
   await controller.load();
   return controller;
 }

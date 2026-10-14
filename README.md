@@ -1,6 +1,6 @@
 # Lumen
 
-Every way you hold bitcoin, in one place. Lumen v1 reads the balance of Lightning wallets connected over Nostr Wallet Connect (NIP-47) and receives Lightning payments into them, on Android, iOS, macOS, Windows, Linux and web. See [SCOPE.md](SCOPE.md) for what v1 covers and [mockups/](mockups/index.html) for the design and accessibility requirements.
+Every way you hold bitcoin, in one place. Lumen v1 reads the balance and recent activity of Lightning wallets connected over Nostr Wallet Connect (NIP-47) and receives Lightning payments into them, on Android, iOS, macOS, Windows, Linux and web. See [SCOPE.md](SCOPE.md) for what v1 covers and [mockups/](mockups/index.html) for the design and accessibility requirements.
 
 ## Layout
 
@@ -31,4 +31,4 @@ flutter test                                  # app, including accessibility gui
 Accessibility is a core goal, not a polish item. The app follows the requirements at the end of the mockups (WCAG 2.2 AA, VoiceOver, TalkBack, Switch Access, hardware keyboard), and `test/accessibility_test.dart` checks tap targets, labels, text contrast and layout at 200% text size on phone and desktop, in both themes.
 
 - On web, the accessibility tree is on from startup.
-- Balances refresh when the app comes back to the foreground, by pulling down, with Cmd+R, Ctrl+R or F5, or with the "Refresh balances" screen reader action on the total.
+- Balances and activity refresh when the app comes back to the foreground, by pulling down, with Cmd+R, Ctrl+R or F5, or with the "Refresh balances" screen reader action on the total.

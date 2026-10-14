@@ -7,6 +7,7 @@ import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
+import '../widgets/activity.dart';
 import '../widgets/amount.dart';
 import '../widgets/brand.dart';
 import '../widgets/screen_parts.dart';
@@ -68,6 +69,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 24),
+              const RecentActivity(),
             ],
           ),
         ),

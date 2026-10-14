@@ -262,4 +262,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get close => 'Close';
+
+  @override
+  String get recentActivity => 'Recent activity';
+
+  @override
+  String get activityLoading => 'Loading activity';
+
+  @override
+  String get noActivity => 'No payments yet.';
+
+  @override
+  String get activityUnreachable =>
+      'Lumen could not load the activity of this wallet.';
+
+  @override
+  String get activityNoPermission =>
+      'This connection cannot list transactions. In your wallet, create a new connection that allows listing transactions.';
+
+  @override
+  String activityNotShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Activity from $count wallets is not shown: it could not be loaded.',
+      one: 'Activity from 1 wallet is not shown: it could not be loaded.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionReceived => 'Received';
+
+  @override
+  String get transactionSent => 'Sent';
+
+  @override
+  String amountReceived(String amount) {
+    return 'received $amount sats';
+  }
+
+  @override
+  String amountSent(String amount) {
+    return 'sent $amount sats';
+  }
+
+  @override
+  String transactionWalletWhen(String wallet, String when) {
+    return '$wallet, $when';
+  }
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '$hours h ago';
+  }
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get columnDescription => 'Description';
+
+  @override
+  String get columnWallet => 'Wallet';
+
+  @override
+  String get columnDate => 'Date';
+
+  @override
+  String get columnAmount => 'Amount';
 }
