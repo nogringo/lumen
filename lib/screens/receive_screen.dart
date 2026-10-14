@@ -4,7 +4,6 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../theme/lumen_colors.dart';
@@ -12,9 +11,11 @@ import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/amount.dart';
+import '../widgets/copy_button.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/qr_code_view.dart';
 import '../widgets/screen_parts.dart';
+import '../widgets/share_text.dart';
 import '../widgets/wallet_picker.dart';
 
 Future<void> openReceive(BuildContext context, {Wallet? wallet}) => openFlow(
@@ -336,52 +337,12 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
   }
 }
 
-class _CopyLine extends StatefulWidget {
+class _CopyLine extends StatelessWidget {
   const _CopyLine(this.request);
 
   final String request;
 
-  @override
-  State<_CopyLine> createState() => _CopyLineState();
-}
-
-class _CopyLineState extends State<_CopyLine> {
-  var _copied = false;
-  Timer? _reset;
-
-  @override
-  void dispose() {
-    _reset?.cancel();
-    super.dispose();
-  }
-
-  String get _short => shortInvoice(widget.request);
-
-  Future<void> _copy() async {
-    final l = AppLocalizations.of(context);
-    final view = View.of(context);
-    final direction = Directionality.of(context);
-    await Clipboard.setData(ClipboardData(text: widget.request));
-    SemanticsService.sendAnnouncement(view, l.invoiceCopied, direction);
-    if (!mounted) return;
-    setState(() => _copied = true);
-    _reset?.cancel();
-    _reset = Timer(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _copied = false);
-    });
-  }
-
-  void _share(BuildContext buttonContext) {
-    final box = buttonContext.findRenderObject() as RenderBox?;
-    SharePlus.instance.share(
-      ShareParams(
-        text: widget.request,
-        sharePositionOrigin: box == null
-            ? null
-            : box.localToGlobal(Offset.zero) & box.size,
-      ),
-    );
-  }
+  String get _short => shortInvoice(request);
 
   @override
   Widget build(BuildContext context) {
@@ -410,11 +371,11 @@ class _CopyLineState extends State<_CopyLine> {
             ),
           ),
           const SizedBox(width: 8),
-          IconButton(
+          CopyButton(
+            text: request,
             tooltip: l.copyInvoice,
+            copied: l.invoiceCopied,
             style: raised,
-            icon: Icon(_copied ? Icons.check : Icons.content_copy_outlined),
-            onPressed: _copy,
           ),
           const SizedBox(width: 8),
           Builder(
@@ -422,7 +383,7 @@ class _CopyLineState extends State<_CopyLine> {
               tooltip: l.shareInvoice,
               style: raised,
               icon: const Icon(Icons.share_outlined),
-              onPressed: () => _share(buttonContext),
+              onPressed: () => shareText(buttonContext, request),
             ),
           ),
         ],

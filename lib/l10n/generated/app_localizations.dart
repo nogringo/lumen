@@ -823,6 +823,48 @@ abstract class AppLocalizations {
   /// **'Fee paid'**
   String get detailFeePaid;
 
+  /// Label of the date and time a payment was sent, on the payment result.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get detailDate;
+
+  /// Label of the Lightning payment hash on the payment result.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment hash'**
+  String get detailPaymentHash;
+
+  /// Button that copies the payment hash.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy payment hash'**
+  String get copyPaymentHash;
+
+  /// Announced by screen readers once the payment hash is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment hash copied'**
+  String get paymentHashCopied;
+
+  /// Button that shares a text receipt of the payment sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Share receipt'**
+  String get shareReceipt;
+
+  /// Label of the payment preimage, the proof of payment, in the shared receipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Preimage'**
+  String get receiptPreimage;
+
+  /// One line of the shared receipt, such as Fee paid: 3 sats.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {value}'**
+  String receiptLine(String label, String value);
+
   /// Read by screen readers instead of a shortened invoice.
   ///
   /// In en, this message translates to:

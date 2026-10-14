@@ -1,5 +1,6 @@
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,8 +10,10 @@ import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/amount.dart';
+import '../widgets/copy_button.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/screen_parts.dart';
+import '../widgets/share_text.dart';
 import '../widgets/wallet_picker.dart';
 
 Future<void> openSend(BuildContext context, {Wallet? wallet}) => openFlow(
@@ -72,6 +75,8 @@ class _SendFlowState extends State<_SendFlow> {
   var _sats = 0;
   Wallet? _payer;
   Payment? _payment;
+  Invoice? _paid;
+  DateTime? _sentAt;
 
   @override
   void dispose() {
@@ -227,6 +232,8 @@ class _SendFlowState extends State<_SendFlow> {
       } else {
         attempted = true;
         _payment = await wallet.payInvoice(invoice);
+        _paid = invoice;
+        _sentAt = DateTime.now();
       }
     } on RecipientException catch (e) {
       error = _recipientMessage(l, e.error, _label(recipient));
@@ -307,7 +314,18 @@ class _SendFlowState extends State<_SendFlow> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          widget.frame.header,
+          if (_step == _Step.sent)
+            widget.frame.headerWith(
+              action: Builder(
+                builder: (button) => IconButton(
+                  tooltip: AppLocalizations.of(context).shareReceipt,
+                  icon: const Icon(Icons.share_outlined),
+                  onPressed: () => shareText(button, _receipt(recipient!)),
+                ),
+              ),
+            )
+          else
+            widget.frame.header,
           const SizedBox(height: 20),
           ...switch (_step) {
             _Step.form => _form(wallets, wallet),
@@ -518,12 +536,15 @@ class _SendFlowState extends State<_SendFlow> {
       ],
       const SizedBox(height: 24),
       _Details([
+        if (_sentAt case final at?) (l.detailDate, Text(_formatSentAt(at))),
         (l.detailFrom, Text(wallet.name)),
         if (_payment case final payment?)
           (
             l.detailFeePaid,
             Text(l.amountSats(formatSats(context, payment.feeSats))),
           ),
+        if (_paid?.paymentHash case final hash?)
+          (l.detailPaymentHash, _PaymentHash(hash)),
       ]),
       widget.frame.bottomGap,
       FilledButton(
@@ -532,6 +553,36 @@ class _SendFlowState extends State<_SendFlow> {
         child: Text(l.done),
       ),
     ];
+  }
+
+  String _formatSentAt(DateTime at) {
+    final locale = AppLocalizations.of(context).localeName;
+    return DateFormat.yMMMd(locale).add_jm().format(at);
+  }
+
+  /// A plain text receipt, without the wallet name, which is private.
+  String _receipt(Recipient recipient) {
+    final l = AppLocalizations.of(context);
+    final to = switch (recipient) {
+      LnurlRecipient(:final label) => l.sentTo(label),
+      InvoiceRecipient(:final invoice) => invoice.description,
+    };
+    return [
+      l.paymentSent,
+      l.amountSats(formatSats(context, _sats)),
+      ?to,
+      if (_sentAt case final at?)
+        l.receiptLine(l.detailDate, _formatSentAt(at)),
+      if (_payment case final payment?)
+        l.receiptLine(
+          l.detailFeePaid,
+          l.amountSats(formatSats(context, payment.feeSats)),
+        ),
+      if (_paid?.paymentHash case final hash?)
+        l.receiptLine(l.detailPaymentHash, hash),
+      if (_payment?.preimage case final preimage? when preimage.isNotEmpty)
+        l.receiptLine(l.receiptPreimage, preimage),
+    ].join('\n');
   }
 }
 
@@ -616,7 +667,39 @@ class _RecipientText extends StatelessWidget {
   }
 }
 
-/// Label and value rows, each read as one item.
+/// The start and end of the hash, and a button that copies all of it.
+class _PaymentHash extends StatelessWidget {
+  const _PaymentHash(this.hash);
+
+  final String hash;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final short = hash.length > 12
+        ? '${hash.substring(0, 4)}...${hash.substring(hash.length - 4)}'
+        : hash;
+    return Wrap(
+      alignment: WrapAlignment.end,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 4,
+      children: [
+        Text(
+          short,
+          style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
+        ),
+        CopyButton(
+          text: hash,
+          tooltip: l.copyPaymentHash,
+          copied: l.paymentHashCopied,
+        ),
+      ],
+    );
+  }
+}
+
+/// Label and value rows, each read as one item. From 150% text, the label
+/// goes above its value so neither is squeezed.
 class _Details extends StatelessWidget {
   const _Details(this.rows);
 
@@ -625,6 +708,12 @@ class _Details extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = LumenColors.of(context);
+    final stacked = MediaQuery.textScalerOf(context).scale(10) >= 15;
+    final valueStyle = TextStyle(
+      fontSize: 15,
+      fontWeight: FontWeight.w500,
+      color: c.text,
+    );
     return DecoratedBox(
       decoration: BoxDecoration(
         color: c.surface2,
@@ -639,28 +728,28 @@ class _Details extends StatelessWidget {
               MergeSemantics(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Row(
+                  child: Flex(
+                    direction: stacked ? Axis.vertical : Axis.horizontal,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         label,
                         style: TextStyle(fontSize: 15, color: c.text2),
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Align(
-                          alignment: AlignmentDirectional.topEnd,
-                          child: DefaultTextStyle.merge(
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: c.text,
+                      SizedBox(width: 16, height: stacked ? 4 : 0),
+                      if (stacked)
+                        DefaultTextStyle.merge(style: valueStyle, child: value)
+                      else
+                        Expanded(
+                          child: Align(
+                            alignment: AlignmentDirectional.topEnd,
+                            child: DefaultTextStyle.merge(
+                              textAlign: TextAlign.end,
+                              style: valueStyle,
+                              child: value,
                             ),
-                            child: value,
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

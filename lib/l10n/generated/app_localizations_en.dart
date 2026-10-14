@@ -443,6 +443,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailFeePaid => 'Fee paid';
 
   @override
+  String get detailDate => 'Date';
+
+  @override
+  String get detailPaymentHash => 'Payment hash';
+
+  @override
+  String get copyPaymentHash => 'Copy payment hash';
+
+  @override
+  String get paymentHashCopied => 'Payment hash copied';
+
+  @override
+  String get shareReceipt => 'Share receipt';
+
+  @override
+  String get receiptPreimage => 'Preimage';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get lightningInvoice => 'Lightning invoice';
 
   @override

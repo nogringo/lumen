@@ -87,12 +87,62 @@ void main() {
     expect(wallet.paid.single.sats, 5400);
     expect(find.text('Payment sent'), findsOneWidget);
     expect(find.text('3 sats'), findsOneWidget);
+    expect(find.text('Date'), findsOneWidget);
+    final hash = _fakeHash(5400);
+    expect(
+      find.text('${hash.substring(0, 4)}...${hash.substring(60)}'),
+      findsOneWidget,
+    );
     expect(wallet.fetchCount, fetchesBefore + 1);
 
     await tester.tap(find.text('Done'));
     await tester.pumpAndSettle();
     expect(find.text('Total balance'), findsOneWidget);
     handle.dispose();
+  });
+
+  testWidgets('the receipt can be shared and its hash copied', (tester) async {
+    String? shared;
+    String? copied;
+    final messenger = tester.binding.defaultBinaryMessenger;
+    const share = MethodChannel('dev.fluttercommunity.plus/share');
+    messenger.setMockMethodCallHandler(share, (call) async {
+      shared = (call.arguments as Map)['text'] as String;
+      return 'dev.fluttercommunity.plus/share/success';
+    });
+    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+      if (call.method == 'Clipboard.setData') {
+        copied = (call.arguments as Map)['text'] as String;
+      }
+      return null;
+    });
+    addTearDown(() {
+      messenger.setMockMethodCallHandler(share, null);
+      messenger.setMockMethodCallHandler(SystemChannels.platform, null);
+    });
+    final wallet = FakeWallet('home', 'Home node', balance: 10000)..feeSats = 1;
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openSend(tester);
+    await fillTo(tester, 'barista@example.com');
+    await tester.enterText(find.byType(TextField).last, '2100');
+    await review(tester);
+    await tester.tap(find.text('Send 2,100 sats'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Copy payment hash'));
+    await tester.pumpAndSettle();
+    expect(copied, _fakeHash(2100));
+
+    await tester.tap(find.byTooltip('Share receipt'));
+    await tester.pumpAndSettle();
+    expect(
+      shared,
+      startsWith('Payment sent\n2,100 sats\nTo barista@example.com\nDate: '),
+    );
+    expect(shared, contains('\nFee paid: 1 sats\n'));
+    expect(shared, contains('\nPayment hash: ${_fakeHash(2100)}\n'));
+    expect(shared, endsWith('\nPreimage: preimage'));
+    expect(shared, isNot(contains('Home node')));
   });
 
   testWidgets('pays a Lightning address the amount typed', (tester) async {
@@ -370,3 +420,9 @@ void main() {
     expect(find.byType(Dialog), findsNothing);
   });
 }
+
+/// The payment hash [fakeBolt11] puts in an invoice for [sats].
+String _fakeHash(int sats) => [
+  for (var i = 0; i < 32; i++)
+    ((sats + i) % 256).toRadixString(16).padLeft(2, '0'),
+].join();

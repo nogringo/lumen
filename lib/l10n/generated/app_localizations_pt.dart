@@ -445,6 +445,29 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailFeePaid => 'Taxa paga';
 
   @override
+  String get detailDate => 'Data';
+
+  @override
+  String get detailPaymentHash => 'Hash do pagamento';
+
+  @override
+  String get copyPaymentHash => 'Copiar hash do pagamento';
+
+  @override
+  String get paymentHashCopied => 'Hash do pagamento copiado';
+
+  @override
+  String get shareReceipt => 'Partilhar recibo';
+
+  @override
+  String get receiptPreimage => 'Pré-imagem';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get lightningInvoice => 'Fatura Lightning';
 
   @override
@@ -1120,6 +1143,29 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get detailFeePaid => 'Taxa paga';
+
+  @override
+  String get detailDate => 'Data';
+
+  @override
+  String get detailPaymentHash => 'Hash do pagamento';
+
+  @override
+  String get copyPaymentHash => 'Copiar hash do pagamento';
+
+  @override
+  String get paymentHashCopied => 'Hash do pagamento copiado';
+
+  @override
+  String get shareReceipt => 'Compartilhar recibo';
+
+  @override
+  String get receiptPreimage => 'Pré-imagem';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
 
   @override
   String get lightningInvoice => 'Fatura Lightning';

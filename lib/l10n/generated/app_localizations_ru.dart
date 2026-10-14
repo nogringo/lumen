@@ -451,6 +451,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get detailFeePaid => 'Комиссия';
 
   @override
+  String get detailDate => 'Дата';
+
+  @override
+  String get detailPaymentHash => 'Хеш платежа';
+
+  @override
+  String get copyPaymentHash => 'Скопировать хеш платежа';
+
+  @override
+  String get paymentHashCopied => 'Хеш платежа скопирован';
+
+  @override
+  String get shareReceipt => 'Поделиться квитанцией';
+
+  @override
+  String get receiptPreimage => 'Прообраз';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get lightningInvoice => 'Счёт Lightning';
 
   @override

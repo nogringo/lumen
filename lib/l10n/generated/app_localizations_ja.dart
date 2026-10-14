@@ -436,6 +436,29 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailFeePaid => '支払った手数料';
 
   @override
+  String get detailDate => '日時';
+
+  @override
+  String get detailPaymentHash => '支払いハッシュ';
+
+  @override
+  String get copyPaymentHash => '支払いハッシュをコピー';
+
+  @override
+  String get paymentHashCopied => '支払いハッシュをコピーしました';
+
+  @override
+  String get shareReceipt => '領収書を共有';
+
+  @override
+  String get receiptPreimage => 'プリイメージ';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get lightningInvoice => 'Lightning インボイス';
 
   @override

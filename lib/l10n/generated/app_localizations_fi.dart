@@ -443,6 +443,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailFeePaid => 'Maksettu kulu';
 
   @override
+  String get detailDate => 'Päivämäärä';
+
+  @override
+  String get detailPaymentHash => 'Maksun tiiviste';
+
+  @override
+  String get copyPaymentHash => 'Kopioi maksun tiiviste';
+
+  @override
+  String get paymentHashCopied => 'Maksun tiiviste kopioitu';
+
+  @override
+  String get shareReceipt => 'Jaa kuitti';
+
+  @override
+  String get receiptPreimage => 'Esikuva';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label: $value';
+  }
+
+  @override
   String get lightningInvoice => 'Lightning-lasku';
 
   @override

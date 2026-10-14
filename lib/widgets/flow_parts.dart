@@ -9,12 +9,14 @@ import 'screen_parts.dart';
 /// What a transaction flow needs from the screen or dialog that holds it.
 class FlowFrame {
   const FlowFrame({
-    required this.header,
+    required this.headerWith,
     required this.onDone,
     required this.expand,
   });
 
-  final Widget header;
+  /// The flow's header, with [action] as its icon button when given.
+  final Widget Function({Widget? action}) headerWith;
+  Widget get header => headerWith();
   final VoidCallback onDone;
 
   /// Fills the screen height to keep the main button at the bottom.
@@ -62,9 +64,9 @@ class FlowScreen extends StatelessWidget {
               child: builder(
                 FlowFrame(
                   expand: true,
-                  header: hasSidebar(context)
-                      ? PageTitle(title)
-                      : TopBar(title: title),
+                  headerWith: ({action}) => hasSidebar(context)
+                      ? PageTitle(title, trailing: action)
+                      : TopBar(title: title, trailing: action),
                   onDone: () =>
                       context.canPop() ? context.pop() : context.go('/'),
                 ),
@@ -95,9 +97,9 @@ class FlowDialog extends StatelessWidget {
           child: builder(
             FlowFrame(
               expand: false,
-              header: Row(
+              headerWith: ({action}) => Row(
                 children: [
-                  const SizedBox(width: 48),
+                  SizedBox(width: 48, child: action),
                   const SizedBox(width: 8),
                   Expanded(
                     child: ScreenTitle(

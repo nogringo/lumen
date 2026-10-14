@@ -39,7 +39,7 @@ English, French, German, Spanish, Finnish, Italian, Japanese, Portuguese (Portug
 - An invoice without amount, an expired invoice, an amount outside what the address accepts, or a known balance below the amount is caught before the payment, with an inline error that says how to fix it.
 - Lumen picks the first wallet whose balance covers the amount. The user can switch before reviewing.
 - Review the amount, recipient, note, wallet and network, then send with `pay_invoice`. An address is only asked for its invoice at that point, and an invoice for another amount is refused.
-- Confirm the payment on screen with the fee paid, and refresh the wallet. A failure says why. When the wallet does not answer in time, Lumen says the payment may still go through and offers no retry.
+- Confirm the payment on screen with its date, the fee paid and the payment hash, which can be copied, and refresh the wallet. Share receipt sends a text receipt (amount, recipient, date, fee, payment hash and preimage, without the wallet name). A failure says why. When the wallet does not answer in time, Lumen says the payment may still go through and offers no retry.
 
 ### Receive
 
@@ -73,7 +73,7 @@ Based on the mockups, trimmed to the features above:
 | Connect with NWC | 03 | No Scan button. The permissions card also lists what the connection cannot do. |
 | Home / Overview | 04, 08, 17, 20 | Send and Receive are the actions, no Scan. Recent activity has no See all, and its rows do not open a detail. The Settings button opens Settings. On desktop the sidebar ends with Settings, then Lock now while App lock is on. |
 | Wallet | 09, 21 (layout only) | Name, balance, Send, Receive and the wallet's recent activity. The options menu holds Rename and Remove. |
-| Send | 10, 11, 12, 22 | Lightning only. The amount is typed in a field, not on a keypad. A Paste button replaces Scan. No fiat value, no fee estimate before sending (NWC has none), no receipt sharing or payment hash. |
+| Send | 10, 11, 12, 22 | Lightning only. The amount is typed in a field, not on a keypad. A Paste button replaces Scan. No fiat value, no fee estimate before sending (NWC has none). |
 | Receive | 13, 23 | Lightning only, so no network switch. The amount is typed first, then the invoice is created. |
 | Settings | 14, 24 | A General group with Language, which opens a dialog of languages, then the Security group: the App lock switch, then Change passphrase and Lock now while it is on. Turning App lock on opens a passphrase screen, turning it off asks for the passphrase in a dialog. |
 | Locked | 15, 25 | A passphrase field instead of the system prompt, with Unlock and Forgot your passphrase. |

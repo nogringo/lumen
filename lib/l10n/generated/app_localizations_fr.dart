@@ -444,6 +444,29 @@ class AppLocalizationsFr extends AppLocalizations {
   String get detailFeePaid => 'Frais payés';
 
   @override
+  String get detailDate => 'Date';
+
+  @override
+  String get detailPaymentHash => 'Hash du paiement';
+
+  @override
+  String get copyPaymentHash => 'Copier le hash du paiement';
+
+  @override
+  String get paymentHashCopied => 'Hash du paiement copié';
+
+  @override
+  String get shareReceipt => 'Partager le reçu';
+
+  @override
+  String get receiptPreimage => 'Préimage';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label : $value';
+  }
+
+  @override
   String get lightningInvoice => 'Facture Lightning';
 
   @override

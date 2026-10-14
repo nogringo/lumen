@@ -583,6 +583,42 @@
   "@detailFeePaid": {
     "description": "Row label: the routing fee the payment cost."
   },
+  "detailDate": "Date",
+  "@detailDate": {
+    "description": "Label of the date and time a payment was sent, on the payment result."
+  },
+  "detailPaymentHash": "Payment hash",
+  "@detailPaymentHash": {
+    "description": "Label of the Lightning payment hash on the payment result."
+  },
+  "copyPaymentHash": "Copy payment hash",
+  "@copyPaymentHash": {
+    "description": "Button that copies the payment hash."
+  },
+  "paymentHashCopied": "Payment hash copied",
+  "@paymentHashCopied": {
+    "description": "Announced by screen readers once the payment hash is copied."
+  },
+  "shareReceipt": "Share receipt",
+  "@shareReceipt": {
+    "description": "Button that shares a text receipt of the payment sent."
+  },
+  "receiptPreimage": "Preimage",
+  "@receiptPreimage": {
+    "description": "Label of the payment preimage, the proof of payment, in the shared receipt."
+  },
+  "receiptLine": "{label}: {value}",
+  "@receiptLine": {
+    "description": "One line of the shared receipt, such as Fee paid: 3 sats.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "lightningInvoice": "Lightning invoice",
   "@lightningInvoice": {
     "description": "Read by screen readers instead of a shortened invoice."

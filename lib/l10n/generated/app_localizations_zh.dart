@@ -426,6 +426,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailFeePaid => '已付手续费';
 
   @override
+  String get detailDate => '日期';
+
+  @override
+  String get detailPaymentHash => '支付哈希';
+
+  @override
+  String get copyPaymentHash => '复制支付哈希';
+
+  @override
+  String get paymentHashCopied => '已复制支付哈希';
+
+  @override
+  String get shareReceipt => '分享收据';
+
+  @override
+  String get receiptPreimage => '原像';
+
+  @override
+  String receiptLine(String label, String value) {
+    return '$label：$value';
+  }
+
+  @override
   String get lightningInvoice => 'Lightning 发票';
 
   @override
