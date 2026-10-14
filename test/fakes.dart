@@ -5,10 +5,12 @@ import 'dart:convert';
 
 import 'package:bech32/bech32.dart';
 import 'package:clock/clock.dart';
+import 'package:cryptography/cryptography.dart' show Sha256;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:lumen/app.dart';
+import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -119,6 +121,18 @@ Transaction tx(
   at: clock.now().subtract(Duration(days: days, minutes: minutesAgo)),
   description: description,
 );
+
+/// Keeps tests fast: Argon2 has its own test.
+class FastKdf implements PassphraseKdf {
+  const FastKdf();
+
+  @override
+  Future<List<int>> derive(
+    String passphrase,
+    List<int> salt,
+    KdfCost cost,
+  ) async => (await Sha256().hash([...utf8.encode(passphrase), ...salt])).bytes;
+}
 
 class FakeSource implements WalletSource {
   FakeSource(this.wallets);

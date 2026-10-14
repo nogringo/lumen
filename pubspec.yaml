@@ -12,6 +12,7 @@ workspace:
 
 dependencies:
   clock: ^1.1.3
+  cryptography: ^2.9.0
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -24,6 +25,7 @@ dependencies:
   material_ui: ^1.6.0
   ndk_flutter: ^0.10.1
   qr: ^3.0.2
+  serverpod_argon2: ^0.1.0
   share_plus: ^13.3.1
 
 dev_dependencies:
