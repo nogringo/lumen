@@ -62,7 +62,51 @@ void main() {
     expect(await repo.getWallets(), isEmpty);
   });
 
-  test('adding a connection that is already saved fails before any network call', () async {
+  test('add saves the wallet at once, before any network answer', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+
+    final wallet = await sources.nwc.add(uri: uri, name: ' Phone ');
+
+    expect(wallet.name, 'Phone');
+    expect(wallet.kind, WalletKind.lightning);
+    final stored = await repo.getWallet(wallet.id) as ndk.NwcWallet;
+    expect(stored.nwcUrl, uri);
+    expect(stored.name, 'Phone');
+  });
+
+  test('a connection being added counts as a duplicate', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+    await sources.nwc.add(uri: uri, name: 'Phone');
+
+    await expectLater(
+      sources.nwc.add(uri: uri, name: 'Again'),
+      throwsA(
+        isA<NwcConnectException>().having(
+          (e) => e.error,
+          'error',
+          NwcConnectError.duplicate,
+        ),
+      ),
+    );
+  });
+
+  test('removing a wallet that is still being added keeps it removed', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+    final wallet = await sources.nwc.add(uri: uri, name: 'Phone');
+
+    await wallet.remove();
+
+    expect(await repo.getWallets(ids: [wallet.id]), isEmpty);
+    expect(
+      (await sources.nwc.load()).map((w) => w.id),
+      isNot(contains(wallet.id)),
+    );
+  });
+
+  test('adding a connection that is already saved fails', () async {
     final sameConnection =
         'nostr+walletconnect://$_pubkey?relays=wss://other.example&secret=$_secret';
 

@@ -62,9 +62,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connect => 'Connect';
 
   @override
-  String get connecting => 'Connecting...';
-
-  @override
   String get errorUriEmpty =>
       'Paste the connection string from your wallet\'s NWC settings.';
 
@@ -80,11 +77,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorUriDuplicate => 'This wallet is already in Lumen.';
 
   @override
-  String get errorUriUnreachable =>
-      'Lumen could not reach this wallet. Check that it is online and that the connection is still active, then try again.';
-
-  @override
-  String get errorUriNoBalance =>
+  String get balanceNoPermission =>
       'This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.';
 
   @override
@@ -114,12 +107,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get balanceUnavailable => 'Unavailable';
 
   @override
-  String walletsUnreachable(int count) {
+  String walletsNotCounted(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count wallets could not be reached.',
-      one: '1 wallet could not be reached.',
+      other: '$count wallets are not counted: their balances are unavailable.',
+      one: '1 wallet is not counted: its balance is unavailable.',
     );
     return '$_temp0';
   }
@@ -158,4 +151,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get removeBody =>
       'Lumen forgets this connection. The wallet and its funds are not affected, and you can connect it again later.';
+
+  @override
+  String get refreshBalances => 'Refresh balances';
+
+  @override
+  String get refreshBalance => 'Refresh balance';
 }

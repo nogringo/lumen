@@ -17,13 +17,11 @@
   "connectionStringHint": "Commence par nostr+walletconnect://",
   "nameLabel": "Nom",
   "connect": "Connecter",
-  "connecting": "Connexion...",
   "errorUriEmpty": "Collez la chaîne de connexion depuis les réglages NWC de votre portefeuille.",
   "errorUriNotNwc": "Ce n'est pas une chaîne de connexion NWC. Elle doit commencer par nostr+walletconnect://",
   "errorUriIncomplete": "Cette chaîne de connexion est incomplète. Copiez-la à nouveau, en entier, depuis votre portefeuille.",
   "errorUriDuplicate": "Ce portefeuille est déjà dans Lumen.",
-  "errorUriUnreachable": "Lumen n'a pas pu joindre ce portefeuille. Vérifiez qu'il est en ligne et que la connexion est toujours active, puis réessayez.",
-  "errorUriNoBalance": "Cette connexion ne peut pas lire le solde. Dans votre portefeuille, créez une nouvelle connexion qui autorise la lecture du solde.",
+  "balanceNoPermission": "Cette connexion ne peut pas lire le solde. Dans votre portefeuille, créez une nouvelle connexion qui autorise la lecture du solde.",
   "errorNameEmpty": "Donnez un nom à ce portefeuille.",
   "overview": "Vue d'ensemble",
   "totalBalance": "Solde total",
@@ -32,7 +30,7 @@
   "amountSats": "{amount} sats",
   "balanceLoading": "Chargement du solde",
   "balanceUnavailable": "Indisponible",
-  "walletsUnreachable": "{count, plural, =1{1 portefeuille n'a pas pu être joint.} other{{count} portefeuilles n'ont pas pu être joints.}}",
+  "walletsNotCounted": "{count, plural, =1{1 portefeuille n'est pas compté : son solde est indisponible.} other{{count} portefeuilles ne sont pas comptés : leurs soldes sont indisponibles.}}",
   "walletUnreachable": "Lumen n'a pas pu joindre ce portefeuille.",
   "tryAgain": "Réessayer",
   "walletOptions": "Options de {name}",
@@ -42,5 +40,7 @@
   "save": "Enregistrer",
   "cancel": "Annuler",
   "removeTitle": "Retirer {name} ?",
-  "removeBody": "Lumen oublie cette connexion. Le portefeuille et ses fonds ne sont pas touchés, et vous pourrez le reconnecter plus tard."
+  "removeBody": "Lumen oublie cette connexion. Le portefeuille et ses fonds ne sont pas touchés, et vous pourrez le reconnecter plus tard.",
+  "refreshBalances": "Actualiser les soldes",
+  "refreshBalance": "Actualiser le solde"
 }

@@ -1,13 +1,6 @@
 import 'package:ndk/ndk.dart';
 
-enum NwcConnectError {
-  empty,
-  notNwc,
-  incomplete,
-  duplicate,
-  unreachable,
-  cannotReadBalance,
-}
+enum NwcConnectError { empty, notNwc, incomplete, duplicate }
 
 class NwcConnectException implements Exception {
   const NwcConnectException(this.error);
@@ -20,8 +13,8 @@ class NwcConnectException implements Exception {
 
 final _hex64 = RegExp(r'^[0-9a-f]{64}$');
 
-/// Returns what is wrong with the format of [input], or null when it can be
-/// tried against the wallet.
+/// Returns what is wrong with the format of [input], or null when it looks
+/// like a usable connection string.
 NwcConnectError? checkNwcUri(String input) {
   final value = input.trim();
   if (value.isEmpty) return NwcConnectError.empty;

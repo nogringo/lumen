@@ -28,6 +28,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  ndk: ^0.10.1
 
 flutter:
   uses-material-design: true

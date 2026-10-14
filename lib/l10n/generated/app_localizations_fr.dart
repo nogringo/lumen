@@ -62,9 +62,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get connect => 'Connecter';
 
   @override
-  String get connecting => 'Connexion...';
-
-  @override
   String get errorUriEmpty =>
       'Collez la chaîne de connexion depuis les réglages NWC de votre portefeuille.';
 
@@ -80,11 +77,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errorUriDuplicate => 'Ce portefeuille est déjà dans Lumen.';
 
   @override
-  String get errorUriUnreachable =>
-      'Lumen n\'a pas pu joindre ce portefeuille. Vérifiez qu\'il est en ligne et que la connexion est toujours active, puis réessayez.';
-
-  @override
-  String get errorUriNoBalance =>
+  String get balanceNoPermission =>
       'Cette connexion ne peut pas lire le solde. Dans votre portefeuille, créez une nouvelle connexion qui autorise la lecture du solde.';
 
   @override
@@ -114,12 +107,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get balanceUnavailable => 'Indisponible';
 
   @override
-  String walletsUnreachable(int count) {
+  String walletsNotCounted(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count portefeuilles n\'ont pas pu être joints.',
-      one: '1 portefeuille n\'a pas pu être joint.',
+      other:
+          '$count portefeuilles ne sont pas comptés : leurs soldes sont indisponibles.',
+      one: '1 portefeuille n\'est pas compté : son solde est indisponible.',
     );
     return '$_temp0';
   }
@@ -158,4 +152,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get removeBody =>
       'Lumen oublie cette connexion. Le portefeuille et ses fonds ne sont pas touchés, et vous pourrez le reconnecter plus tard.';
+
+  @override
+  String get refreshBalances => 'Actualiser les soldes';
+
+  @override
+  String get refreshBalance => 'Actualiser le solde';
 }

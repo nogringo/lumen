@@ -68,10 +68,6 @@
   "@connect": {
     "description": "Button that checks the connection string and saves the wallet."
   },
-  "connecting": "Connecting...",
-  "@connecting": {
-    "description": "Button label while Lumen checks the connection."
-  },
   "errorUriEmpty": "Paste the connection string from your wallet's NWC settings.",
   "@errorUriEmpty": {
     "description": "Error when the connection string field is empty."
@@ -88,13 +84,9 @@
   "@errorUriDuplicate": {
     "description": "Error when this connection is already saved."
   },
-  "errorUriUnreachable": "Lumen could not reach this wallet. Check that it is online and that the connection is still active, then try again.",
-  "@errorUriUnreachable": {
-    "description": "Error when the wallet does not answer over its relays."
-  },
-  "errorUriNoBalance": "This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.",
-  "@errorUriNoBalance": {
-    "description": "Error when the connection lacks the permission to read the balance."
+  "balanceNoPermission": "This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.",
+  "@balanceNoPermission": {
+    "description": "Shown on a wallet screen when its connection lacks the permission to read the balance."
   },
   "errorNameEmpty": "Give this wallet a name.",
   "@errorNameEmpty": {
@@ -133,8 +125,8 @@
   "@balanceUnavailable": {
     "description": "Shown instead of a balance when the wallet could not be reached."
   },
-  "walletsUnreachable": "{count, plural, =1{1 wallet could not be reached.} other{{count} wallets could not be reached.}}",
-  "@walletsUnreachable": {
+  "walletsNotCounted": "{count, plural, =1{1 wallet is not counted: its balance is unavailable.} other{{count} wallets are not counted: their balances are unavailable.}}",
+  "@walletsNotCounted": {
     "description": "Note under the total balance when some wallets are left out of it.",
     "placeholders": {
       "count": {
@@ -191,5 +183,13 @@
   "removeBody": "Lumen forgets this connection. The wallet and its funds are not affected, and you can connect it again later.",
   "@removeBody": {
     "description": "Body of the remove confirmation dialog."
+  },
+  "refreshBalances": "Refresh balances",
+  "@refreshBalances": {
+    "description": "Accessibility action on the total balance that reloads every wallet balance."
+  },
+  "refreshBalance": "Refresh balance",
+  "@refreshBalance": {
+    "description": "Accessibility action on a wallet balance that reloads it."
   }
 }

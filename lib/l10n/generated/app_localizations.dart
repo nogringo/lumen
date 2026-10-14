@@ -200,12 +200,6 @@ abstract class AppLocalizations {
   /// **'Connect'**
   String get connect;
 
-  /// Button label while Lumen checks the connection.
-  ///
-  /// In en, this message translates to:
-  /// **'Connecting...'**
-  String get connecting;
-
   /// Error when the connection string field is empty.
   ///
   /// In en, this message translates to:
@@ -230,17 +224,11 @@ abstract class AppLocalizations {
   /// **'This wallet is already in Lumen.'**
   String get errorUriDuplicate;
 
-  /// Error when the wallet does not answer over its relays.
-  ///
-  /// In en, this message translates to:
-  /// **'Lumen could not reach this wallet. Check that it is online and that the connection is still active, then try again.'**
-  String get errorUriUnreachable;
-
-  /// Error when the connection lacks the permission to read the balance.
+  /// Shown on a wallet screen when its connection lacks the permission to read the balance.
   ///
   /// In en, this message translates to:
   /// **'This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.'**
-  String get errorUriNoBalance;
+  String get balanceNoPermission;
 
   /// Error when the wallet name is empty.
   ///
@@ -293,8 +281,8 @@ abstract class AppLocalizations {
   /// Note under the total balance when some wallets are left out of it.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{1 wallet could not be reached.} other{{count} wallets could not be reached.}}'**
-  String walletsUnreachable(int count);
+  /// **'{count, plural, =1{1 wallet is not counted: its balance is unavailable.} other{{count} wallets are not counted: their balances are unavailable.}}'**
+  String walletsNotCounted(int count);
 
   /// Shown on a wallet screen when its balance could not be read.
   ///
@@ -355,6 +343,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lumen forgets this connection. The wallet and its funds are not affected, and you can connect it again later.'**
   String get removeBody;
+
+  /// Accessibility action on the total balance that reloads every wallet balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh balances'**
+  String get refreshBalances;
+
+  /// Accessibility action on a wallet balance that reloads it.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh balance'**
+  String get refreshBalance;
 }
 
 class _AppLocalizationsDelegate

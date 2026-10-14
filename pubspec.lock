@@ -598,7 +598,7 @@ packages:
     source: hosted
     version: "1.0.4+0"
   ndk:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       name: ndk
       sha256: "446c29cfe0e5e8ac66cc047c4b2977b08bfa692c2f1018bafbe4b77d5973dfaa"
