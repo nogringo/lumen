@@ -5,6 +5,10 @@ import 'package:material_ui/material_ui.dart';
 import 'package:ndk_flutter/ndk_flutter.dart';
 
 import 'app.dart';
+import 'lock/app_gate.dart';
+import 'lock/app_lock.dart';
+import 'lock/lock_store.dart';
+import 'lock/sealed_storage.dart';
 import 'wallets/wallet_cache.dart';
 import 'wallets/wallets_controller.dart';
 
@@ -12,11 +16,23 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Flutter web builds no accessibility tree until a hidden button is pressed.
   if (kIsWeb) SemanticsBinding.instance.ensureSemantics();
-  final sources = WalletSources.create(
-    repo: FlutterSecureStorageWalletsRepo(),
-    eventVerifier: NdkEventVerifier(),
+  final storage = SealedStorage();
+  final gate = AppGate(
+    lock: AppLock(SecureLockStore()),
+    storage: storage,
+    openSession: () async {
+      final sources = WalletSources.create(
+        repo: FlutterSecureStorageWalletsRepo(storage: storage),
+        eventVerifier: NdkEventVerifier(),
+      );
+      final wallets = WalletsController(
+        sources.all,
+        cache: SecureWalletCache(storage: storage),
+      );
+      await wallets.load();
+      return LumenSession(sources, wallets);
+    },
   );
-  final wallets = WalletsController(sources.all, cache: SecureWalletCache());
-  await wallets.load();
-  runApp(LumenApp(sources: sources, wallets: wallets));
+  await gate.start();
+  runApp(LumenApp(gate: gate));
 }

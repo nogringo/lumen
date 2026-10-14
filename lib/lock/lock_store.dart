@@ -54,11 +54,11 @@ final class SecureLockStore implements LockStore {
 
   final FlutterSecureStorage _storage;
 
-  static const _key = 'lumen.lock';
+  static const storageKey = 'lumen.lock';
 
   @override
   Future<LockRecord?> read() async {
-    final saved = await _storage.read(key: _key);
+    final saved = await _storage.read(key: storageKey);
     if (saved == null) return null;
     final json = jsonDecode(saved) as Map<String, dynamic>;
     final retryAt = json['retryAt'] as int?;
@@ -76,9 +76,9 @@ final class SecureLockStore implements LockStore {
 
   @override
   Future<void> write(LockRecord? record) => record == null
-      ? _storage.delete(key: _key)
+      ? _storage.delete(key: storageKey)
       : _storage.write(
-          key: _key,
+          key: storageKey,
           value: jsonEncode({
             'salt': base64.encode(record.salt),
             'memoryKiB': record.memoryKiB,

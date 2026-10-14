@@ -89,16 +89,12 @@ class AppLock extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// [encrypt] copies the saved data under the new key before App lock counts
-  /// as on, so a failure leaves it off with the data still readable.
-  Future<void> enable(
-    String passphrase, {
-    Future<void> Function(SecretKey key)? encrypt,
-  }) async {
+  /// Saves the lock before the data is sealed with [key], so a sealing cut
+  /// short can finish at the next unlock instead of losing the key.
+  Future<void> enable(String passphrase) async {
     assert(isLongEnough(passphrase));
     final key = await _cipher.newSecretKey();
     final record = await _wrap(key, passphrase);
-    await encrypt?.call(key);
     _key = key;
     await _save(record);
   }

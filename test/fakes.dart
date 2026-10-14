@@ -10,7 +10,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:lumen/app.dart';
+import 'package:lumen/lock/app_gate.dart';
 import 'package:lumen/lock/app_lock.dart';
+import 'package:lumen/lock/lock_store.dart';
+import 'package:lumen/lock/sealed_storage.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -211,8 +214,16 @@ Future<WalletsController> loadedController(
   return controller;
 }
 
-Widget testApp(WalletSources sources, WalletsController wallets) =>
-    LumenApp(sources: sources, wallets: wallets);
+/// A gate whose sessions all use [sources] and [wallets].
+AppGate testGate(
+  WalletSources sources,
+  WalletsController wallets, {
+  LockStore? lockStore,
+}) => AppGate(
+  lock: AppLock(lockStore ?? MemoryLockStore(), kdf: const FastKdf()),
+  storage: SealedStorage(),
+  openSession: () async => LumenSession(sources, wallets),
+);
 
 const phoneSize = Size(390, 844);
 const desktopSize = Size(1440, 900);
@@ -233,7 +244,9 @@ Future<WalletsController> pumpLumen(
   addTearDown(tester.platformDispatcher.clearAllTestValues);
 
   final controller = await tester.runAsync(() => loadedController(wallets));
-  await tester.pumpWidget(testApp(sources, controller!));
+  final gate = testGate(sources, controller!);
+  await tester.runAsync(gate.start);
+  await tester.pumpWidget(LumenApp(gate: gate));
   await tester.runAsync(controller.refreshAll);
   await tester.pumpAndSettle();
   return controller;

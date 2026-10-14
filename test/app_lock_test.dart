@@ -1,5 +1,4 @@
 import 'package:clock/clock.dart';
-import 'package:cryptography/cryptography.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/lock/app_lock.dart';
@@ -62,38 +61,6 @@ void main() {
     expect(String.fromCharCodes(record.wrappedKey), isNot(contains('horse')));
     expect(record.wrappedKey, isNot(containsAllInOrder(key)));
     expect((record.memoryKiB, record.iterations), (65536, 3));
-  });
-
-  test(
-    'enabling copies the data under the key before App lock is on',
-    () async {
-      final store = MemoryLockStore();
-      final lock = appLock(store);
-      SecretKey? copiedWith;
-
-      await lock.enable(
-        passphrase,
-        encrypt: (key) async {
-          copiedWith = key;
-          expect(store.record, isNull);
-        },
-      );
-
-      expect(copiedWith, same(lock.key));
-      expect(store.record, isNotNull);
-    },
-  );
-
-  test('a failed copy leaves App lock off', () async {
-    final store = MemoryLockStore();
-    final lock = appLock(store);
-
-    await expectLater(
-      lock.enable(passphrase, encrypt: (_) async => throw Exception('disk')),
-      throwsException,
-    );
-
-    expect((lock.enabled, store.record), (false, null));
   });
 
   test('Lock now forgets the key', () async {
