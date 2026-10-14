@@ -142,6 +142,16 @@ void main() {
     );
   });
 
+  test('knows a saved connection, whatever its relays', () async {
+    final sameConnection =
+        'nostr+walletconnect://$_pubkey?relays=wss://other.example&secret=$_secret';
+    final other =
+        'nostr+walletconnect://${'a' * 64}?relay=wss://relay.example.com&secret=$_secret';
+
+    expect(await sources.nwc.isSaved(sameConnection), isTrue);
+    expect(await sources.nwc.isSaved(other), isFalse);
+  });
+
   test('adding a connection that is already saved fails', () async {
     final sameConnection =
         'nostr+walletconnect://$_pubkey?relays=wss://other.example&secret=$_secret';

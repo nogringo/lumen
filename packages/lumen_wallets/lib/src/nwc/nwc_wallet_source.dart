@@ -51,8 +51,7 @@ final class NwcWalletSource implements WalletSource {
     final formatError = checkNwcUri(value);
     if (formatError != null) throw NwcConnectException(formatError);
 
-    final saved = (await _repo.getWallets()).whereType<ndk.NwcWallet>();
-    if (saved.any((wallet) => sameNwcConnection(wallet.nwcUrl, value))) {
+    if (await isSaved(value)) {
       throw const NwcConnectException(NwcConnectError.duplicate);
     }
 
@@ -80,6 +79,12 @@ final class NwcWalletSource implements WalletSource {
       name.trim(),
       lightningAddress: nwcLightningAddress(value),
     );
+  }
+
+  /// Whether the connection in [uri] is already saved, whatever its relays.
+  Future<bool> isSaved(String uri) async {
+    final saved = (await _repo.getWallets()).whereType<ndk.NwcWallet>();
+    return saved.any((wallet) => sameNwcConnection(wallet.nwcUrl, uri));
   }
 
   /// Asks the wallet behind [uri] what the connection allows, without saving

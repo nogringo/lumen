@@ -162,11 +162,12 @@ class FakeSource implements WalletSource {
 }
 
 /// Real sources over an in-memory store, for screens that need them.
-WalletSources memorySources({http.Client? httpClient}) => WalletSources.create(
-  repo: MemWalletsRepo(),
-  eventVerifier: Bip340EventVerifier(),
-  httpClient: httpClient,
-);
+WalletSources memorySources({http.Client? httpClient, MemWalletsRepo? repo}) =>
+    WalletSources.create(
+      repo: repo ?? MemWalletsRepo(),
+      eventVerifier: Bip340EventVerifier(),
+      httpClient: httpClient,
+    );
 
 /// A BOLT11 invoice that decodes like a real one, with a blank signature.
 /// Without [sats], it leaves the amount to the payer.

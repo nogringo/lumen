@@ -43,13 +43,29 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
   }
 
   Future<void> _submit() async {
+    if (_saving) return;
+    _saving = true;
+    try {
+      await _save();
+    } finally {
+      _saving = false;
+    }
+  }
+
+  Future<void> _save() async {
     final l = AppLocalizations.of(context);
+    final nwc = LumenScope.sourcesOf(context).nwc;
+    var uriError = checkNwcUri(_uri.text);
+    if (uriError == null && await nwc.isSaved(_uri.text)) {
+      uriError = NwcConnectError.duplicate;
+    }
+    if (!mounted) return;
     setState(() {
-      _uriError = checkNwcUri(_uri.text);
-      _nameMissing = _name.text.trim().isEmpty;
+      _uriError = uriError;
+      _nameMissing = uriError == null && _name.text.trim().isEmpty;
     });
-    if (_uriError != null) {
-      _reportError(_uriError!.message(l), _uriFocus);
+    if (uriError != null) {
+      _reportError(uriError.message(l), _uriFocus);
       return;
     }
     if (_nameMissing) {
@@ -57,11 +73,8 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
       return;
     }
 
-    if (_saving) return;
-    _saving = true;
     try {
-      final wallet = await LumenScope.sourcesOf(context).nwc
-          .add(uri: _uri.text, name: _name.text);
+      final wallet = await nwc.add(uri: _uri.text, name: _name.text);
       if (!mounted) return;
       LumenScope.readWallets(context).added(wallet);
       context.go('/');
@@ -69,8 +82,6 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
       if (!mounted) return;
       setState(() => _uriError = e.error);
       _reportError(e.error.message(l), _uriFocus);
-    } finally {
-      _saving = false;
     }
   }
 
@@ -85,13 +96,28 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
     _inspect(value);
   }
 
+  /// Flags a connection that is already saved, or else shows what it allows.
   Future<void> _inspect(String value) async {
+    final nwc = LumenScope.sourcesOf(context).nwc;
+    final saved = await nwc.isSaved(value);
+    if (!mounted || _uri.text.trim() != value) return;
+    if (saved) {
+      setState(() {
+        _inspected = null;
+        _uriError = NwcConnectError.duplicate;
+      });
+      _announce(
+        NwcConnectError.duplicate.message(AppLocalizations.of(context)),
+      );
+      return;
+    }
+
     setState(() {
       _inspected = value;
       _grant = null;
       _checking = true;
     });
-    final grant = await LumenScope.sourcesOf(context).nwc.inspect(value);
+    final grant = await nwc.inspect(value);
     if (!mounted || _inspected != value) return;
     setState(() {
       _grant = grant;
@@ -101,6 +127,10 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
 
   void _reportError(String message, FocusNode field) {
     field.requestFocus();
+    _announce(message);
+  }
+
+  void _announce(String message) {
     SemanticsService.sendAnnouncement(
       View.of(context),
       message,
