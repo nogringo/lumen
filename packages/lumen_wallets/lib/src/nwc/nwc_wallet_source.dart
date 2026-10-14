@@ -25,6 +25,9 @@ final class NwcWalletSource implements WalletSource {
   static const _timeout = Duration(seconds: 30);
   static const _paymentCheckInterval = Duration(seconds: 5);
 
+  /// Routing a payment can take much longer than other requests.
+  static const _paymentTimeout = Duration(seconds: 60);
+
   @override
   Future<List<Wallet>> load() async => [
     for (final wallet in await _ndkWallets())
@@ -142,6 +145,38 @@ final class NwcWalletSource implements WalletSource {
     } catch (_) {
       await _dropConnection(wallet);
       throw const ReceiveException(ReceiveError.unreachable);
+    }
+  }
+
+  Future<Payment> _payInvoice(String id, Invoice invoice) async {
+    final ndk.NwcWallet wallet;
+    try {
+      wallet = await _connected(id).timeout(_timeout);
+    } catch (_) {
+      throw const SendException(SendError.unreachable);
+    }
+    final connection = wallet.connection!;
+    final permissions = connection.permissions;
+    // ndk sends nothing until the wallet has listed its methods.
+    if (permissions.isEmpty) throw const SendException(SendError.unreachable);
+    if (!permissions.contains(NwcMethod.PAY_INVOICE.name)) {
+      throw const SendException(SendError.noPermission);
+    }
+
+    try {
+      final response = await _ndk.nwc.payInvoice(
+        connection,
+        invoice: invoice.request,
+        timeout: _paymentTimeout,
+      );
+      return Payment(
+        feeSats: (response.feesPaid / 1000).ceil(),
+        preimage: response.preimage,
+      );
+    } catch (e) {
+      final error = nwcSendError(e);
+      if (error == SendError.unconfirmed) await _dropConnection(wallet);
+      throw SendException(error);
     }
   }
 
@@ -305,6 +340,10 @@ final class _NwcWallet implements Wallet {
       _source._watchPayment(id, invoice);
 
   @override
+  Future<Payment> payInvoice(Invoice invoice) =>
+      _source._payInvoice(id, invoice);
+
+  @override
   Future<List<Transaction>> fetchTransactions({int limit = 10}) =>
       _source._fetchTransactions(id, limit);
 
@@ -316,6 +355,18 @@ final class _NwcWallet implements Wallet {
 
   @override
   Future<void> remove() => _source._remove(id);
+}
+
+/// ndk reports the NIP-47 error code only inside its exception message. An
+/// error without one means no answer came, so the outcome is unknown.
+SendError nwcSendError(Object error) {
+  return switch (RegExp(r'code: (\w+)').firstMatch('$error')?.group(1)) {
+    null || 'null' => SendError.unconfirmed,
+    'INSUFFICIENT_BALANCE' => SendError.insufficientBalance,
+    'QUOTA_EXCEEDED' => SendError.budgetExceeded,
+    'RESTRICTED' || 'UNAUTHORIZED' => SendError.noPermission,
+    _ => SendError.failed,
+  };
 }
 
 String _randomId() {

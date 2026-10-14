@@ -69,6 +69,23 @@ class FakeWallet implements Wallet {
     ?..add(null)
     ..close();
 
+  SendError? sendError;
+  int feeSats = 0;
+  final List<Invoice> paid = [];
+
+  /// When set, payments wait for it to complete.
+  Completer<void>? paymentGate;
+
+  @override
+  Future<Payment> payInvoice(Invoice invoice) async {
+    await Future<void>.delayed(Duration.zero);
+    await paymentGate?.future;
+    if (sendError case final error?) throw SendException(error);
+    paid.add(invoice);
+    balance -= invoice.sats + feeSats;
+    return Payment(feeSats: feeSats, preimage: 'preimage');
+  }
+
   @override
   Future<List<Transaction>> fetchTransactions({int limit = 10}) async {
     await Future<void>.delayed(Duration.zero);

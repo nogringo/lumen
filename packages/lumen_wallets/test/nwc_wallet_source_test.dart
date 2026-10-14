@@ -1,6 +1,7 @@
 // ignore_for_file: experimental_member_use
 
 import 'package:lumen_wallets/lumen_wallets.dart';
+import 'package:lumen_wallets/src/nwc/nwc_wallet_source.dart' show nwcSendError;
 import 'package:ndk/data_layer/repositories/wallets/mem_wallets_repo.dart';
 import 'package:ndk/entities.dart' as ndk show NwcWallet;
 import 'package:ndk/ndk.dart' show Bip340EventVerifier;
@@ -153,6 +154,45 @@ void main() {
           ActivityError.unreachable,
         ),
       ),
+    );
+  });
+
+  test('an unreachable wallet sends nothing', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+    final wallet = await sources.nwc.add(uri: uri, name: 'Phone');
+
+    await expectLater(
+      wallet.payInvoice(const Invoice(request: 'lnbc1', sats: 1)),
+      throwsA(
+        isA<SendException>().having(
+          (e) => e.error,
+          'error',
+          SendError.unreachable,
+        ),
+      ),
+    );
+  });
+
+  test('NIP-47 payment errors keep their meaning', () {
+    SendError of(String code) =>
+        nwcSendError(Exception('error pay_invoice code: $code Some message'));
+
+    expect(of('INSUFFICIENT_BALANCE'), SendError.insufficientBalance);
+    expect(of('QUOTA_EXCEEDED'), SendError.budgetExceeded);
+    expect(of('RESTRICTED'), SendError.noPermission);
+    expect(of('PAYMENT_FAILED'), SendError.failed);
+    expect(of('INTERNAL'), SendError.failed);
+  });
+
+  test('a payment without an answer may still go through', () {
+    expect(
+      nwcSendError('Timed out while executing NWC request pay_invoice'),
+      SendError.unconfirmed,
+    );
+    expect(
+      nwcSendError(StateError('NWC connection is closed')),
+      SendError.unconfirmed,
     );
   });
 

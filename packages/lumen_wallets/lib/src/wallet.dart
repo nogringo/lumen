@@ -42,6 +42,36 @@ enum ActivityError {
   noPermission,
 }
 
+enum SendError {
+  /// The wallet or its relays did not answer, so nothing was sent.
+  unreachable,
+
+  /// The wallet answered, but this connection may not pay invoices.
+  noPermission,
+
+  /// The wallet holds less than the amount and its fee reserve.
+  insufficientBalance,
+
+  /// The connection's spending budget is used up.
+  budgetExceeded,
+
+  /// The wallet tried and the payment failed, for example with no route.
+  failed,
+
+  /// The wallet got the request but did not say how it ended in time. The
+  /// payment may still go through.
+  unconfirmed,
+}
+
+class SendException implements Exception {
+  const SendException(this.error);
+
+  final SendError error;
+
+  @override
+  String toString() => 'SendException(${error.name})';
+}
+
 class ActivityException implements Exception {
   const ActivityException(this.error);
 
@@ -75,13 +105,14 @@ final class Transaction {
   bool get isIncoming => direction == TransactionDirection.incoming;
 }
 
-/// A Lightning invoice that pays into one wallet.
+/// A BOLT11 Lightning invoice.
 final class Invoice {
   const Invoice({
     required this.request,
     required this.sats,
     this.paymentHash,
     this.expiresAt,
+    this.description,
   });
 
   /// The BOLT11 payment request.
@@ -89,9 +120,18 @@ final class Invoice {
   final int sats;
   final String? paymentHash;
   final DateTime? expiresAt;
+  final String? description;
 
   bool isExpiredAt(DateTime now) =>
       expiresAt != null && !now.isBefore(expiresAt!);
+}
+
+/// A payment the wallet sent.
+final class Payment {
+  const Payment({required this.feeSats, this.preimage});
+
+  final int feeSats;
+  final String? preimage;
 }
 
 abstract interface class Wallet {
@@ -108,6 +148,10 @@ abstract interface class Wallet {
   /// Emits once when [invoice] is paid, then closes. Cancelling the
   /// subscription stops watching.
   Stream<void> watchPayment(Invoice invoice);
+
+  /// Pays [invoice]. Throws a [SendException] when the payment did not go
+  /// through, or may not have.
+  Future<Payment> payInvoice(Invoice invoice);
 
   /// The latest settled transactions, newest first. Throws an
   /// [ActivityException] when they cannot be read.

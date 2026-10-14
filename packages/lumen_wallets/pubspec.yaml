@@ -10,6 +10,8 @@ environment:
 resolution: workspace
 
 dependencies:
+  bech32: ^0.2.2
+  http: ^1.6.0
   ndk: ^0.10.1
 
 dev_dependencies:
