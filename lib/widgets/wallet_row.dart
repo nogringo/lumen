@@ -36,11 +36,10 @@ class WalletRow extends StatelessWidget {
     return MergeSemantics(
       child: Tappable(
         onTap: onTap,
-        borderRadius: 4,
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 64),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
+            padding: const EdgeInsets.all(12),
             child: Row(
               children: [
                 SourceBadge(wallet.kind),
