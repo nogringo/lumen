@@ -528,6 +528,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String get paymentHashCopied => 'Hash do pagamento copiado';
 
   @override
+  String get paymentTitle => 'Pagamento';
+
+  @override
+  String get paymentNotFound => 'O Lumen já não tem este pagamento.';
+
+  @override
+  String get copyPreimage => 'Copiar pré-imagem';
+
+  @override
+  String get preimageCopied => 'Pré-imagem copiada';
+
+  @override
   String get shareReceipt => 'Partilhar recibo';
 
   @override
@@ -1296,6 +1308,18 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get paymentHashCopied => 'Hash do pagamento copiado';
+
+  @override
+  String get paymentTitle => 'Pagamento';
+
+  @override
+  String get paymentNotFound => 'O Lumen não tem mais este pagamento.';
+
+  @override
+  String get copyPreimage => 'Copiar pré-imagem';
+
+  @override
+  String get preimageCopied => 'Pré-imagem copiada';
 
   @override
   String get shareReceipt => 'Compartilhar recibo';

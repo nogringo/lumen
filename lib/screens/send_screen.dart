@@ -1,6 +1,5 @@
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -9,8 +8,9 @@ import '../theme/lumen_colors.dart';
 import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
+import '../widgets/activity.dart';
 import '../widgets/amount.dart';
-import '../widgets/copy_button.dart';
+import '../widgets/details.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/share_text.dart';
@@ -473,7 +473,7 @@ class _SendFlowState extends State<_SendFlow> {
         ),
       ),
       const SizedBox(height: 24),
-      _Details([
+      DetailsCard([
         (l.detailTo, _RecipientText(recipient)),
         if (note != null) (l.detailNote, Text(note)),
         (l.detailFrom, Text(wallet.name)),
@@ -535,8 +535,9 @@ class _SendFlowState extends State<_SendFlow> {
         ),
       ],
       const SizedBox(height: 24),
-      _Details([
-        if (_sentAt case final at?) (l.detailDate, Text(_formatSentAt(at))),
+      DetailsCard([
+        if (_sentAt case final at?)
+          (l.detailDate, Text(formatDateTime(context, at))),
         (l.detailFrom, Text(wallet.name)),
         if (_payment case final payment?)
           (
@@ -544,7 +545,14 @@ class _SendFlowState extends State<_SendFlow> {
             Text(l.amountSats(formatSats(context, payment.feeSats))),
           ),
         if (_paid?.paymentHash case final hash?)
-          (l.detailPaymentHash, _PaymentHash(hash)),
+          (
+            l.detailPaymentHash,
+            CopyableValue(
+              hash,
+              tooltip: l.copyPaymentHash,
+              copied: l.paymentHashCopied,
+            ),
+          ),
       ]),
       widget.frame.bottomGap,
       FilledButton(
@@ -553,11 +561,6 @@ class _SendFlowState extends State<_SendFlow> {
         child: Text(l.done),
       ),
     ];
-  }
-
-  String _formatSentAt(DateTime at) {
-    final locale = AppLocalizations.of(context).localeName;
-    return DateFormat.yMMMd(locale).add_jm().format(at);
   }
 
   /// A plain text receipt, without the wallet name, which is private.
@@ -572,7 +575,7 @@ class _SendFlowState extends State<_SendFlow> {
       l.amountSats(formatSats(context, _sats)),
       ?to,
       if (_sentAt case final at?)
-        l.receiptLine(l.detailDate, _formatSentAt(at)),
+        l.receiptLine(l.detailDate, formatDateTime(context, at)),
       if (_payment case final payment?)
         l.receiptLine(
           l.detailFeePaid,
@@ -664,100 +667,5 @@ class _RecipientText extends StatelessWidget {
         style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
       ),
     };
-  }
-}
-
-/// The start and end of the hash, and a button that copies all of it.
-class _PaymentHash extends StatelessWidget {
-  const _PaymentHash(this.hash);
-
-  final String hash;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final short = hash.length > 12
-        ? '${hash.substring(0, 4)}...${hash.substring(hash.length - 4)}'
-        : hash;
-    return Wrap(
-      alignment: WrapAlignment.end,
-      crossAxisAlignment: WrapCrossAlignment.center,
-      spacing: 4,
-      children: [
-        Text(
-          short,
-          style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
-        ),
-        CopyButton(
-          text: hash,
-          tooltip: l.copyPaymentHash,
-          copied: l.paymentHashCopied,
-        ),
-      ],
-    );
-  }
-}
-
-/// Label and value rows, each read as one item. From 150% text, the label
-/// goes above its value so neither is squeezed.
-class _Details extends StatelessWidget {
-  const _Details(this.rows);
-
-  final List<(String, Widget)> rows;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = LumenColors.of(context);
-    final stacked = MediaQuery.textScalerOf(context).scale(10) >= 15;
-    final valueStyle = TextStyle(
-      fontSize: 15,
-      fontWeight: FontWeight.w500,
-      color: c.text,
-    );
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: c.surface2,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        child: Column(
-          children: [
-            for (final (i, (label, value)) in rows.indexed) ...[
-              if (i > 0) Divider(height: 1, color: c.surface3),
-              MergeSemantics(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Flex(
-                    direction: stacked ? Axis.vertical : Axis.horizontal,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: TextStyle(fontSize: 15, color: c.text2),
-                      ),
-                      SizedBox(width: 16, height: stacked ? 4 : 0),
-                      if (stacked)
-                        DefaultTextStyle.merge(style: valueStyle, child: value)
-                      else
-                        Expanded(
-                          child: Align(
-                            alignment: AlignmentDirectional.topEnd,
-                            child: DefaultTextStyle.merge(
-                              textAlign: TextAlign.end,
-                              style: valueStyle,
-                              child: value,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 }

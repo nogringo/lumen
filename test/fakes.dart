@@ -144,6 +144,9 @@ Transaction tx(
   int minutesAgo = 0,
   int days = 0,
   String? description,
+  int? feeSats,
+  String? preimage,
+  String? invoice,
 }) => Transaction(
   id: id,
   direction: incoming
@@ -152,6 +155,10 @@ Transaction tx(
   sats: sats,
   at: clock.now().subtract(Duration(days: days, minutes: minutesAgo)),
   description: description,
+  paymentHash: id,
+  feeSats: feeSats,
+  preimage: preimage,
+  invoice: invoice,
 );
 
 /// Keeps tests fast: Argon2 has its own test.

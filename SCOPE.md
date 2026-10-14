@@ -31,6 +31,7 @@ English, French, German, Spanish, Finnish, Italian, Japanese, Portuguese (Portug
 - Each payment shows its description (or Received / Sent), when it settled, and its amount with a sign and words, never color alone.
 - On desktop, activity is a table with column headers.
 - Activity loads with the balances, with `list_transactions`. At launch, the last activity read shows until it refreshes. A wallet whose activity cannot be read says why: unreachable, or a connection without that permission.
+- Each payment opens its details: direction, amount, description, date, wallet, network, the fee paid for a payment sent, and the payment hash, preimage and invoice when the wallet gave them, each with Copy. Share receipt sends them as text, without the wallet name. On desktop, the description cell is the row's keyboard stop and the whole row takes clicks.
 - See all opens every payment Lumen has seen, from Home for every wallet or from a wallet screen for that wallet, 50 at a time with Show more. It stays readable offline.
 - Lumen keeps its own copy of the history in an encrypted local database (sembast: a file on native platforms, IndexedDB on the web). Each record is sealed with AES-256-GCM under a random key kept in secure storage, so App lock seals that key with the wallets.
 - Each refresh asks for the newest page and keeps paging until it reaches a payment already saved, so payments made while Lumen was away fill in. After a wallet is added, its older history loads in the background, page by page, and resumes at the next refresh if it was cut short.
@@ -74,11 +75,12 @@ Based on the mockups, trimmed to the features above:
 |---|---|---|
 | Welcome | 01, 19 | Lists Lightning only. "Add a wallet" opens the NWC screen directly. |
 | Connect with NWC | 03 | No Scan button. The permissions card also lists what the connection cannot do. |
-| Home / Overview | 04, 08, 17, 20 | Send and Receive are the actions, no Scan. Recent activity has See all, and its rows do not open a detail. The Settings button opens Settings. On desktop the sidebar ends with Settings, then Lock now while App lock is on. |
+| Home / Overview | 04, 08, 17, 20 | Send and Receive are the actions, no Scan. Recent activity has See all, and its rows open the payment. The Settings button opens Settings. On desktop the sidebar ends with Settings, then Lock now while App lock is on. |
 | Wallet | 09, 21 (layout only) | Name, balance, Send, Receive and the wallet's recent activity, with See all. The options menu holds Rename and Remove. |
 | Send | 10, 11, 12, 22 | Lightning only. The amount is typed in a field, not on a keypad. A Paste button replaces Scan. No fiat value, no fee estimate before sending (NWC has none). |
 | Receive | 13, 23 | Lightning only, so no network switch. The amount is typed first, then the invoice is created. |
 | Activity | none | Every saved payment, as the Home rows (a table on desktop), with Show more. Opened by See all. |
+| Payment | none | Centered like the payment result: direction, amount and description, then a details card. Share receipt in the header. |
 | Settings | 14, 24 | A General group with Language, which opens a dialog of languages, then the Security group: the App lock switch, then Change passphrase and Lock now while it is on. Turning App lock on opens a passphrase screen, turning it off asks for the passphrase in a dialog. |
 | Locked | 15, 25 | A passphrase field instead of the system prompt, with Unlock and Forgot your passphrase. |
 

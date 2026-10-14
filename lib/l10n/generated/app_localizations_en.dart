@@ -525,6 +525,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentHashCopied => 'Payment hash copied';
 
   @override
+  String get paymentTitle => 'Payment';
+
+  @override
+  String get paymentNotFound => 'Lumen no longer has this payment.';
+
+  @override
+  String get copyPreimage => 'Copy preimage';
+
+  @override
+  String get preimageCopied => 'Preimage copied';
+
+  @override
   String get shareReceipt => 'Share receipt';
 
   @override

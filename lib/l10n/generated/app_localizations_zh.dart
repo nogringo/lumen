@@ -507,6 +507,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paymentHashCopied => '已复制支付哈希';
 
   @override
+  String get paymentTitle => '付款';
+
+  @override
+  String get paymentNotFound => 'Lumen 中已没有这笔付款。';
+
+  @override
+  String get copyPreimage => '复制原像';
+
+  @override
+  String get preimageCopied => '原像已复制';
+
+  @override
   String get shareReceipt => '分享收据';
 
   @override

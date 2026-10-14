@@ -535,6 +535,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paymentHashCopied => 'Хеш платежа скопирован';
 
   @override
+  String get paymentTitle => 'Платёж';
+
+  @override
+  String get paymentNotFound => 'Этого платежа больше нет в Lumen.';
+
+  @override
+  String get copyPreimage => 'Скопировать прообраз';
+
+  @override
+  String get preimageCopied => 'Прообраз скопирован';
+
+  @override
   String get shareReceipt => 'Поделиться квитанцией';
 
   @override

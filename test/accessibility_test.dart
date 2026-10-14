@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +28,15 @@ void main() {
           minutesAgo: 2,
           description: 'Zap from bob',
         ),
-        tx('coffee', sats: 5400, minutesAgo: 30, description: 'Coffee'),
+        tx(
+          'coffee',
+          sats: 5400,
+          minutesAgo: 30,
+          description: 'Coffee',
+          feeSats: 3,
+          preimage: 'proof' * 8,
+          invoice: 'lnbc54u1${'q' * 200}',
+        ),
         tx('paid', sats: 40000, incoming: true, days: 1),
       ],
     FakeWallet('offline', 'Offline node', error: BalanceError.unreachable)
@@ -39,6 +48,23 @@ void main() {
     await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
     await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
     await expectLater(tester, meetsGuideline(textContrastGuideline));
+  }
+
+  Future<void> openPayment(WidgetTester tester, String title) async {
+    await tester.scrollUntilVisible(
+      find.text(title),
+      300,
+      scrollable: find.descendant(
+        of: find.byType(RefreshIndicator),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.ensureVisible(find.text(title));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(title));
+    await tester.pump();
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
   }
 
   Future<void> openActivity(WidgetTester tester) async {
@@ -127,6 +153,23 @@ void main() {
           size: size,
           brightness: brightness,
         );
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+
+      testWidgets('a payment meets the guidelines, $name, ${brightness.name}', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: twoWallets(),
+          size: size,
+          brightness: brightness,
+        );
+        await openPayment(tester, 'Coffee');
+        expect(find.text('Payment sent'), findsOneWidget);
         await expectGuidelines(tester);
         handle.dispose();
       }, variant: _platformFor(size));
@@ -433,6 +476,41 @@ void main() {
     handle.dispose();
   }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
 
+  testWidgets('a desktop row highlights and takes focus as a whole', (
+    tester,
+  ) async {
+    await pumpLumen(tester, sources, wallets: twoWallets(), size: desktopSize);
+    BoxDecoration coffeeRow() =>
+        tester.widget<Table>(find.byType(Table)).children[2].decoration!
+            as BoxDecoration;
+    expect(coffeeRow().color, isNull);
+
+    final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+    await mouse.moveTo(tester.getCenter(find.text('-5,400')));
+    await tester.pump();
+    expect(coffeeRow().color, isNotNull);
+
+    await mouse.moveTo(Offset.zero);
+    Focus.of(tester.element(find.text('Coffee'))).requestFocus();
+    await tester.pump();
+    expect(coffeeRow().color, isNull);
+    expect((coffeeRow().border! as Border).top.width, 3);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+
+  testWidgets('desktop dates stay whole in a narrow window', (tester) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: twoWallets(),
+      size: const Size(1000, 900),
+    );
+
+    final oneLine = tester.getSize(find.text('Coffee')).height;
+    expect(tester.getSize(find.text('Yesterday')).height, oneLine);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+
   testWidgets('a wallet without activity permission says how to fix it', (
     tester,
   ) async {
@@ -512,6 +590,19 @@ void main() {
       await tester.tap(find.text('Copy connection string'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'copy connection dialog');
+    }, variant: _platformFor(size));
+
+    testWidgets('a payment lays out at 200% text, $name', (tester) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: twoWallets(),
+        size: size,
+        textScale: 2,
+      );
+      await openPayment(tester, 'Coffee');
+      expect(tester.takeException(), isNull);
+      expect(find.text('Payment sent'), findsOneWidget);
     }, variant: _platformFor(size));
 
     testWidgets('activity lays out at 200% text, $name', (tester) async {

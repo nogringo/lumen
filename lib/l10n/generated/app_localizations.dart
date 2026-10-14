@@ -961,6 +961,30 @@ abstract class AppLocalizations {
   /// **'Payment hash copied'**
   String get paymentHashCopied;
 
+  /// Title of the screen with the details of one payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentTitle;
+
+  /// Shown when a payment opened from a link is no longer saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen no longer has this payment.'**
+  String get paymentNotFound;
+
+  /// Tooltip of the button that copies the preimage of a payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy preimage'**
+  String get copyPreimage;
+
+  /// Announced after the preimage is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Preimage copied'**
+  String get preimageCopied;
+
   /// Button that shares a text receipt of the payment sent.
   ///
   /// In en, this message translates to:

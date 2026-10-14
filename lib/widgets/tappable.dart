@@ -13,6 +13,8 @@ class Tappable extends StatefulWidget {
     this.toggled,
     this.checked,
     this.focusNode,
+    this.decorated = true,
+    this.onFocusChange,
   });
 
   final VoidCallback onTap;
@@ -26,6 +28,11 @@ class Tappable extends StatefulWidget {
   /// Makes the row one choice of several for screen readers, picked or not.
   final bool? checked;
   final FocusNode? focusNode;
+
+  /// False leaves the fill and focus ring to a parent that draws them over a
+  /// larger area, such as a table row.
+  final bool decorated;
+  final ValueChanged<bool>? onFocusChange;
 
   @override
   State<Tappable> createState() => _TappableState();
@@ -51,14 +58,22 @@ class _TappableState extends State<Tappable> {
         child: InkWell(
           onTap: widget.onTap,
           focusNode: widget.focusNode,
-          onFocusChange: (focused) => setState(() => _focused = focused),
+          onFocusChange: (focused) {
+            setState(() => _focused = focused);
+            widget.onFocusChange?.call(focused);
+          },
           borderRadius: radius,
           focusColor: Colors.transparent,
+          hoverColor: widget.decorated ? null : Colors.transparent,
+          highlightColor: widget.decorated ? null : Colors.transparent,
+          splashFactory: widget.decorated ? null : NoSplash.splashFactory,
           child: DecoratedBox(
             position: DecorationPosition.foreground,
             decoration: BoxDecoration(
               borderRadius: radius,
-              border: _focused ? Border.all(color: c.focus, width: 3) : null,
+              border: _focused && widget.decorated
+                  ? Border.all(color: c.focus, width: 3)
+                  : null,
             ),
             child: widget.child,
           ),

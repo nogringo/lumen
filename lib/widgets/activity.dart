@@ -14,6 +14,7 @@ import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import 'amount.dart';
 import 'screen_parts.dart';
+import 'tappable.dart';
 import 'wallet_kind_style.dart';
 
 /// "2 min ago", "Yesterday", "Oct 12": how long ago [at] was, as of [now].
@@ -32,6 +33,16 @@ String formatWhen(BuildContext context, DateTime at, DateTime now) {
       : DateFormat.yMMMd(l.localeName);
   return format.format(local);
 }
+
+/// "Oct 15, 2026, 9:30 AM", in the app language.
+String formatDateTime(BuildContext context, DateTime at) =>
+    DateFormat.yMMMd(AppLocalizations.of(context).localeName)
+        .add_jm()
+        .format(at.toLocal());
+
+void openPayment(BuildContext context, WalletTransaction item) => context.push(
+  '/payment/${item.wallet.id}/${Uri.encodeComponent(item.transaction.id)}',
+);
 
 /// Keeps "5 min ago" current while the screen stays open.
 mixin TickingNow<T extends StatefulWidget> on State<T> {
@@ -291,34 +302,37 @@ class _ActivityRow extends StatelessWidget {
     final amount = _SignedAmount(transaction);
 
     return MergeSemantics(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: 64),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              _DirectionBadge(transaction),
-              const SizedBox(width: 14),
-              if (stacked)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      meta,
-                      const SizedBox(height: 6),
-                      Align(
-                        alignment: AlignmentDirectional.centerEnd,
-                        child: amount,
-                      ),
-                    ],
-                  ),
-                )
-              else ...[
-                Expanded(child: meta),
-                const SizedBox(width: 12),
-                amount,
+      child: Tappable(
+        onTap: () => openPayment(context, item),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 64),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                DirectionBadge(transaction),
+                const SizedBox(width: 14),
+                if (stacked)
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        meta,
+                        const SizedBox(height: 6),
+                        Align(
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: amount,
+                        ),
+                      ],
+                    ),
+                  )
+                else ...[
+                  Expanded(child: meta),
+                  const SizedBox(width: 12),
+                  amount,
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -328,7 +342,7 @@ class _ActivityRow extends StatelessWidget {
 
 /// Desktop activity: a real table, so screen readers read it cell by cell
 /// with its column headers.
-class ActivityTable extends StatelessWidget {
+class ActivityTable extends StatefulWidget {
   const ActivityTable(
     this.items, {
     super.key,
@@ -341,10 +355,21 @@ class ActivityTable extends StatelessWidget {
   final bool showWallet;
 
   @override
+  State<ActivityTable> createState() => _ActivityTableState();
+}
+
+class _ActivityTableState extends State<ActivityTable> {
+  String? _hovered;
+  String? _focused;
+
+  static String _key(WalletTransaction item) =>
+      '${item.wallet.id}/${item.transaction.id}';
+
+  @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final c = LumenColors.of(context);
-    final border = BoxDecoration(
+    final line = BoxDecoration(
       border: Border(bottom: BorderSide(color: c.line)),
     );
 
@@ -364,40 +389,92 @@ class ActivityTable extends StatelessWidget {
       ),
     );
 
-    Widget cell(Widget child, {bool end = false}) => Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-      child: Align(
-        alignment: end
-            ? AlignmentDirectional.centerEnd
-            : AlignmentDirectional.centerStart,
-        child: child,
-      ),
-    );
+    // The description is the row's one focus stop. The other cells only take
+    // pointer taps, and every cell tracks the pointer, so the whole row
+    // highlights and clicks as one.
+    Widget cell(
+      WalletTransaction item,
+      Widget child, {
+      bool end = false,
+      bool focusable = false,
+    }) {
+      final key = _key(item);
+      final content = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+        child: Align(
+          alignment: end
+              ? AlignmentDirectional.centerEnd
+              : AlignmentDirectional.centerStart,
+          child: child,
+        ),
+      );
+      return MouseRegion(
+        cursor: SystemMouseCursors.click,
+        onEnter: (_) => setState(() => _hovered = key),
+        onExit: (_) {
+          if (_hovered == key) setState(() => _hovered = null);
+        },
+        child: focusable
+            ? Tappable(
+                onTap: () => openPayment(context, item),
+                decorated: false,
+                onFocusChange: (focused) => setState(
+                  () => _focused = focused
+                      ? key
+                      : (_focused == key ? null : _focused),
+                ),
+                child: content,
+              )
+            : GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                excludeFromSemantics: true,
+                onTap: () => openPayment(context, item),
+                child: content,
+              ),
+      );
+    }
+
+    BoxDecoration rowDecoration(WalletTransaction item) {
+      final key = _key(item);
+      final focused = _focused == key;
+      final hovered = _hovered == key;
+      if (!focused && !hovered) return line;
+      return BoxDecoration(
+        color: hovered ? c.surface2 : null,
+        borderRadius: BorderRadius.circular(12),
+        border: focused ? Border.all(color: c.focus, width: 3) : null,
+      );
+    }
 
     return Table(
-      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+      // Dates and amounts keep their words whole, the description gives way.
       columnWidths: {
         0: const FlexColumnWidth(3),
-        if (showWallet) 1: const FlexColumnWidth(2),
+        if (widget.showWallet) 1: const FlexColumnWidth(2),
+        widget.showWallet ? 2 : 1: const IntrinsicColumnWidth(),
+        widget.showWallet ? 3 : 2: const IntrinsicColumnWidth(),
       },
       children: [
         TableRow(
-          decoration: border,
+          decoration: line,
           children: [
             header(l.columnDescription),
-            if (showWallet) header(l.columnWallet),
+            if (widget.showWallet) header(l.columnWallet),
             header(l.columnDate),
             header(l.columnAmount, end: true),
           ],
         ),
-        for (final item in items)
+        for (final item in widget.items)
           TableRow(
-            decoration: border,
+            decoration: rowDecoration(item),
             children: [
               cell(
+                item,
+                focusable: true,
                 Row(
                   children: [
-                    _DirectionBadge(item.transaction, small: true),
+                    DirectionBadge(item.transaction, size: BadgeSize.small),
                     const SizedBox(width: 12),
                     Flexible(
                       child: Text(
@@ -413,8 +490,9 @@ class ActivityTable extends StatelessWidget {
                   ],
                 ),
               ),
-              if (showWallet)
+              if (widget.showWallet)
                 cell(
+                  item,
                   Row(
                     children: [
                       SourceBadge(item.wallet.kind, size: BadgeSize.small),
@@ -429,12 +507,13 @@ class ActivityTable extends StatelessWidget {
                   ),
                 ),
               cell(
+                item,
                 Text(
-                  formatWhen(context, item.transaction.at, now),
+                  formatWhen(context, item.transaction.at, widget.now),
                   style: TextStyle(fontSize: 15, color: c.text2),
                 ),
               ),
-              cell(_SignedAmount(item.transaction), end: true),
+              cell(item, _SignedAmount(item.transaction), end: true),
             ],
           ),
       ],
@@ -474,27 +553,35 @@ class _SignedAmount extends StatelessWidget {
   }
 }
 
-class _DirectionBadge extends StatelessWidget {
-  const _DirectionBadge(this.transaction, {this.small = false});
+class DirectionBadge extends StatelessWidget {
+  const DirectionBadge(
+    this.transaction, {
+    super.key,
+    this.size = BadgeSize.medium,
+  });
 
   final Transaction transaction;
-  final bool small;
+  final BadgeSize size;
 
   @override
   Widget build(BuildContext context) {
     final c = LumenColors.of(context);
-    final box = small ? 28.0 : 40.0;
+    final (box, radius, icon) = switch (size) {
+      BadgeSize.small => (28.0, 9.0, 16.0),
+      BadgeSize.medium => (40.0, 13.0, 20.0),
+      BadgeSize.large => (56.0, 18.0, 28.0),
+    };
     return ExcludeSemantics(
       child: Container(
         width: box,
         height: box,
         decoration: BoxDecoration(
           color: c.surface2,
-          borderRadius: BorderRadius.circular(small ? 9 : 13),
+          borderRadius: BorderRadius.circular(radius),
         ),
         child: Icon(
           transaction.isIncoming ? Icons.south : Icons.north,
-          size: small ? 16 : 20,
+          size: icon,
           color: c.text2,
         ),
       ),

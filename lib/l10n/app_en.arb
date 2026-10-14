@@ -690,6 +690,22 @@
   "@paymentHashCopied": {
     "description": "Announced by screen readers once the payment hash is copied."
   },
+  "paymentTitle": "Payment",
+  "@paymentTitle": {
+    "description": "Title of the screen with the details of one payment."
+  },
+  "paymentNotFound": "Lumen no longer has this payment.",
+  "@paymentNotFound": {
+    "description": "Shown when a payment opened from a link is no longer saved."
+  },
+  "copyPreimage": "Copy preimage",
+  "@copyPreimage": {
+    "description": "Tooltip of the button that copies the preimage of a payment."
+  },
+  "preimageCopied": "Preimage copied",
+  "@preimageCopied": {
+    "description": "Announced after the preimage is copied."
+  },
   "shareReceipt": "Share receipt",
   "@shareReceipt": {
     "description": "Button that shares a text receipt of the payment sent."

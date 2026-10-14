@@ -526,6 +526,18 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paymentHashCopied => 'Maksun tiiviste kopioitu';
 
   @override
+  String get paymentTitle => 'Maksu';
+
+  @override
+  String get paymentNotFound => 'Lumenilla ei ole enää tätä maksua.';
+
+  @override
+  String get copyPreimage => 'Kopioi esikuva';
+
+  @override
+  String get preimageCopied => 'Esikuva kopioitu';
+
+  @override
   String get shareReceipt => 'Jaa kuitti';
 
   @override

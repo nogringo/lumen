@@ -517,6 +517,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paymentHashCopied => '支払いハッシュをコピーしました';
 
   @override
+  String get paymentTitle => '支払い';
+
+  @override
+  String get paymentNotFound => 'この支払いは Lumen に残っていません。';
+
+  @override
+  String get copyPreimage => 'プリイメージをコピー';
+
+  @override
+  String get preimageCopied => 'プリイメージをコピーしました';
+
+  @override
   String get shareReceipt => '領収書を共有';
 
   @override

@@ -6,6 +6,7 @@ import 'layout/layout.dart';
 import 'screens/activity_screen.dart';
 import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/payment_screen.dart';
 import 'screens/receive_screen.dart';
 import 'screens/send_screen.dart';
 import 'screens/settings_screen.dart';
@@ -51,6 +52,21 @@ GoRouter createRouter(WalletsController wallets) {
               context,
               state,
               ActivityScreen(walletId: state.uri.queryParameters['wallet']),
+            ),
+          ),
+          GoRoute(
+            path: '/payment/:wallet/:id',
+            redirect: (context, state) =>
+                wallets.walletById(state.pathParameters['wallet']!) == null
+                ? '/'
+                : null,
+            pageBuilder: (context, state) => _page(
+              context,
+              state,
+              PaymentScreen(
+                walletId: state.pathParameters['wallet']!,
+                transactionId: state.pathParameters['id']!,
+              ),
             ),
           ),
           GoRoute(
