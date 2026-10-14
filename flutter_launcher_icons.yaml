@@ -1,0 +1,20 @@
+# Run tool/app_icons.sh rather than the generator directly: it renders the SVGs and fixes its output.
+flutter_launcher_icons:
+  image_path: "assets/icon/icon.png"
+  android: true
+  image_path_android: "assets/icon/icon-rounded.png"
+  adaptive_icon_background: "#ffb547"
+  adaptive_icon_foreground: "assets/icon/foreground.png"
+  adaptive_icon_foreground_inset: 0
+  adaptive_icon_monochrome: "assets/icon/monochrome.png"
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: "#ffb547"
+  web:
+    generate: true
+    image_path: "assets/icon/icon.png"
+    background_color: "#111317"
+    theme_color: "#111317"
+  macos:
+    generate: true
+    image_path: "assets/icon/icon-macos.png"
