@@ -721,6 +721,54 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{Activity from 1 wallet is not shown: it could not be loaded.} other{Activity from {count} wallets is not shown: it could not be loaded.}}'**
   String activityNotShown(int count);
 
+  /// Link from Recent activity to the screen with every payment.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get seeAll;
+
+  /// Accessible name of the See all link.
+  ///
+  /// In en, this message translates to:
+  /// **'See all activity'**
+  String get seeAllActivity;
+
+  /// Title of the screen with every payment of every wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activityTitle;
+
+  /// Title of the screen with every payment of one wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} activity'**
+  String walletActivityTitle(String name);
+
+  /// Button under the activity list that shows older payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
+  /// Announced to screen readers after Show more.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 payment shown} other{{count} payments shown}}'**
+  String activityShownCount(int count);
+
+  /// Shown under the activity list while older payments load from the wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading older payments'**
+  String get loadingOlder;
+
+  /// Shown under the activity list once every saved payment is shown.
+  ///
+  /// In en, this message translates to:
+  /// **'That is every payment Lumen has saved.'**
+  String get activityEnd;
+
   /// Title of an incoming payment that has no description.
   ///
   /// In en, this message translates to:

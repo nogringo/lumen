@@ -393,6 +393,42 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'Показать все';
+
+  @override
+  String get seeAllActivity => 'Показать всю активность';
+
+  @override
+  String get activityTitle => 'Активность';
+
+  @override
+  String walletActivityTitle(String name) {
+    return 'Активность: $name';
+  }
+
+  @override
+  String get showMore => 'Показать ещё';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Показано $count платежа',
+      many: 'Показано $count платежей',
+      few: 'Показано $count платежа',
+      one: 'Показан $count платёж',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'Загрузка более ранних платежей';
+
+  @override
+  String get activityEnd => 'Это все платежи, которые сохранил Lumen.';
+
+  @override
   String get transactionReceived => 'Получено';
 
   @override

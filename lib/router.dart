@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'layout/app_shell.dart';
 import 'layout/layout.dart';
+import 'screens/activity_screen.dart';
 import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/receive_screen.dart';
@@ -20,6 +21,7 @@ GoRouter createRouter(WalletsController wallets) {
       final empty = wallets.wallets.isEmpty;
       if (empty &&
           (path == '/' ||
+              path == '/activity' ||
               path == '/send' ||
               path == '/receive' ||
               path.startsWith('/wallet/'))) {
@@ -42,6 +44,14 @@ GoRouter createRouter(WalletsController wallets) {
             path: '/',
             pageBuilder: (context, state) =>
                 _page(context, state, const HomeScreen()),
+          ),
+          GoRoute(
+            path: '/activity',
+            pageBuilder: (context, state) => _page(
+              context,
+              state,
+              ActivityScreen(walletId: state.uri.queryParameters['wallet']),
+            ),
           ),
           GoRoute(
             path: '/connect',

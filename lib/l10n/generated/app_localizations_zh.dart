@@ -368,6 +368,39 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get seeAll => '查看全部';
+
+  @override
+  String get seeAllActivity => '查看全部活动';
+
+  @override
+  String get activityTitle => '活动';
+
+  @override
+  String walletActivityTitle(String name) {
+    return '$name 的活动';
+  }
+
+  @override
+  String get showMore => '显示更多';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已显示 $count 笔付款',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => '正在加载更早的付款';
+
+  @override
+  String get activityEnd => '这些是 Lumen 保存的全部付款。';
+
+  @override
   String get transactionReceived => '已收款';
 
   @override

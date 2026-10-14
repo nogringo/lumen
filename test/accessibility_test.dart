@@ -41,6 +41,21 @@ void main() {
     await expectLater(tester, meetsGuideline(textContrastGuideline));
   }
 
+  Future<void> openActivity(WidgetTester tester) async {
+    await tester.scrollUntilVisible(
+      find.text('See all'),
+      300,
+      scrollable: find.descendant(
+        of: find.byType(RefreshIndicator),
+        matching: find.byType(Scrollable),
+      ),
+    );
+    await tester.tap(find.text('See all'));
+    await tester.pump();
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+  }
+
   for (final brightness in Brightness.values) {
     for (final (name, size) in [
       ('phone', phoneSize),
@@ -112,6 +127,23 @@ void main() {
           size: size,
           brightness: brightness,
         );
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+
+      testWidgets('activity meets the guidelines, $name, ${brightness.name}', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: twoWallets(),
+          size: size,
+          brightness: brightness,
+        );
+        await openActivity(tester);
+        expect(find.text('Activity'), findsWidgets);
         await expectGuidelines(tester);
         handle.dispose();
       }, variant: _platformFor(size));
@@ -480,6 +512,19 @@ void main() {
       await tester.tap(find.text('Copy connection string'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'copy connection dialog');
+    }, variant: _platformFor(size));
+
+    testWidgets('activity lays out at 200% text, $name', (tester) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: twoWallets(),
+        size: size,
+        textScale: 2,
+      );
+      await openActivity(tester);
+      expect(tester.takeException(), isNull);
+      expect(find.text('Zap from bob'), findsOneWidget);
     }, variant: _platformFor(size));
 
     testWidgets('welcome and connect lay out at 200% text, $name', (

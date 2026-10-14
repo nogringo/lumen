@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:clock/clock.dart';
 import 'package:flutter/semantics.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,6 +33,113 @@ String formatWhen(BuildContext context, DateTime at, DateTime now) {
   return format.format(local);
 }
 
+/// Keeps "5 min ago" current while the screen stays open.
+mixin TickingNow<T extends StatefulWidget> on State<T> {
+  var timeNow = clock.now();
+  Timer? _ticker;
+
+  @override
+  void initState() {
+    super.initState();
+    _ticker = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => setState(() => timeNow = clock.now()),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+}
+
+/// Why some activity of [wallet], or of every wallet, is missing, or null.
+String? activityNote(
+  AppLocalizations l,
+  WalletsController wallets,
+  Wallet? wallet,
+) {
+  if (wallet == null) {
+    final missing = wallets.activityUnavailableCount;
+    return missing > 0 ? l.activityNotShown(missing) : null;
+  }
+  return switch (wallets.activityOf(wallet).error) {
+    ActivityError.unreachable => l.activityUnreachable,
+    ActivityError.noPermission => l.activityNoPermission,
+    null => null,
+  };
+}
+
+class ActivityNote extends StatelessWidget {
+  const ActivityNote(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(Icons.error_outline, size: 16, color: c.text2),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(text, style: TextStyle(fontSize: 15, color: c.text2)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ActivityLoading extends StatelessWidget {
+  const ActivityLoading({super.key, required this.label, this.visible = false});
+
+  final String label;
+
+  /// Shows [label] next to the spinner instead of only reading it aloud.
+  final bool visible;
+
+  @override
+  Widget build(BuildContext context) {
+    const spinner = SizedBox.square(
+      dimension: 20,
+      child: CircularProgressIndicator(strokeWidth: 2),
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: visible
+          ? MergeSemantics(
+              child: Row(
+                children: [
+                  spinner,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: LumenColors.of(context).text2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Semantics(label: label, child: spinner),
+            ),
+    );
+  }
+}
+
 /// The latest transactions of every wallet, or only of [wallet].
 class RecentActivity extends StatefulWidget {
   const RecentActivity({super.key, this.wallet});
@@ -42,28 +150,8 @@ class RecentActivity extends StatefulWidget {
   State<RecentActivity> createState() => _RecentActivityState();
 }
 
-class _RecentActivityState extends State<RecentActivity> {
+class _RecentActivityState extends State<RecentActivity> with TickingNow {
   static const _shown = 5;
-
-  var _now = clock.now();
-
-  /// Keeps "5 min ago" current while the screen stays open.
-  Timer? _ticker;
-
-  @override
-  void initState() {
-    super.initState();
-    _ticker = Timer.periodic(
-      const Duration(seconds: 10),
-      (_) => setState(() => _now = clock.now()),
-    );
-  }
-
-  @override
-  void dispose() {
-    _ticker?.cancel();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,12 +162,9 @@ class _RecentActivityState extends State<RecentActivity> {
 
     final List<WalletTransaction> items;
     final bool loading;
-    final String? note;
     if (wallet == null) {
       items = wallets.recentActivity;
       loading = wallets.isLoadingActivity;
-      final missing = wallets.activityUnavailableCount;
-      note = missing > 0 ? l.activityNotShown(missing) : null;
     } else {
       final state = wallets.activityOf(wallet);
       items = [
@@ -87,61 +172,56 @@ class _RecentActivityState extends State<RecentActivity> {
           (wallet: wallet, transaction: transaction),
       ];
       loading = state.loading;
-      note = switch (state.error) {
-        ActivityError.unreachable => l.activityUnreachable,
-        ActivityError.noPermission => l.activityNoPermission,
-        null => null,
-      };
     }
+    final note = activityNote(l, wallets, wallet);
     final shown = items.take(_shown).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionHead(title: l.recentActivity),
-        if (note != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Icon(Icons.error_outline, size: 16, color: c.text2),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    note,
-                    style: TextStyle(fontSize: 15, color: c.text2),
+        SectionHead(
+          title: l.recentActivity,
+          action: shown.isEmpty
+              ? null
+              : TextButton(
+                  onPressed: () => context.push(
+                    wallet == null
+                        ? '/activity'
+                        : '/activity?wallet=${wallet.id}',
                   ),
+                  child: Text(l.seeAll, semanticsLabel: l.seeAllActivity),
                 ),
-              ],
-            ),
-          ),
+        ),
+        if (note != null) ActivityNote(note),
         if (shown.isNotEmpty)
-          LayoutSize.of(context) == LayoutSize.desktop
-              ? ActivityTable(shown, now: _now, showWallet: wallet == null)
-              : ActivityList(shown, now: _now, showWallet: wallet == null)
+          ActivityItems(shown, now: timeNow, showWallet: wallet == null)
         else if (loading)
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Semantics(
-              label: l.activityLoading,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            ),
-          )
+          ActivityLoading(label: l.activityLoading)
         else if (note == null)
           Text(l.noActivity, style: TextStyle(fontSize: 15, color: c.text2)),
       ],
     );
   }
+}
+
+/// A table on desktop, a list otherwise.
+class ActivityItems extends StatelessWidget {
+  const ActivityItems(
+    this.items, {
+    super.key,
+    required this.now,
+    required this.showWallet,
+  });
+
+  final List<WalletTransaction> items;
+  final DateTime now;
+  final bool showWallet;
+
+  @override
+  Widget build(BuildContext context) =>
+      LayoutSize.of(context) == LayoutSize.desktop
+      ? ActivityTable(items, now: now, showWallet: showWallet)
+      : ActivityList(items, now: now, showWallet: showWallet);
 }
 
 class ActivityList extends StatelessWidget {

@@ -387,6 +387,41 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'Ver tudo';
+
+  @override
+  String get seeAllActivity => 'Ver toda a atividade';
+
+  @override
+  String get activityTitle => 'Atividade';
+
+  @override
+  String walletActivityTitle(String name) {
+    return 'Atividade de $name';
+  }
+
+  @override
+  String get showMore => 'Mostrar mais';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pagamentos mostrados',
+      one: '1 pagamento mostrado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'A carregar pagamentos anteriores';
+
+  @override
+  String get activityEnd =>
+      'Estes são todos os pagamentos que o Lumen guardou.';
+
+  @override
   String get transactionReceived => 'Recebido';
 
   @override
@@ -1121,6 +1156,40 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
     );
     return '$_temp0';
   }
+
+  @override
+  String get seeAll => 'Ver tudo';
+
+  @override
+  String get seeAllActivity => 'Ver toda a atividade';
+
+  @override
+  String get activityTitle => 'Atividade';
+
+  @override
+  String walletActivityTitle(String name) {
+    return 'Atividade de $name';
+  }
+
+  @override
+  String get showMore => 'Mostrar mais';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pagamentos exibidos',
+      one: '1 pagamento exibido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'Carregando pagamentos anteriores';
+
+  @override
+  String get activityEnd => 'Estes são todos os pagamentos que o Lumen salvou.';
 
   @override
   String get transactionReceived => 'Recebido';

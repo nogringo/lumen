@@ -385,6 +385,40 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'See all';
+
+  @override
+  String get seeAllActivity => 'See all activity';
+
+  @override
+  String get activityTitle => 'Activity';
+
+  @override
+  String walletActivityTitle(String name) {
+    return '$name activity';
+  }
+
+  @override
+  String get showMore => 'Show more';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count payments shown',
+      one: '1 payment shown',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'Loading older payments';
+
+  @override
+  String get activityEnd => 'That is every payment Lumen has saved.';
+
+  @override
   String get transactionReceived => 'Received';
 
   @override

@@ -378,6 +378,39 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'すべて表示';
+
+  @override
+  String get seeAllActivity => 'すべてのアクティビティを表示';
+
+  @override
+  String get activityTitle => 'アクティビティ';
+
+  @override
+  String walletActivityTitle(String name) {
+    return '$name のアクティビティ';
+  }
+
+  @override
+  String get showMore => 'さらに表示';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 件の支払いを表示中',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => '以前の支払いを読み込み中';
+
+  @override
+  String get activityEnd => 'Lumen が保存した支払いはこれですべてです。';
+
+  @override
   String get transactionReceived => '受け取り';
 
   @override

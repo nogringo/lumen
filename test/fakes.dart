@@ -288,7 +288,12 @@ Future<WalletsController> pumpLumen(
       language: language ?? LanguageSetting(MemoryLanguageStore()),
     ),
   );
-  await tester.runAsync(controller.refreshAll);
+  await tester.runAsync(() async {
+    await controller.refreshAll();
+    await Future.wait([
+      for (final w in controller.wallets) controller.loadOlder(w),
+    ]);
+  });
   await tester.pumpAndSettle();
   return controller;
 }

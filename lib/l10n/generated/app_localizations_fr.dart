@@ -386,6 +386,41 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'Tout voir';
+
+  @override
+  String get seeAllActivity => 'Voir toute l\'activité';
+
+  @override
+  String get activityTitle => 'Activité';
+
+  @override
+  String walletActivityTitle(String name) {
+    return 'Activité de $name';
+  }
+
+  @override
+  String get showMore => 'Afficher plus';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count paiements affichés',
+      one: '1 paiement affiché',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'Chargement des paiements plus anciens';
+
+  @override
+  String get activityEnd =>
+      'Ce sont tous les paiements que Lumen a enregistrés.';
+
+  @override
   String get transactionReceived => 'Reçu';
 
   @override

@@ -492,6 +492,48 @@
       }
     }
   },
+  "seeAll": "See all",
+  "@seeAll": {
+    "description": "Link from Recent activity to the screen with every payment."
+  },
+  "seeAllActivity": "See all activity",
+  "@seeAllActivity": {
+    "description": "Accessible name of the See all link."
+  },
+  "activityTitle": "Activity",
+  "@activityTitle": {
+    "description": "Title of the screen with every payment of every wallet."
+  },
+  "walletActivityTitle": "{name} activity",
+  "@walletActivityTitle": {
+    "description": "Title of the screen with every payment of one wallet.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "showMore": "Show more",
+  "@showMore": {
+    "description": "Button under the activity list that shows older payments."
+  },
+  "activityShownCount": "{count, plural, =1{1 payment shown} other{{count} payments shown}}",
+  "@activityShownCount": {
+    "description": "Announced to screen readers after Show more.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingOlder": "Loading older payments",
+  "@loadingOlder": {
+    "description": "Shown under the activity list while older payments load from the wallet."
+  },
+  "activityEnd": "That is every payment Lumen has saved.",
+  "@activityEnd": {
+    "description": "Shown under the activity list once every saved payment is shown."
+  },
   "transactionReceived": "Received",
   "@transactionReceived": {
     "description": "Title of an incoming payment that has no description."

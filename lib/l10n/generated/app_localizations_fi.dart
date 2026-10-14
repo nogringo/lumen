@@ -385,6 +385,41 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get seeAll => 'Näytä kaikki';
+
+  @override
+  String get seeAllActivity => 'Näytä kaikki toiminta';
+
+  @override
+  String get activityTitle => 'Toiminta';
+
+  @override
+  String walletActivityTitle(String name) {
+    return '$name: toiminta';
+  }
+
+  @override
+  String get showMore => 'Näytä lisää';
+
+  @override
+  String activityShownCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count maksua näytetään',
+      one: '1 maksu näytetään',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadingOlder => 'Ladataan vanhempia maksuja';
+
+  @override
+  String get activityEnd =>
+      'Tässä ovat kaikki maksut, jotka Lumen on tallentanut.';
+
+  @override
   String get transactionReceived => 'Vastaanotettu';
 
   @override
