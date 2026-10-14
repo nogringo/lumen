@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lumen/wallets/balance_store.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 
 import 'fakes.dart';
@@ -98,5 +99,33 @@ void main() {
     await controller.rename(wallet, 'Renamed');
 
     expect(listChanges, 0);
+  });
+
+  test('shows the last known balance at launch while it refreshes', () async {
+    final store = MemoryBalanceStore();
+    final first = FakeWallet('a', 'Home node', balance: 2100);
+    await (await loadedController([first], store: store)).refreshAll();
+
+    final wallet = FakeWallet('a', 'Home node', balance: 2500);
+    final controller = await loadedController([wallet], store: store);
+
+    expect(controller.balanceOf(wallet).sats, 2100);
+    expect(controller.balanceOf(wallet).loading, isTrue);
+    expect(controller.hasKnownBalance, isTrue);
+    await controller.refreshAll();
+    expect(controller.balanceOf(wallet).sats, 2500);
+    expect(await store.read('a'), 2500);
+  });
+
+  test('remove forgets the saved balance', () async {
+    final store = MemoryBalanceStore();
+    final wallet = FakeWallet('a', 'Home node', balance: 10);
+    final controller = await loadedController([wallet], store: store);
+    await controller.refreshAll();
+
+    await controller.remove(wallet);
+    await Future<void>.delayed(Duration.zero);
+
+    expect(await store.read('a'), isNull);
   });
 }

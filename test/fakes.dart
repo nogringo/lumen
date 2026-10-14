@@ -2,6 +2,7 @@
 
 import 'package:flutter/widgets.dart';
 import 'package:lumen/app.dart';
+import 'package:lumen/wallets/balance_store.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:ndk/data_layer/repositories/wallets/mem_wallets_repo.dart';
@@ -54,8 +55,13 @@ WalletSources memorySources() => WalletSources.create(
   eventVerifier: Bip340EventVerifier(),
 );
 
-Future<WalletsController> loadedController(List<Wallet> wallets) async {
-  final controller = WalletsController([FakeSource(wallets)]);
+Future<WalletsController> loadedController(
+  List<Wallet> wallets, {
+  BalanceStore? store,
+}) async {
+  final controller = WalletsController([
+    FakeSource(wallets),
+  ], store: store ?? MemoryBalanceStore());
   await controller.load();
   return controller;
 }

@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
+
+import 'balance_store.dart';
 
 @immutable
 class BalanceState {
@@ -13,9 +17,10 @@ class BalanceState {
 }
 
 class WalletsController extends ChangeNotifier {
-  WalletsController(this._sources);
+  WalletsController(this._sources, {required this._store});
 
   final List<WalletSource> _sources;
+  final BalanceStore _store;
   final List<Wallet> _wallets = [];
   final Map<String, BalanceState> _balances = {};
   final Map<String, Future<void>> _refreshing = {};
@@ -49,6 +54,12 @@ class WalletsController extends ChangeNotifier {
     for (final source in _sources) {
       _wallets.addAll(await source.load());
     }
+    final saved = await Future.wait([
+      for (final w in _wallets) _store.read(w.id),
+    ]);
+    for (final (i, sats) in saved.indexed) {
+      if (sats != null) _balances[_wallets[i].id] = BalanceState(sats: sats);
+    }
     _listChanged();
     refreshAll();
   }
@@ -78,6 +89,9 @@ class WalletsController extends ChangeNotifier {
     if (!_wallets.contains(wallet)) return;
     _balances[wallet.id] = result;
     notifyListeners();
+    if (result.sats case final sats?) {
+      unawaited(_store.write(wallet.id, sats).catchError((Object _) {}));
+    }
   }
 
   void added(Wallet wallet) {
@@ -96,6 +110,7 @@ class WalletsController extends ChangeNotifier {
     _wallets.remove(wallet);
     _balances.remove(wallet.id);
     _listChanged();
+    unawaited(_store.delete(wallet.id).catchError((Object _) {}));
   }
 
   void _listChanged() {

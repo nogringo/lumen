@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:ndk_flutter/ndk_flutter.dart';
 
 import 'app.dart';
+import 'wallets/balance_store.dart';
 import 'wallets/wallets_controller.dart';
 
 Future<void> main() async {
@@ -15,7 +16,7 @@ Future<void> main() async {
     repo: FlutterSecureStorageWalletsRepo(),
     eventVerifier: NdkEventVerifier(),
   );
-  final wallets = WalletsController(sources.all);
+  final wallets = WalletsController(sources.all, store: SecureBalanceStore());
   await wallets.load();
   runApp(LumenApp(sources: sources, wallets: wallets));
 }
