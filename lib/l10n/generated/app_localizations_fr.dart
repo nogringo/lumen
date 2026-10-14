@@ -77,6 +77,62 @@ class AppLocalizationsFr extends AppLocalizations {
   String get errorUriDuplicate => 'Ce portefeuille est déjà dans Lumen.';
 
   @override
+  String get grantChecking => 'Vérification de ce que permet cette connexion';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen n\'a pas pu joindre ce portefeuille pour vérifier ce que permet la connexion. Vous pouvez quand même le connecter.';
+
+  @override
+  String get grantCan => 'Cette connexion peut';
+
+  @override
+  String get grantCannot => 'Cette connexion ne peut pas';
+
+  @override
+  String get grantAllowed => 'Autorisé';
+
+  @override
+  String get grantDenied => 'Non autorisé';
+
+  @override
+  String get abilityReadBalance => 'Voir le solde';
+
+  @override
+  String get abilityReceive => 'Créer des factures';
+
+  @override
+  String get abilityPay => 'Payer des factures';
+
+  @override
+  String get abilityListTransactions => 'Lister les transactions';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Jusqu\'à $amount sats par jour';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Jusqu\'à $amount sats par semaine';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Jusqu\'à $amount sats par mois';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Jusqu\'à $amount sats par an';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Jusqu\'à $amount sats au total';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Cette connexion ne peut pas lire le solde. Dans votre portefeuille, créez une nouvelle connexion qui autorise la lecture du solde.';
 

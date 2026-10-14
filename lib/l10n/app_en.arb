@@ -84,6 +84,91 @@
   "@errorUriDuplicate": {
     "description": "Error when this connection is already saved."
   },
+  "grantChecking": "Checking what this connection allows",
+  "@grantChecking": {
+    "description": "Shown in the permissions card while Lumen asks the wallet what the pasted connection allows."
+  },
+  "grantUnreachable": "Lumen could not reach this wallet to check what the connection allows. You can still connect it.",
+  "@grantUnreachable": {
+    "description": "Shown in the permissions card when the wallet could not be reached before saving."
+  },
+  "grantCan": "This connection can",
+  "@grantCan": {
+    "description": "Heading of the list of what the NWC connection allows. Followed by items such as See the balance."
+  },
+  "grantCannot": "This connection cannot",
+  "@grantCannot": {
+    "description": "Heading of the list of what the NWC connection does not allow. Followed by items such as Pay invoices."
+  },
+  "grantAllowed": "Allowed",
+  "@grantAllowed": {
+    "description": "Read by screen readers before an item the connection allows."
+  },
+  "grantDenied": "Not allowed",
+  "@grantDenied": {
+    "description": "Read by screen readers before an item the connection does not allow."
+  },
+  "abilityReadBalance": "See the balance",
+  "@abilityReadBalance": {
+    "description": "Item of the permissions card: the connection can read the wallet balance."
+  },
+  "abilityReceive": "Create invoices",
+  "@abilityReceive": {
+    "description": "Item of the permissions card: the connection can create Lightning invoices to receive."
+  },
+  "abilityPay": "Pay invoices",
+  "@abilityPay": {
+    "description": "Item of the permissions card: the connection can pay Lightning invoices."
+  },
+  "abilityListTransactions": "List transactions",
+  "@abilityListTransactions": {
+    "description": "Item of the permissions card: the connection can list past payments."
+  },
+  "budgetPerDay": "Up to {amount} sats a day",
+  "@budgetPerDay": {
+    "description": "Spending budget of the connection, renewed every day.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetPerWeek": "Up to {amount} sats a week",
+  "@budgetPerWeek": {
+    "description": "Spending budget of the connection, renewed every week.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetPerMonth": "Up to {amount} sats a month",
+  "@budgetPerMonth": {
+    "description": "Spending budget of the connection, renewed every month.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetPerYear": "Up to {amount} sats a year",
+  "@budgetPerYear": {
+    "description": "Spending budget of the connection, renewed every year.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "budgetTotal": "Up to {amount} sats in total",
+  "@budgetTotal": {
+    "description": "Spending budget of the connection, never renewed.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "balanceNoPermission": "This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.",
   "@balanceNoPermission": {
     "description": "Shown on a wallet screen when its connection lacks the permission to read the balance."

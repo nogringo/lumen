@@ -16,6 +16,7 @@ English, French, German, Spanish, Finnish, Italian, Japanese, Portuguese (Portug
 
 - Add a wallet by pasting a `nostr+walletconnect://` connection string and giving it a name.
 - Before saving, check that the connection string is valid. Otherwise show an inline error that says how to fix it.
+- Once the connection string is valid, ask the wallet what it allows (`get_info`, and `get_budget` when it can pay) and show it in a card: what the connection can and cannot do in Lumen, and its spending budget. A wallet that does not answer is said so, and can still be added.
 - Hold several NWC wallets at once.
 - Rename a wallet.
 - Remove a wallet.
@@ -69,7 +70,7 @@ Based on the mockups, trimmed to the features above:
 | Screen | Mockup frames | Changes for v1 |
 |---|---|---|
 | Welcome | 01, 19 | Lists Lightning only. "Add a wallet" opens the NWC screen directly. |
-| Connect with NWC | 03 | No Scan button, no permissions card. |
+| Connect with NWC | 03 | No Scan button. The permissions card also lists what the connection cannot do. |
 | Home / Overview | 04, 08, 17, 20 | Send and Receive are the actions, no Scan. Recent activity has no See all, and its rows do not open a detail. The Settings button opens Settings. On desktop the sidebar ends with Settings, then Lock now while App lock is on. |
 | Wallet | 09, 21 (layout only) | Name, balance, Send, Receive and the wallet's recent activity. The options menu holds Rename and Remove. |
 | Send | 10, 11, 12, 22 | Lightning only. The amount is typed in a field, not on a keypad. A Paste button replaces Scan. No fiat value, no fee estimate before sending (NWC has none), no receipt sharing or payment hash. |

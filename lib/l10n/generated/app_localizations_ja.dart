@@ -74,6 +74,62 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorUriDuplicate => 'このウォレットはすでに Lumen に追加されています。';
 
   @override
+  String get grantChecking => 'この接続で許可されている内容を確認しています';
+
+  @override
+  String get grantUnreachable =>
+      '接続で許可されている内容を確認するためにこのウォレットに接続できませんでした。このまま接続することもできます。';
+
+  @override
+  String get grantCan => 'この接続でできること';
+
+  @override
+  String get grantCannot => 'この接続でできないこと';
+
+  @override
+  String get grantAllowed => '許可';
+
+  @override
+  String get grantDenied => '不許可';
+
+  @override
+  String get abilityReadBalance => '残高を見る';
+
+  @override
+  String get abilityReceive => 'インボイスを作成する';
+
+  @override
+  String get abilityPay => 'インボイスを支払う';
+
+  @override
+  String get abilityListTransactions => '取引を一覧表示する';
+
+  @override
+  String budgetPerDay(String amount) {
+    return '1日あたり最大 $amount sats';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return '1週間あたり最大 $amount sats';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return '1か月あたり最大 $amount sats';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return '1年あたり最大 $amount sats';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return '合計で最大 $amount sats';
+  }
+
+  @override
   String get balanceNoPermission =>
       'この接続では残高を読み取れません。ウォレットで、残高の読み取りを許可する新しい接続を作成してください。';
 

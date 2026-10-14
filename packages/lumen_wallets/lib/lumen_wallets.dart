@@ -7,6 +7,8 @@ export 'src/lightning/recipient.dart'
         RecipientError,
         RecipientException,
         parseRecipient;
+export 'src/nwc/nwc_grant.dart'
+    show BudgetPeriod, NwcAbility, NwcBudget, NwcGrant;
 export 'src/nwc/nwc_uri.dart';
 export 'src/nwc/nwc_wallet_source.dart' show NwcWalletSource;
 export 'src/wallet.dart';

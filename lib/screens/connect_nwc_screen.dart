@@ -8,6 +8,7 @@ import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
 import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
+import '../widgets/nwc_grant_card.dart';
 import '../widgets/screen_parts.dart';
 
 class ConnectNwcScreen extends StatefulWidget {
@@ -26,6 +27,11 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
   NwcConnectError? _uriError;
   var _nameMissing = false;
   var _saving = false;
+
+  /// The valid connection string whose permissions the card shows.
+  String? _inspected;
+  NwcGrant? _grant;
+  var _checking = false;
 
   @override
   void dispose() {
@@ -66,6 +72,31 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
     } finally {
       _saving = false;
     }
+  }
+
+  void _uriChanged(String text) {
+    if (_uriError != null) setState(() => _uriError = null);
+    final value = text.trim();
+    if (value == _inspected) return;
+    if (checkNwcUri(value) != null) {
+      if (_inspected != null) setState(() => _inspected = null);
+      return;
+    }
+    _inspect(value);
+  }
+
+  Future<void> _inspect(String value) async {
+    setState(() {
+      _inspected = value;
+      _grant = null;
+      _checking = true;
+    });
+    final grant = await LumenScope.sourcesOf(context).nwc.inspect(value);
+    if (!mounted || _inspected != value) return;
+    setState(() {
+      _grant = grant;
+      _checking = false;
+    });
   }
 
   void _reportError(String message, FocusNode field) {
@@ -123,9 +154,7 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
                       autocorrect: false,
                       enableSuggestions: false,
                       onSubmitted: (_) => _nameFocus.requestFocus(),
-                      onChanged: (_) {
-                        if (_uriError != null) setState(() => _uriError = null);
-                      },
+                      onChanged: _uriChanged,
                       style: TextStyle(
                         fontFamily: monoFamily,
                         fontSize: 13,
@@ -155,6 +184,10 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
                       ),
                     ),
                   ),
+                  if (_inspected != null) ...[
+                    const SizedBox(height: 20),
+                    NwcGrantCard(checking: _checking, grant: _grant),
+                  ],
                   const SizedBox(height: 32),
                   if (LayoutSize.of(context) == LayoutSize.phone)
                     const Spacer(),

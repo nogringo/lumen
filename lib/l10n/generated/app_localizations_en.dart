@@ -77,6 +77,62 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorUriDuplicate => 'This wallet is already in Lumen.';
 
   @override
+  String get grantChecking => 'Checking what this connection allows';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen could not reach this wallet to check what the connection allows. You can still connect it.';
+
+  @override
+  String get grantCan => 'This connection can';
+
+  @override
+  String get grantCannot => 'This connection cannot';
+
+  @override
+  String get grantAllowed => 'Allowed';
+
+  @override
+  String get grantDenied => 'Not allowed';
+
+  @override
+  String get abilityReadBalance => 'See the balance';
+
+  @override
+  String get abilityReceive => 'Create invoices';
+
+  @override
+  String get abilityPay => 'Pay invoices';
+
+  @override
+  String get abilityListTransactions => 'List transactions';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Up to $amount sats a day';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Up to $amount sats a week';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Up to $amount sats a month';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Up to $amount sats a year';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Up to $amount sats in total';
+  }
+
+  @override
   String get balanceNoPermission =>
       'This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.';
 

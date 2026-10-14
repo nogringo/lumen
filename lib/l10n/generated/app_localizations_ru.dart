@@ -77,6 +77,62 @@ class AppLocalizationsRu extends AppLocalizations {
   String get errorUriDuplicate => 'Этот кошелёк уже есть в Lumen.';
 
   @override
+  String get grantChecking => 'Проверяем, что разрешает это подключение';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen не удалось связаться с кошельком, чтобы проверить, что разрешает подключение. Вы всё равно можете его подключить.';
+
+  @override
+  String get grantCan => 'Это подключение может';
+
+  @override
+  String get grantCannot => 'Это подключение не может';
+
+  @override
+  String get grantAllowed => 'Разрешено';
+
+  @override
+  String get grantDenied => 'Не разрешено';
+
+  @override
+  String get abilityReadBalance => 'Видеть баланс';
+
+  @override
+  String get abilityReceive => 'Создавать счета';
+
+  @override
+  String get abilityPay => 'Оплачивать счета';
+
+  @override
+  String get abilityListTransactions => 'Показывать список транзакций';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'До $amount sats в день';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'До $amount sats в неделю';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'До $amount sats в месяц';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'До $amount sats в год';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'До $amount sats всего';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Это подключение не может читать баланс. Создайте в кошельке новое подключение с правом чтения баланса.';
 

@@ -77,6 +77,62 @@ class AppLocalizationsIt extends AppLocalizations {
   String get errorUriDuplicate => 'Questo portafoglio è già in Lumen.';
 
   @override
+  String get grantChecking => 'Verifica di cosa consente questa connessione';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen non è riuscito a raggiungere questo portafoglio per verificare cosa consente la connessione. Puoi comunque collegarlo.';
+
+  @override
+  String get grantCan => 'Questa connessione può';
+
+  @override
+  String get grantCannot => 'Questa connessione non può';
+
+  @override
+  String get grantAllowed => 'Consentito';
+
+  @override
+  String get grantDenied => 'Non consentito';
+
+  @override
+  String get abilityReadBalance => 'Vedere il saldo';
+
+  @override
+  String get abilityReceive => 'Creare fatture';
+
+  @override
+  String get abilityPay => 'Pagare fatture';
+
+  @override
+  String get abilityListTransactions => 'Elencare le transazioni';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Fino a $amount sats al giorno';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Fino a $amount sats a settimana';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Fino a $amount sats al mese';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Fino a $amount sats all\'anno';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Fino a $amount sats in totale';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Questa connessione non può leggere il saldo. Nel tuo portafoglio, crea una nuova connessione che consenta di leggere il saldo.';
 

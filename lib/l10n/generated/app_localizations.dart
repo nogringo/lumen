@@ -241,6 +241,96 @@ abstract class AppLocalizations {
   /// **'This wallet is already in Lumen.'**
   String get errorUriDuplicate;
 
+  /// Shown in the permissions card while Lumen asks the wallet what the pasted connection allows.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking what this connection allows'**
+  String get grantChecking;
+
+  /// Shown in the permissions card when the wallet could not be reached before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not reach this wallet to check what the connection allows. You can still connect it.'**
+  String get grantUnreachable;
+
+  /// Heading of the list of what the NWC connection allows. Followed by items such as See the balance.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection can'**
+  String get grantCan;
+
+  /// Heading of the list of what the NWC connection does not allow. Followed by items such as Pay invoices.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection cannot'**
+  String get grantCannot;
+
+  /// Read by screen readers before an item the connection allows.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed'**
+  String get grantAllowed;
+
+  /// Read by screen readers before an item the connection does not allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not allowed'**
+  String get grantDenied;
+
+  /// Item of the permissions card: the connection can read the wallet balance.
+  ///
+  /// In en, this message translates to:
+  /// **'See the balance'**
+  String get abilityReadBalance;
+
+  /// Item of the permissions card: the connection can create Lightning invoices to receive.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invoices'**
+  String get abilityReceive;
+
+  /// Item of the permissions card: the connection can pay Lightning invoices.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay invoices'**
+  String get abilityPay;
+
+  /// Item of the permissions card: the connection can list past payments.
+  ///
+  /// In en, this message translates to:
+  /// **'List transactions'**
+  String get abilityListTransactions;
+
+  /// Spending budget of the connection, renewed every day.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} sats a day'**
+  String budgetPerDay(String amount);
+
+  /// Spending budget of the connection, renewed every week.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} sats a week'**
+  String budgetPerWeek(String amount);
+
+  /// Spending budget of the connection, renewed every month.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} sats a month'**
+  String budgetPerMonth(String amount);
+
+  /// Spending budget of the connection, renewed every year.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} sats a year'**
+  String budgetPerYear(String amount);
+
+  /// Spending budget of the connection, never renewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} sats in total'**
+  String budgetTotal(String amount);
+
   /// Shown on a wallet screen when its connection lacks the permission to read the balance.
   ///
   /// In en, this message translates to:

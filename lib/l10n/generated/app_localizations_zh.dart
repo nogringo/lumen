@@ -73,6 +73,61 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorUriDuplicate => '此钱包已在 Lumen 中。';
 
   @override
+  String get grantChecking => '正在检查此连接允许的操作';
+
+  @override
+  String get grantUnreachable => 'Lumen 无法连接此钱包以检查该连接允许的操作。您仍然可以连接它。';
+
+  @override
+  String get grantCan => '此连接可以';
+
+  @override
+  String get grantCannot => '此连接不能';
+
+  @override
+  String get grantAllowed => '允许';
+
+  @override
+  String get grantDenied => '不允许';
+
+  @override
+  String get abilityReadBalance => '查看余额';
+
+  @override
+  String get abilityReceive => '创建发票';
+
+  @override
+  String get abilityPay => '支付发票';
+
+  @override
+  String get abilityListTransactions => '列出交易';
+
+  @override
+  String budgetPerDay(String amount) {
+    return '每天最多 $amount sats';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return '每周最多 $amount sats';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return '每月最多 $amount sats';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return '每年最多 $amount sats';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return '总计最多 $amount sats';
+  }
+
+  @override
   String get balanceNoPermission => '此连接无法读取余额。请在您的钱包中新建一个允许读取余额的连接。';
 
   @override

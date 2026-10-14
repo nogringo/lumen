@@ -77,6 +77,62 @@ class AppLocalizationsFi extends AppLocalizations {
   String get errorUriDuplicate => 'Tämä lompakko on jo Lumenissa.';
 
   @override
+  String get grantChecking => 'Tarkistetaan, mitä tämä yhteys sallii';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen ei saanut yhteyttä tähän lompakkoon tarkistaakseen, mitä yhteys sallii. Voit silti yhdistää sen.';
+
+  @override
+  String get grantCan => 'Tämä yhteys voi';
+
+  @override
+  String get grantCannot => 'Tämä yhteys ei voi';
+
+  @override
+  String get grantAllowed => 'Sallittu';
+
+  @override
+  String get grantDenied => 'Ei sallittu';
+
+  @override
+  String get abilityReadBalance => 'Nähdä saldon';
+
+  @override
+  String get abilityReceive => 'Luoda laskuja';
+
+  @override
+  String get abilityPay => 'Maksaa laskuja';
+
+  @override
+  String get abilityListTransactions => 'Listata tapahtumat';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Enintään $amount satsia päivässä';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Enintään $amount satsia viikossa';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Enintään $amount satsia kuukaudessa';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Enintään $amount satsia vuodessa';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Enintään $amount satsia yhteensä';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Tämä yhteys ei voi lukea saldoa. Luo lompakossasi uusi yhteys, joka sallii saldon lukemisen.';
 

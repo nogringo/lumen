@@ -208,4 +208,12 @@ void main() {
       ),
     );
   });
+
+  test('an unreachable wallet has nothing to show before saving', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+
+    expect(await sources.nwc.inspect(uri), isNull);
+    expect(await sources.nwc.load(), hasLength(1));
+  });
 }

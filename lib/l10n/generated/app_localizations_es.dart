@@ -77,6 +77,62 @@ class AppLocalizationsEs extends AppLocalizations {
   String get errorUriDuplicate => 'Esta billetera ya está en Lumen.';
 
   @override
+  String get grantChecking => 'Comprobando qué permite esta conexión';
+
+  @override
+  String get grantUnreachable =>
+      'Lumen no pudo contactar con esta billetera para comprobar qué permite la conexión. Aun así puedes conectarla.';
+
+  @override
+  String get grantCan => 'Esta conexión puede';
+
+  @override
+  String get grantCannot => 'Esta conexión no puede';
+
+  @override
+  String get grantAllowed => 'Permitido';
+
+  @override
+  String get grantDenied => 'No permitido';
+
+  @override
+  String get abilityReadBalance => 'Ver el saldo';
+
+  @override
+  String get abilityReceive => 'Crear facturas';
+
+  @override
+  String get abilityPay => 'Pagar facturas';
+
+  @override
+  String get abilityListTransactions => 'Listar transacciones';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Hasta $amount sats al día';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Hasta $amount sats a la semana';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Hasta $amount sats al mes';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Hasta $amount sats al año';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Hasta $amount sats en total';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Esta conexión no puede leer el saldo. En tu billetera, crea una nueva conexión que permita leer el saldo.';
 

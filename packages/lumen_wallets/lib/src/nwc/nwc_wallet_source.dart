@@ -5,9 +5,11 @@ import 'dart:math';
 
 import 'package:ndk/domain_layer/repositories/wallets_repo.dart';
 import 'package:ndk/entities.dart' as ndk show NwcWallet, WalletType;
-import 'package:ndk/ndk.dart' show Ndk, NwcConnection, NwcMethod;
+import 'package:ndk/ndk.dart'
+    show GetBudgetResponse, Ndk, NwcConnection, NwcMethod;
 
 import '../wallet.dart';
+import 'nwc_grant.dart';
 import 'nwc_transaction.dart';
 import 'nwc_uri.dart';
 
@@ -68,6 +70,42 @@ final class NwcWalletSource implements WalletSource {
           _registering.remove(id);
         });
     return _NwcWallet(this, id, name.trim());
+  }
+
+  /// Asks the wallet behind [uri] what the connection allows, without saving
+  /// it. Returns null when the wallet cannot be reached.
+  Future<NwcGrant?> inspect(String uri) async {
+    final value = uri.trim();
+    if (checkNwcUri(value) != null) return null;
+
+    NwcConnection? connection;
+    try {
+      connection = await _ndk.nwc.connect(
+        value,
+        doGetInfoMethod: true,
+        timeout: _timeout,
+      );
+      // ndk returns a bare connection when the wallet published no info.
+      if (connection.permissions.isEmpty) return null;
+
+      // get_info lists this connection's methods, the info event the wallet's.
+      final methods = connection.info?.methods.toSet() ?? const <String>{};
+      final allowed = methods.isEmpty ? connection.permissions : methods;
+      GetBudgetResponse? budget;
+      if (allowed.contains(NwcMethod.PAY_INVOICE.name) &&
+          allowed.contains(NwcMethod.GET_BUDGET.name)) {
+        try {
+          budget = await _ndk.nwc.getBudget(connection).timeout(_timeout);
+        } catch (_) {
+          // Shown without its budget.
+        }
+      }
+      return nwcGrant(allowed, budget);
+    } catch (_) {
+      return null;
+    } finally {
+      if (connection != null) await _ndk.nwc.disconnect(connection);
+    }
   }
 
   /// Waits for a background registration, and retries one that failed.

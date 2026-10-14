@@ -77,6 +77,62 @@ class AppLocalizationsPt extends AppLocalizations {
   String get errorUriDuplicate => 'Esta carteira já está no Lumen.';
 
   @override
+  String get grantChecking => 'A verificar o que esta ligação permite';
+
+  @override
+  String get grantUnreachable =>
+      'O Lumen não conseguiu contactar esta carteira para verificar o que a ligação permite. Pode ligá-la mesmo assim.';
+
+  @override
+  String get grantCan => 'Esta ligação pode';
+
+  @override
+  String get grantCannot => 'Esta ligação não pode';
+
+  @override
+  String get grantAllowed => 'Permitido';
+
+  @override
+  String get grantDenied => 'Não permitido';
+
+  @override
+  String get abilityReadBalance => 'Ver o saldo';
+
+  @override
+  String get abilityReceive => 'Criar faturas';
+
+  @override
+  String get abilityPay => 'Pagar faturas';
+
+  @override
+  String get abilityListTransactions => 'Listar transações';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Até $amount sats por dia';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Até $amount sats por semana';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Até $amount sats por mês';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Até $amount sats por ano';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Até $amount sats no total';
+  }
+
+  @override
   String get balanceNoPermission =>
       'Esta ligação não pode ler o saldo. Na sua carteira, crie uma nova ligação que permita ler o saldo.';
 
@@ -696,6 +752,62 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get errorUriDuplicate => 'Esta carteira já está no Lumen.';
+
+  @override
+  String get grantChecking => 'Verificando o que esta conexão permite';
+
+  @override
+  String get grantUnreachable =>
+      'O Lumen não conseguiu acessar esta carteira para verificar o que a conexão permite. Você ainda pode conectá-la.';
+
+  @override
+  String get grantCan => 'Esta conexão pode';
+
+  @override
+  String get grantCannot => 'Esta conexão não pode';
+
+  @override
+  String get grantAllowed => 'Permitido';
+
+  @override
+  String get grantDenied => 'Não permitido';
+
+  @override
+  String get abilityReadBalance => 'Ver o saldo';
+
+  @override
+  String get abilityReceive => 'Criar faturas';
+
+  @override
+  String get abilityPay => 'Pagar faturas';
+
+  @override
+  String get abilityListTransactions => 'Listar transações';
+
+  @override
+  String budgetPerDay(String amount) {
+    return 'Até $amount sats por dia';
+  }
+
+  @override
+  String budgetPerWeek(String amount) {
+    return 'Até $amount sats por semana';
+  }
+
+  @override
+  String budgetPerMonth(String amount) {
+    return 'Até $amount sats por mês';
+  }
+
+  @override
+  String budgetPerYear(String amount) {
+    return 'Até $amount sats por ano';
+  }
+
+  @override
+  String budgetTotal(String amount) {
+    return 'Até $amount sats no total';
+  }
 
   @override
   String get balanceNoPermission =>
