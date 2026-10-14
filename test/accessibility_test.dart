@@ -73,6 +73,8 @@ void main() {
         );
         await tester.tap(find.text('Home node').first);
         await tester.pumpAndSettle();
+        expect(find.text('satoshi@example.com'), findsOneWidget);
+        await expectGuidelines(tester);
 
         await tester.tap(find.byTooltip('Home node options'));
         await tester.pumpAndSettle();

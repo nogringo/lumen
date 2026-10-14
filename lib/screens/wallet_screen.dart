@@ -11,6 +11,7 @@ import '../theme/lumen_colors.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/activity.dart';
+import '../widgets/address_card.dart';
 import '../widgets/amount.dart';
 import '../widgets/passphrase_field.dart';
 import '../widgets/screen_parts.dart';
@@ -83,6 +84,10 @@ class WalletScreen extends StatelessWidget {
               ],
               const SizedBox(height: 24),
               WalletActions(wallet: wallet),
+              if (wallet.lightningAddress case final address?) ...[
+                const SizedBox(height: 24),
+                AddressCard(address),
+              ],
               const SizedBox(height: 24),
               RecentActivity(wallet: wallet),
             ],

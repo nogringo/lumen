@@ -247,6 +247,37 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('the wallet screen shows its Lightning address', (tester) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: [
+        FakeWallet(
+          'home',
+          'Home node',
+          lightningAddress: 'satoshi@example.com',
+        ),
+        FakeWallet('phone', 'Phone wallet'),
+      ],
+    );
+
+    await tester.tap(find.text('Home node'));
+    await tester.pumpAndSettle();
+    expect(find.text('satoshi@example.com'), findsOneWidget);
+    expect(find.byTooltip('Copy address'), findsOneWidget);
+    await tester.tap(find.byTooltip('Show QR code'));
+    await tester.pumpAndSettle();
+    expect(find.text('Share address'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Phone wallet'));
+    await tester.pumpAndSettle();
+    expect(find.text('Lightning address'), findsNothing);
+  });
+
   testWidgets(
     'the wallet menu focuses the chosen wallet and Escape closes only it',
     (tester) async {
