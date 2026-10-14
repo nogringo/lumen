@@ -670,7 +670,7 @@ packages:
     source: hosted
     version: "2.2.0"
   path:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path
       sha256: "75cca69d1490965be98c73ceaea117e8a04dd21217b37b292c9ddbec0d955bc5"
@@ -686,7 +686,7 @@ packages:
     source: hosted
     version: "1.1.0"
   path_provider:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: path_provider
       sha256: a7f4874f987173da295a61c181b8ee71dab59b332a486b391babf26a1b884825
@@ -830,7 +830,7 @@ packages:
     source: hosted
     version: "0.28.0"
   sembast:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sembast
       sha256: "05da81104e6d4a1ecbeb9aa92062231620d360c8bd9303b82495842c4d92632b"
@@ -838,7 +838,7 @@ packages:
     source: hosted
     version: "3.9.0"
   sembast_web:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: sembast_web
       sha256: "99dad5c3610c7b9559add7f394ab272ccb76a595a28dc94bc40d05c45481c7bf"

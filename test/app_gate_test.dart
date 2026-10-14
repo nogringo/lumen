@@ -6,14 +6,18 @@ import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/lock/lock_store.dart';
 import 'package:lumen/lock/sealed_storage.dart';
 import 'package:lumen/settings/language.dart';
+import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 
 import 'fakes.dart';
 
 class _Session extends LumenSession {
-  _Session()
-    : super(memorySources(), WalletsController([], cache: MemoryWalletCache()));
+  _Session(HistoryStore history)
+    : super(
+        memorySources(),
+        WalletsController([], cache: MemoryWalletCache(), history: history),
+      );
 
   bool closed = false;
 
@@ -41,7 +45,7 @@ void main() {
     lock: AppLock(lockStore, kdf: const FastKdf()),
     storage: storage,
     openSession: () async {
-      final session = _Session();
+      final session = _Session(await HistoryStore.memory());
       sessions.add(session);
       return session;
     },

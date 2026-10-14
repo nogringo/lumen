@@ -4,6 +4,7 @@ import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 
+import 'history_store.dart';
 import 'wallet_cache.dart';
 
 @immutable
@@ -33,6 +34,7 @@ class WalletsController extends ChangeNotifier {
   WalletsController(
     this._sources, {
     required this._cache,
+    required this._history,
     this.staleAfter = const Duration(seconds: 30),
   });
 
@@ -41,12 +43,23 @@ class WalletsController extends ChangeNotifier {
 
   final List<WalletSource> _sources;
   final WalletCache _cache;
+  final HistoryStore _history;
   final List<Wallet> _wallets = [];
   final Map<String, BalanceState> _balances = {};
   final Map<String, ActivityState> _activity = {};
   final Map<String, Future<void>> _refreshing = {};
   final Map<String, DateTime> _attemptedAt = {};
+  final Map<String, Future<void>> _loadingOlder = {};
   final _listRevision = ValueNotifier(0);
+  final _historyRevision = ValueNotifier(0);
+  var _closed = false;
+
+  /// Transactions kept for Home and the launch cache, per wallet.
+  static const _recentCount = 10;
+  static const _pageSize = 25;
+
+  /// Bounds one walk through a wallet's list, in case it ignores the offset.
+  static const _maxPages = 200;
 
   List<Wallet> get wallets => List.unmodifiable(_wallets);
 
@@ -86,6 +99,31 @@ class WalletsController extends ChangeNotifier {
       _wallets.where((w) => activityOf(w).error != null).length;
 
   int get unavailableCount => _wallets.where((w) => balanceOf(w).failed).length;
+
+  /// Notifies when transactions are saved to the history.
+  Listenable get historyChanges => _historyRevision;
+
+  /// Whether older transactions of [wallet], or of any wallet, are loading.
+  bool isLoadingOlder([Wallet? wallet]) => wallet == null
+      ? _loadingOlder.isNotEmpty
+      : _loadingOlder.containsKey(wallet.id);
+
+  /// The saved transactions of [wallet], or of every wallet, newest first.
+  /// They stay readable offline.
+  Future<List<WalletTransaction>> history({
+    Wallet? wallet,
+    required int limit,
+  }) async {
+    final byId = {
+      for (final w in wallet == null ? _wallets : [wallet]) w.id: w,
+    };
+    final saved = await _history.read(byId.keys.toSet(), limit: limit);
+    return [
+      for (final (:walletId, :transaction) in saved)
+        if (byId[walletId] case final wallet?)
+          (wallet: wallet, transaction: transaction),
+    ];
+  }
 
   Future<void> load() async {
     for (final source in _sources) {
@@ -169,9 +207,13 @@ class WalletsController extends ChangeNotifier {
 
   Future<void> _refreshActivity(Wallet wallet) async {
     final known = _activity[wallet.id]?.transactions;
+    TransactionPage? page;
     ActivityState result;
     try {
-      result = ActivityState(transactions: await wallet.fetchTransactions());
+      page = await wallet.fetchTransactions(limit: _pageSize);
+      result = ActivityState(
+        transactions: page.transactions.take(_recentCount).toList(),
+      );
     } on ActivityException catch (e) {
       result = ActivityState(transactions: known, error: e.error);
     } catch (_) {
@@ -190,6 +232,84 @@ class WalletsController extends ChangeNotifier {
             .catchError((Object _) {}),
       );
     }
+    if (page != null) await _saveNewest(wallet, page);
+  }
+
+  /// Saves [first], then the pages after it until one holds a transaction
+  /// already saved, so payments made while Lumen was away fill in. A wallet
+  /// seen for the first time walks its older transactions in the background
+  /// instead.
+  Future<void> _saveNewest(Wallet wallet, TransactionPage first) async {
+    final HistorySync sync;
+    try {
+      sync = await _history.readSync(wallet.id);
+      if (!sync.started) {
+        await _history.save(wallet.id, first.transactions);
+        await _history.writeSync(wallet.id, HistorySync(offset: first.listed));
+      } else {
+        var page = first;
+        var offset = 0;
+        for (var i = 0; i < _maxPages && !_closed; i++) {
+          final added = await _history.save(wallet.id, page.transactions);
+          if (page.listed == 0 || added < page.transactions.length) break;
+          offset += page.listed;
+          page = await wallet.fetchTransactions(
+            limit: _pageSize,
+            offset: offset,
+          );
+        }
+      }
+    } catch (_) {
+      // Picked up again at the next refresh.
+      return;
+    }
+    _historyChanged();
+    if (!sync.complete) unawaited(loadOlder(wallet));
+  }
+
+  /// Walks [wallet]'s older transactions into the history, from where the
+  /// last walk stopped. A walk cut short goes on at the next refresh.
+  Future<void> loadOlder(Wallet wallet) {
+    if (_loadingOlder[wallet.id] case final running?) return running;
+    final walk = _loadOlder(wallet).whenComplete(() {
+      _loadingOlder.remove(wallet.id);
+      if (!_closed) notifyListeners();
+    });
+    _loadingOlder[wallet.id] = walk;
+    notifyListeners();
+    return walk;
+  }
+
+  Future<void> _loadOlder(Wallet wallet) async {
+    bool gone() => _closed || !_wallets.contains(wallet);
+    try {
+      var sync = await _history.readSync(wallet.id);
+      List<String>? previous;
+      for (var i = 0; i < _maxPages && !sync.complete && !gone(); i++) {
+        final page = await wallet.fetchTransactions(
+          limit: _pageSize,
+          offset: sync.offset,
+        );
+        if (gone()) return;
+        final ids = [for (final t in page.transactions) t.id];
+        // A wallet that ignores the offset lists the same page again.
+        final repeated = ids.isNotEmpty && listEquals(ids, previous);
+        previous = ids;
+        await _history.save(wallet.id, page.transactions);
+        sync = HistorySync(
+          offset: sync.offset + page.listed,
+          complete: page.listed == 0 || repeated,
+        );
+        await _history.writeSync(wallet.id, sync);
+        _historyChanged();
+      }
+    } catch (_) {
+      // Picked up again at the next refresh.
+    }
+  }
+
+  void _historyChanged() {
+    if (!_closed) _historyRevision.value++;
   }
 
   void added(Wallet wallet) {
@@ -211,6 +331,14 @@ class WalletsController extends ChangeNotifier {
     _attemptedAt.remove(wallet.id);
     _listChanged();
     unawaited(_cache.delete(wallet.id).catchError((Object _) {}));
+    // After any save still in flight for it.
+    final saving = [?_refreshing[wallet.id], ?_loadingOlder[wallet.id]];
+    unawaited(
+      Future.wait(saving)
+          .then((_) => _history.delete(wallet.id))
+          .catchError((Object _) {}),
+    );
+    _historyChanged();
   }
 
   void _listChanged() {
@@ -218,9 +346,17 @@ class WalletsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Stops syncing and closes the history, when Lumen locks.
+  Future<void> close() async {
+    dispose();
+    await _history.close();
+  }
+
   @override
   void dispose() {
+    _closed = true;
     _listRevision.dispose();
+    _historyRevision.dispose();
     super.dispose();
   }
 }

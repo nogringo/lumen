@@ -105,6 +105,19 @@ final class Transaction {
   bool get isIncoming => direction == TransactionDirection.incoming;
 }
 
+/// One page of a wallet's transaction list, newest first.
+final class TransactionPage {
+  const TransactionPage(this.transactions, {required this.listed});
+
+  /// The settled payments on this page.
+  final List<Transaction> transactions;
+
+  /// How many entries the wallet listed, pending and failed ones included.
+  /// The next page starts this many entries further. Zero means the list
+  /// ended.
+  final int listed;
+}
+
 /// A BOLT11 Lightning invoice.
 final class Invoice {
   const Invoice({
@@ -161,9 +174,9 @@ abstract interface class Wallet {
   /// through, or may not have.
   Future<Payment> payInvoice(Invoice invoice);
 
-  /// The latest settled transactions, newest first. Throws an
-  /// [ActivityException] when they cannot be read.
-  Future<List<Transaction>> fetchTransactions({int limit = 10});
+  /// Up to [limit] transactions, starting [offset] entries from the newest.
+  /// Throws an [ActivityException] when they cannot be read.
+  Future<TransactionPage> fetchTransactions({int limit = 10, int offset = 0});
 
   Future<void> rename(String name);
 

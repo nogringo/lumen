@@ -1,5 +1,6 @@
 import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 
@@ -259,5 +260,91 @@ void main() {
 
     expect(wallet.fetchCount, 2);
     expect(controller.balanceOf(wallet).failed, isTrue);
+  });
+
+  group('history', () {
+    List<Transaction> payments(
+      int count, {
+      String prefix = 't',
+      int from = 0,
+    }) => [
+      for (var i = 0; i < count; i++) tx('$prefix$i', minutesAgo: from + i),
+    ];
+
+    test('a new wallet walks all its transactions in the background', () async {
+      final wallet = FakeWallet('a', 'Home node')..transactions = payments(60);
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      await controller.loadOlder(wallet);
+
+      expect(controller.activityOf(wallet).transactions, hasLength(10));
+      expect(await controller.history(limit: 100), hasLength(60));
+      expect(controller.isLoadingOlder(), isFalse);
+    });
+
+    test('payments made while away fill in at the next refresh', () async {
+      final wallet = FakeWallet('a', 'Home node')
+        ..transactions = payments(30, from: 100);
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      await controller.loadOlder(wallet);
+
+      wallet.transactions = [
+        ...payments(40, prefix: 'new'),
+        ...wallet.transactions,
+      ];
+      wallet.listedOffsets.clear();
+      await controller.refresh(wallet);
+
+      final saved = await controller.history(limit: 100);
+      expect(saved, hasLength(70));
+      expect(saved.first.transaction.id, 'new0');
+      expect(wallet.listedOffsets, [0, 25]);
+    });
+
+    test('stays readable when the wallet cannot be reached', () async {
+      final wallet = FakeWallet('a', 'Home node')..transactions = payments(30);
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      await controller.loadOlder(wallet);
+
+      wallet.activityError = ActivityError.unreachable;
+      await controller.refresh(wallet);
+
+      expect(
+        await controller.history(wallet: wallet, limit: 100),
+        hasLength(30),
+      );
+    });
+
+    test('a wallet that ignores the offset ends its walk', () async {
+      final wallet = FakeWallet('a', 'Home node')
+        ..transactions = payments(60)
+        ..ignoresOffset = true;
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      await controller.loadOlder(wallet);
+
+      expect(await controller.history(limit: 100), hasLength(25));
+      expect(wallet.listedOffsets.length, lessThan(5));
+    });
+
+    test('remove forgets the wallet history', () async {
+      final kept = FakeWallet('a', 'Home node')..transactions = payments(3);
+      final removed = FakeWallet('b', 'Old')
+        ..transactions = payments(3, prefix: 'old');
+      final history = await HistoryStore.memory();
+      final controller = await loadedController([
+        kept,
+        removed,
+      ], history: history);
+      await controller.refreshAll();
+
+      await controller.remove(removed);
+      await pumpEventQueue();
+
+      expect(await history.read({'b'}, limit: 10), isEmpty);
+      expect(await controller.history(limit: 10), hasLength(3));
+    });
   });
 }

@@ -10,6 +10,7 @@ import 'lock/app_lock.dart';
 import 'lock/lock_store.dart';
 import 'lock/sealed_storage.dart';
 import 'settings/language.dart';
+import 'wallets/history_store.dart';
 import 'wallets/wallet_cache.dart';
 import 'wallets/wallets_controller.dart';
 
@@ -29,6 +30,9 @@ Future<void> main() async {
       final wallets = WalletsController(
         sources.all,
         cache: SecureWalletCache(storage: storage),
+        // Without a history on disk, Lumen still works for this session.
+        history: await HistoryStore.open(storage)
+            .catchError((Object _) => HistoryStore.memory()),
       );
       await wallets.load();
       return LumenSession(sources, wallets);

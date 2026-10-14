@@ -14,7 +14,7 @@ class LumenSession {
   final WalletsController wallets;
 
   Future<void> close() async {
-    wallets.dispose();
+    await wallets.close();
     await sources.dispose();
   }
 }

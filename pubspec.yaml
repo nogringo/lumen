@@ -24,7 +24,11 @@ dependencies:
     path: packages/lumen_wallets
   material_ui: ^1.6.0
   ndk_flutter: ^0.10.1
+  path: ^1.9.1
+  path_provider: ^2.1.6
   qr: ^3.0.2
+  sembast: ^3.9.0
+  sembast_web: ^2.4.6+1
   serverpod_argon2: ^0.1.0
   share_plus: ^13.3.1
   shared_preferences: ^2.5.6

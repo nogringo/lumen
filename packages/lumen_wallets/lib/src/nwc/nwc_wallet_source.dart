@@ -233,7 +233,11 @@ final class NwcWalletSource implements WalletSource {
     }
   }
 
-  Future<List<Transaction>> _fetchTransactions(String id, int limit) async {
+  Future<TransactionPage> _fetchTransactions(
+    String id,
+    int limit,
+    int offset,
+  ) async {
     final ndk.NwcWallet wallet;
     try {
       wallet = await _connected(id).timeout(_timeout);
@@ -249,10 +253,19 @@ final class NwcWalletSource implements WalletSource {
 
     try {
       final response = await _ndk.nwc
-          .listTransactions(connection, limit: limit, unpaid: false)
+          .listTransactions(
+            connection,
+            limit: limit,
+            offset: offset,
+            unpaid: false,
+          )
           .timeout(_timeout);
-      return response.transactions.map(nwcTransaction).nonNulls.toList()
-        ..sort((a, b) => b.at.compareTo(a.at));
+      final listed = response.transactions;
+      return TransactionPage(
+        listed.map(nwcTransaction).nonNulls.toList()
+          ..sort((a, b) => b.at.compareTo(a.at)),
+        listed: listed.length,
+      );
     } catch (_) {
       await _dropConnection(wallet);
       throw const ActivityException(ActivityError.unreachable);
@@ -408,8 +421,8 @@ final class _NwcWallet implements Wallet {
       _source._payInvoice(id, invoice);
 
   @override
-  Future<List<Transaction>> fetchTransactions({int limit = 10}) =>
-      _source._fetchTransactions(id, limit);
+  Future<TransactionPage> fetchTransactions({int limit = 10, int offset = 0}) =>
+      _source._fetchTransactions(id, limit, offset);
 
   @override
   Future<void> rename(String name) async {

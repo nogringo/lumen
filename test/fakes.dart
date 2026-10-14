@@ -15,6 +15,7 @@ import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/lock/lock_store.dart';
 import 'package:lumen/lock/sealed_storage.dart';
 import 'package:lumen/settings/language.dart';
+import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -52,8 +53,13 @@ class FakeWallet implements Wallet {
   int fetchCount = 0;
   bool removed = false;
 
+  /// Newest first.
   List<Transaction> transactions = [];
   ActivityError? activityError;
+
+  /// Lists every page from the newest, like a wallet that ignores offsets.
+  bool ignoresOffset = false;
+  final List<int> listedOffsets = [];
 
   ReceiveError? receiveError;
   Duration invoiceLifetime = const Duration(hours: 1);
@@ -110,10 +116,18 @@ class FakeWallet implements Wallet {
   }
 
   @override
-  Future<List<Transaction>> fetchTransactions({int limit = 10}) async {
+  Future<TransactionPage> fetchTransactions({
+    int limit = 10,
+    int offset = 0,
+  }) async {
     await Future<void>.delayed(Duration.zero);
     if (activityError case final error?) throw ActivityException(error);
-    return transactions.take(limit).toList();
+    listedOffsets.add(offset);
+    final page = transactions
+        .skip(ignoresOffset ? 0 : offset)
+        .take(limit)
+        .toList();
+    return TransactionPage(page, listed: page.length);
   }
 
   @override
@@ -222,11 +236,13 @@ String fakeBolt11(
 Future<WalletsController> loadedController(
   List<Wallet> wallets, {
   WalletCache? cache,
+  HistoryStore? history,
   Duration staleAfter = const Duration(seconds: 30),
 }) async {
   final controller = WalletsController(
     [FakeSource(wallets)],
     cache: cache ?? MemoryWalletCache(),
+    history: history ?? await HistoryStore.memory(),
     staleAfter: staleAfter,
   );
   await controller.load();
