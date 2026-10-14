@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
 import '../screens/receive_screen.dart';
+import '../screens/send_screen.dart';
 import '../theme/lumen_colors.dart';
 import 'tappable.dart';
 
@@ -13,13 +14,19 @@ class WalletActions extends StatelessWidget {
 
   final Wallet? wallet;
 
-  /// Send and Scan will join Receive, in that order.
+  /// Scan will join Send and Receive.
   static const _slots = 3;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final actions = [
+      _Action(
+        icon: Icons.north,
+        label: l.send,
+        primary: true,
+        onTap: () => openSend(context, wallet: wallet),
+      ),
       _Action(
         icon: Icons.south,
         label: l.receive,
@@ -46,29 +53,36 @@ class WalletActions extends StatelessWidget {
 }
 
 class _Action extends StatelessWidget {
-  const _Action({required this.icon, required this.label, required this.onTap});
+  const _Action({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.primary = false,
+  });
 
   final IconData icon;
   final String label;
   final VoidCallback onTap;
+  final bool primary;
 
   @override
   Widget build(BuildContext context) {
     final c = LumenColors.of(context);
     final desktop = LayoutSize.of(context) == LayoutSize.desktop;
-    final iconWidget = Icon(icon, color: c.text);
+    final foreground = primary ? c.onAccent : c.text;
+    final iconWidget = Icon(icon, color: foreground);
     final text = Text(
       label,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: desktop ? 15 : 13,
         fontWeight: FontWeight.w500,
-        color: c.text,
+        color: foreground,
       ),
     );
 
     return Material(
-      color: c.surface2,
+      color: primary ? c.accent : c.surface2,
       borderRadius: BorderRadius.circular(desktop ? 14 : 20),
       child: Tappable(
         onTap: onTap,

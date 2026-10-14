@@ -27,10 +27,12 @@ dependencies:
   share_plus: ^13.3.1
 
 dev_dependencies:
+  bech32: ^0.2.2
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.14.4
   flutter_lints: ^6.0.0
+  http: ^1.6.0
   ndk: ^0.10.1
 
 flutter:

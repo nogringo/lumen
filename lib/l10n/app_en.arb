@@ -437,5 +437,220 @@
   "columnAmount": "Amount",
   "@columnAmount": {
     "description": "Column header of the activity table on desktop."
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Action that opens the send flow, and title of that screen."
+  },
+  "sendTo": "To",
+  "@sendTo": {
+    "description": "Label of the field with the invoice or address to pay."
+  },
+  "sendToHint": "Lightning invoice or Lightning address",
+  "@sendToHint": {
+    "description": "Hint under the To field."
+  },
+  "paste": "Paste",
+  "@paste": {
+    "description": "Button that pastes the clipboard into the To field."
+  },
+  "payFrom": "Pay from",
+  "@payFrom": {
+    "description": "Label above the wallet that pays."
+  },
+  "chooseWalletThatPays": "Choose the wallet that pays",
+  "@chooseWalletThatPays": {
+    "description": "Accessibility hint of the wallet picker on the send screen."
+  },
+  "amountSetByInvoice": "Amount set by the invoice",
+  "@amountSetByInvoice": {
+    "description": "Label above the amount of a pasted invoice, which cannot be changed."
+  },
+  "reviewPayment": "Review",
+  "@reviewPayment": {
+    "description": "Button that checks the payment and shows it before sending."
+  },
+  "checkingPayment": "Checking",
+  "@checkingPayment": {
+    "description": "Button label while Lumen checks the recipient."
+  },
+  "youAreSending": "You are sending",
+  "@youAreSending": {
+    "description": "Heading above the amount on the review step."
+  },
+  "detailTo": "To",
+  "@detailTo": {
+    "description": "Row label: who receives the payment."
+  },
+  "detailNote": "Note",
+  "@detailNote": {
+    "description": "Row label: the invoice description."
+  },
+  "detailFrom": "From",
+  "@detailFrom": {
+    "description": "Row label: the wallet that pays."
+  },
+  "detailNetwork": "Network",
+  "@detailNetwork": {
+    "description": "Row label: the network the payment uses."
+  },
+  "detailFeePaid": "Fee paid",
+  "@detailFeePaid": {
+    "description": "Row label: the routing fee the payment cost."
+  },
+  "lightningInvoice": "Lightning invoice",
+  "@lightningInvoice": {
+    "description": "Read by screen readers instead of a shortened invoice."
+  },
+  "sendAmount": "Send {amount} sats",
+  "@sendAmount": {
+    "description": "Button that sends the payment.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "sendingPayment": "Sending",
+  "@sendingPayment": {
+    "description": "Button label while the wallet pays."
+  },
+  "editPayment": "Edit payment",
+  "@editPayment": {
+    "description": "Button that goes back from the review step to the form."
+  },
+  "paymentSent": "Payment sent",
+  "@paymentSent": {
+    "description": "Title shown once the payment went through."
+  },
+  "sentTo": "To {label}",
+  "@sentTo": {
+    "description": "Who received the payment, under the amount.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "sentAnnouncement": "Payment sent: {amount} sats from {name}",
+  "@sentAnnouncement": {
+    "description": "Announced to screen readers when the payment went through.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorToEmpty": "Paste a Lightning invoice or a Lightning address.",
+  "@errorToEmpty": {
+    "description": "Error when the To field is empty."
+  },
+  "errorToUnrecognized": "This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.",
+  "@errorToUnrecognized": {
+    "description": "Error when the To field holds something Lumen cannot pay. Keep lnbc as is."
+  },
+  "errorInvoiceNoAmount": "This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.",
+  "@errorInvoiceNoAmount": {
+    "description": "Error for an invoice without amount."
+  },
+  "errorInvoiceExpired": "This invoice expired. Ask the recipient for a new one.",
+  "@errorInvoiceExpired": {
+    "description": "Error for an expired invoice."
+  },
+  "errorAmountRange": "{label} accepts from {min} to {max} sats.",
+  "@errorAmountRange": {
+    "description": "Error when the amount is outside what the Lightning address accepts.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      }
+    }
+  },
+  "recipientUnreachable": "Lumen could not reach {label}. Check the address and your connection, then try again.",
+  "@recipientUnreachable": {
+    "description": "Error when the Lightning address service did not answer.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "recipientRefused": "{label} cannot receive payments right now. Check the address with the recipient.",
+  "@recipientRefused": {
+    "description": "Error when the Lightning address service refused the payment.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "recipientWrongInvoice": "{label} sent an invoice for another amount, so Lumen did not pay it.",
+  "@recipientWrongInvoice": {
+    "description": "Error when the Lightning address service sent a wrong invoice.",
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "notEnoughSats": "{name} holds {balance} sats, not enough for this payment. Pay from another wallet or lower the amount.",
+  "@notEnoughSats": {
+    "description": "Error when the paying wallet's known balance is below the amount.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "balance": {
+        "type": "String"
+      }
+    }
+  },
+  "sendUnreachable": "Lumen could not reach {name}, so nothing was sent. Check that it is online, then try again.",
+  "@sendUnreachable": {
+    "description": "Error when the paying wallet did not answer before the payment.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sendNoPermission": "This connection cannot pay. In your wallet, create a new connection that allows payments.",
+  "@sendNoPermission": {
+    "description": "Error when the NWC connection lacks the permission to pay invoices."
+  },
+  "sendInsufficientBalance": "{name} does not hold enough sats for this payment and its fee. Pay from another wallet or lower the amount.",
+  "@sendInsufficientBalance": {
+    "description": "Error when the wallet reports an insufficient balance.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sendBudgetExceeded": "This connection has used up its spending budget. Raise it in your wallet's NWC settings, or pay from another wallet.",
+  "@sendBudgetExceeded": {
+    "description": "Error when the NWC connection's budget is used up."
+  },
+  "sendFailed": "The payment did not go through, often for lack of a route to the recipient. Try again later, or pay from another wallet.",
+  "@sendFailed": {
+    "description": "Error when the wallet tried and the payment failed."
+  },
+  "sendUnconfirmed": "{name} did not confirm the payment in time. It may still go through: check its recent activity before you try again.",
+  "@sendUnconfirmed": {
+    "description": "Shown when the wallet did not answer after the payment was sent.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

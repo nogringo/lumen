@@ -625,6 +625,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Amount'**
   String get columnAmount;
+
+  /// Action that opens the send flow, and title of that screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// Label of the field with the invoice or address to pay.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get sendTo;
+
+  /// Hint under the To field.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning invoice or Lightning address'**
+  String get sendToHint;
+
+  /// Button that pastes the clipboard into the To field.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste'**
+  String get paste;
+
+  /// Label above the wallet that pays.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay from'**
+  String get payFrom;
+
+  /// Accessibility hint of the wallet picker on the send screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the wallet that pays'**
+  String get chooseWalletThatPays;
+
+  /// Label above the amount of a pasted invoice, which cannot be changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount set by the invoice'**
+  String get amountSetByInvoice;
+
+  /// Button that checks the payment and shows it before sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewPayment;
+
+  /// Button label while Lumen checks the recipient.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking'**
+  String get checkingPayment;
+
+  /// Heading above the amount on the review step.
+  ///
+  /// In en, this message translates to:
+  /// **'You are sending'**
+  String get youAreSending;
+
+  /// Row label: who receives the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get detailTo;
+
+  /// Row label: the invoice description.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get detailNote;
+
+  /// Row label: the wallet that pays.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get detailFrom;
+
+  /// Row label: the network the payment uses.
+  ///
+  /// In en, this message translates to:
+  /// **'Network'**
+  String get detailNetwork;
+
+  /// Row label: the routing fee the payment cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee paid'**
+  String get detailFeePaid;
+
+  /// Read by screen readers instead of a shortened invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning invoice'**
+  String get lightningInvoice;
+
+  /// Button that sends the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Send {amount} sats'**
+  String sendAmount(String amount);
+
+  /// Button label while the wallet pays.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending'**
+  String get sendingPayment;
+
+  /// Button that goes back from the review step to the form.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit payment'**
+  String get editPayment;
+
+  /// Title shown once the payment went through.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent'**
+  String get paymentSent;
+
+  /// Who received the payment, under the amount.
+  ///
+  /// In en, this message translates to:
+  /// **'To {label}'**
+  String sentTo(String label);
+
+  /// Announced to screen readers when the payment went through.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment sent: {amount} sats from {name}'**
+  String sentAnnouncement(String amount, String name);
+
+  /// Error when the To field is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a Lightning invoice or a Lightning address.'**
+  String get errorToEmpty;
+
+  /// Error when the To field holds something Lumen cannot pay. Keep lnbc as is.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.'**
+  String get errorToUnrecognized;
+
+  /// Error for an invoice without amount.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.'**
+  String get errorInvoiceNoAmount;
+
+  /// Error for an expired invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice expired. Ask the recipient for a new one.'**
+  String get errorInvoiceExpired;
+
+  /// Error when the amount is outside what the Lightning address accepts.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} accepts from {min} to {max} sats.'**
+  String errorAmountRange(String label, String min, String max);
+
+  /// Error when the Lightning address service did not answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not reach {label}. Check the address and your connection, then try again.'**
+  String recipientUnreachable(String label);
+
+  /// Error when the Lightning address service refused the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} cannot receive payments right now. Check the address with the recipient.'**
+  String recipientRefused(String label);
+
+  /// Error when the Lightning address service sent a wrong invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} sent an invoice for another amount, so Lumen did not pay it.'**
+  String recipientWrongInvoice(String label);
+
+  /// Error when the paying wallet's known balance is below the amount.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} holds {balance} sats, not enough for this payment. Pay from another wallet or lower the amount.'**
+  String notEnoughSats(String name, String balance);
+
+  /// Error when the paying wallet did not answer before the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not reach {name}, so nothing was sent. Check that it is online, then try again.'**
+  String sendUnreachable(String name);
+
+  /// Error when the NWC connection lacks the permission to pay invoices.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection cannot pay. In your wallet, create a new connection that allows payments.'**
+  String get sendNoPermission;
+
+  /// Error when the wallet reports an insufficient balance.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} does not hold enough sats for this payment and its fee. Pay from another wallet or lower the amount.'**
+  String sendInsufficientBalance(String name);
+
+  /// Error when the NWC connection's budget is used up.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection has used up its spending budget. Raise it in your wallet\'s NWC settings, or pay from another wallet.'**
+  String get sendBudgetExceeded;
+
+  /// Error when the wallet tried and the payment failed.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment did not go through, often for lack of a route to the recipient. Try again later, or pay from another wallet.'**
+  String get sendFailed;
+
+  /// Shown when the wallet did not answer after the payment was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} did not confirm the payment in time. It may still go through: check its recent activity before you try again.'**
+  String sendUnconfirmed(String name);
 }
 
 class _AppLocalizationsDelegate

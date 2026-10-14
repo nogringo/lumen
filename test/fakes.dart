@@ -1,10 +1,13 @@
 // ignore_for_file: experimental_member_use
 
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:bech32/bech32.dart';
 import 'package:clock/clock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:lumen/app.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
@@ -127,10 +130,61 @@ class FakeSource implements WalletSource {
 }
 
 /// Real sources over an in-memory store, for screens that need them.
-WalletSources memorySources() => WalletSources.create(
+WalletSources memorySources({http.Client? httpClient}) => WalletSources.create(
   repo: MemWalletsRepo(),
   eventVerifier: Bip340EventVerifier(),
+  httpClient: httpClient,
 );
+
+/// A BOLT11 invoice that decodes like a real one, with a blank signature.
+/// Without [sats], it leaves the amount to the payer.
+String fakeBolt11(
+  int? sats, {
+  String? description,
+  DateTime? createdAt,
+  Duration expiry = const Duration(hours: 1),
+}) {
+  List<int> number(int value, [int length = 1]) {
+    final words = <int>[];
+    for (; value > 0 || words.length < length; value ~/= 32) {
+      words.insert(0, value % 32);
+    }
+    return words;
+  }
+
+  List<int> words(List<int> bytes) {
+    final out = <int>[];
+    var buffer = 0;
+    var bits = 0;
+    for (final byte in bytes) {
+      buffer = (buffer << 8 | byte) & 0xfff;
+      bits += 8;
+      while (bits >= 5) {
+        bits -= 5;
+        out.add(buffer >> bits & 31);
+      }
+    }
+    if (bits > 0) out.add(buffer << (5 - bits) & 31);
+    return out;
+  }
+
+  List<int> tag(int type, List<int> data) => [
+    type,
+    ...number(data.length, 2),
+    ...data,
+  ];
+
+  final created = (createdAt ?? DateTime.now()).millisecondsSinceEpoch ~/ 1000;
+  final data = [
+    ...number(created, 7),
+    ...tag(1, words([for (var i = 0; i < 32; i++) ((sats ?? 0) + i) % 256])),
+    if (description != null) ...tag(13, words(utf8.encode(description))),
+    ...tag(6, number(expiry.inSeconds)),
+    ...List.filled(104, 0),
+  ];
+  final hrp = sats == null ? 'lnbc' : 'lnbc${sats * 10}n';
+  return const Bech32Codec().encode(Bech32(hrp, data), 4000);
+}
 
 Future<WalletsController> loadedController(
   List<Wallet> wallets, {

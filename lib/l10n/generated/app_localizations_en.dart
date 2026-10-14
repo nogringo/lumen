@@ -340,4 +340,144 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get columnAmount => 'Amount';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get sendTo => 'To';
+
+  @override
+  String get sendToHint => 'Lightning invoice or Lightning address';
+
+  @override
+  String get paste => 'Paste';
+
+  @override
+  String get payFrom => 'Pay from';
+
+  @override
+  String get chooseWalletThatPays => 'Choose the wallet that pays';
+
+  @override
+  String get amountSetByInvoice => 'Amount set by the invoice';
+
+  @override
+  String get reviewPayment => 'Review';
+
+  @override
+  String get checkingPayment => 'Checking';
+
+  @override
+  String get youAreSending => 'You are sending';
+
+  @override
+  String get detailTo => 'To';
+
+  @override
+  String get detailNote => 'Note';
+
+  @override
+  String get detailFrom => 'From';
+
+  @override
+  String get detailNetwork => 'Network';
+
+  @override
+  String get detailFeePaid => 'Fee paid';
+
+  @override
+  String get lightningInvoice => 'Lightning invoice';
+
+  @override
+  String sendAmount(String amount) {
+    return 'Send $amount sats';
+  }
+
+  @override
+  String get sendingPayment => 'Sending';
+
+  @override
+  String get editPayment => 'Edit payment';
+
+  @override
+  String get paymentSent => 'Payment sent';
+
+  @override
+  String sentTo(String label) {
+    return 'To $label';
+  }
+
+  @override
+  String sentAnnouncement(String amount, String name) {
+    return 'Payment sent: $amount sats from $name';
+  }
+
+  @override
+  String get errorToEmpty =>
+      'Paste a Lightning invoice or a Lightning address.';
+
+  @override
+  String get errorToUnrecognized =>
+      'This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.';
+
+  @override
+  String get errorInvoiceNoAmount =>
+      'This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.';
+
+  @override
+  String get errorInvoiceExpired =>
+      'This invoice expired. Ask the recipient for a new one.';
+
+  @override
+  String errorAmountRange(String label, String min, String max) {
+    return '$label accepts from $min to $max sats.';
+  }
+
+  @override
+  String recipientUnreachable(String label) {
+    return 'Lumen could not reach $label. Check the address and your connection, then try again.';
+  }
+
+  @override
+  String recipientRefused(String label) {
+    return '$label cannot receive payments right now. Check the address with the recipient.';
+  }
+
+  @override
+  String recipientWrongInvoice(String label) {
+    return '$label sent an invoice for another amount, so Lumen did not pay it.';
+  }
+
+  @override
+  String notEnoughSats(String name, String balance) {
+    return '$name holds $balance sats, not enough for this payment. Pay from another wallet or lower the amount.';
+  }
+
+  @override
+  String sendUnreachable(String name) {
+    return 'Lumen could not reach $name, so nothing was sent. Check that it is online, then try again.';
+  }
+
+  @override
+  String get sendNoPermission =>
+      'This connection cannot pay. In your wallet, create a new connection that allows payments.';
+
+  @override
+  String sendInsufficientBalance(String name) {
+    return '$name does not hold enough sats for this payment and its fee. Pay from another wallet or lower the amount.';
+  }
+
+  @override
+  String get sendBudgetExceeded =>
+      'This connection has used up its spending budget. Raise it in your wallet\'s NWC settings, or pay from another wallet.';
+
+  @override
+  String get sendFailed =>
+      'The payment did not go through, often for lack of a route to the recipient. Try again later, or pay from another wallet.';
+
+  @override
+  String sendUnconfirmed(String name) {
+    return '$name did not confirm the payment in time. It may still go through: check its recent activity before you try again.';
+  }
 }

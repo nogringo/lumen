@@ -2,36 +2,27 @@ import 'dart:async';
 
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../l10n/generated/app_localizations.dart';
-import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
 import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/amount.dart';
+import '../widgets/flow_parts.dart';
 import '../widgets/qr_code_view.dart';
 import '../widgets/screen_parts.dart';
-import '../widgets/tappable.dart';
-import '../widgets/wallet_kind_style.dart';
+import '../widgets/wallet_picker.dart';
 
-/// Full screen on phones, a dialog over the current page on larger screens.
-Future<void> openReceive(BuildContext context, {Wallet? wallet}) async {
-  if (LayoutSize.of(context) == LayoutSize.phone) {
-    await context.push(
-      wallet == null ? '/receive' : '/receive?wallet=${wallet.id}',
-    );
-    return;
-  }
-  await showDialog<void>(
-    context: context,
-    builder: (_) => _ReceiveDialog(walletId: wallet?.id),
-  );
-}
+Future<void> openReceive(BuildContext context, {Wallet? wallet}) => openFlow(
+  context,
+  location: wallet == null ? '/receive' : '/receive?wallet=${wallet.id}',
+  title: AppLocalizations.of(context).receive,
+  builder: (frame) => _ReceiveFlow(frame: frame, walletId: wallet?.id),
+);
 
 class ReceiveScreen extends StatelessWidget {
   const ReceiveScreen({super.key, this.walletId});
@@ -39,92 +30,17 @@ class ReceiveScreen extends StatelessWidget {
   final String? walletId;
 
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Scaffold(
-      body: SafeArea(
-        child: FillScroll(
-          padding: LayoutSize.of(context).screenPadding,
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 480),
-              child: _ReceiveFlow(
-                walletId: walletId,
-                expand: true,
-                header: hasSidebar(context)
-                    ? PageTitle(l.receive)
-                    : TopBar(title: l.receive),
-                onDone: () =>
-                    context.canPop() ? context.pop() : context.go('/'),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ReceiveDialog extends StatelessWidget {
-  const _ReceiveDialog({this.walletId});
-
-  final String? walletId;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    return Dialog(
-      insetPadding: const EdgeInsets.all(24),
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 440),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
-          child: _ReceiveFlow(
-            walletId: walletId,
-            header: Row(
-              children: [
-                const SizedBox(width: 48),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: ScreenTitle(
-                    child: Text(
-                      l.receive,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  tooltip: l.close,
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            onDone: () => Navigator.pop(context),
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => FlowScreen(
+    title: AppLocalizations.of(context).receive,
+    builder: (frame) => _ReceiveFlow(frame: frame, walletId: walletId),
+  );
 }
 
 class _ReceiveFlow extends StatefulWidget {
-  const _ReceiveFlow({
-    required this.header,
-    required this.onDone,
-    this.walletId,
-    this.expand = false,
-  });
+  const _ReceiveFlow({required this.frame, this.walletId});
 
-  final Widget header;
-  final VoidCallback onDone;
+  final FlowFrame frame;
   final String? walletId;
-
-  /// Fills the screen height to keep the main button at the bottom.
-  final bool expand;
 
   @override
   State<_ReceiveFlow> createState() => _ReceiveFlowState();
@@ -264,7 +180,9 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       body = _paidView(invoice, _invoiceWallet ?? wallet);
     } else {
       body = [
-        _WalletPicker(
+        WalletPicker(
+          label: AppLocalizations.of(context).receiveInto,
+          hint: AppLocalizations.of(context).chooseWallet,
           selected: wallet,
           wallets: wallets.wallets,
           enabled: !_creating,
@@ -281,12 +199,11 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [widget.header, const SizedBox(height: 20), ...body],
+      children: [widget.frame.header, const SizedBox(height: 20), ...body],
     );
   }
 
-  Widget get _bottomGap =>
-      widget.expand ? const Spacer() : const SizedBox(height: 28);
+  Widget get _bottomGap => widget.frame.bottomGap;
 
   List<Widget> _amountForm() {
     final l = AppLocalizations.of(context);
@@ -334,7 +251,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       ),
       if (_error case final error?) ...[
         const SizedBox(height: 16),
-        _ErrorNote(error.message(l)),
+        ErrorNote(error.message(l)),
       ],
       _bottomGap,
       FilledButton(
@@ -375,7 +292,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
   List<Widget> _expiredView() {
     final l = AppLocalizations.of(context);
     return [
-      Focus(focusNode: _resultFocus, child: _ErrorNote(l.invoiceExpired)),
+      Focus(focusNode: _resultFocus, child: ErrorNote(l.invoiceExpired)),
       _bottomGap,
       FilledButton(
         onPressed: _creating ? null : _create,
@@ -386,22 +303,9 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
 
   List<Widget> _paidView(Invoice invoice, Wallet wallet) {
     final l = AppLocalizations.of(context);
-    final c = LumenColors.of(context);
     return [
       const SizedBox(height: 16),
-      Center(
-        child: ExcludeSemantics(
-          child: Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              color: c.positive.withValues(alpha: 0.16),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.check, size: 36, color: c.positive),
-          ),
-        ),
-      ),
+      const SuccessMark(),
       const SizedBox(height: 16),
       Focus(
         focusNode: _resultFocus,
@@ -420,168 +324,15 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       Text(
         l.receivedInto(wallet.name),
         textAlign: TextAlign.center,
-        style: TextStyle(fontSize: 15, color: c.text2),
+        style: TextStyle(fontSize: 15, color: LumenColors.of(context).text2),
       ),
       _bottomGap,
       FilledButton(
-        onPressed: widget.onDone,
-        style: FilledButton.styleFrom(
-          backgroundColor: c.surface2,
-          foregroundColor: c.text,
-        ),
+        onPressed: widget.frame.onDone,
+        style: quietButtonStyle(context),
         child: Text(l.done),
       ),
     ];
-  }
-}
-
-class _WalletPicker extends StatefulWidget {
-  const _WalletPicker({
-    required this.selected,
-    required this.wallets,
-    required this.enabled,
-    required this.onChanged,
-  });
-
-  final Wallet selected;
-  final List<Wallet> wallets;
-  final bool enabled;
-  final ValueChanged<String> onChanged;
-
-  @override
-  State<_WalletPicker> createState() => _WalletPickerState();
-}
-
-class _WalletPickerState extends State<_WalletPicker> {
-  /// The menu matches the picker's width, measured when it opens.
-  var _width = 0.0;
-  final _selectedItem = FocusNode();
-  final _picker = FocusNode();
-
-  @override
-  void dispose() {
-    _selectedItem.dispose();
-    _picker.dispose();
-    super.dispose();
-  }
-
-  void _toggle(MenuController controller) {
-    if (!widget.enabled) return;
-    if (controller.isOpen) return controller.close();
-    setState(() => _width = context.size?.width ?? 0);
-    controller.open();
-    // Inside the menu, Escape closes only the menu, not the dialog under it.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) _selectedItem.requestFocus();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final c = LumenColors.of(context);
-    final selected = widget.selected;
-    final wallets = widget.wallets;
-    final canChoose = wallets.length > 1;
-    final radius = BorderRadius.circular(18);
-    final content = ConstrainedBox(
-      constraints: const BoxConstraints(minHeight: 64),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
-          children: [
-            SourceBadge(selected.kind),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.receiveInto,
-                    style: TextStyle(fontSize: 13, color: c.text2),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    selected.name,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (canChoose) ...[
-              const SizedBox(width: 8),
-              Icon(Icons.unfold_more, color: c.text3),
-            ],
-          ],
-        ),
-      ),
-    );
-
-    if (!canChoose) {
-      return MergeSemantics(
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: c.surface2, borderRadius: radius),
-          child: content,
-        ),
-      );
-    }
-    final balances = LumenScope.walletsOf(context);
-    return MenuAnchor(
-      alignmentOffset: const Offset(0, 8),
-      onClose: _picker.requestFocus,
-      style: MenuStyle(
-        minimumSize: WidgetStatePropertyAll(Size(_width, 0)),
-        maximumSize: WidgetStatePropertyAll(Size(_width, double.infinity)),
-      ),
-      menuChildren: [
-        for (final wallet in wallets)
-          MenuItemButton(
-            focusNode: wallet.id == selected.id ? _selectedItem : null,
-            onPressed: () => widget.onChanged(wallet.id),
-            child: Semantics(
-              selected: wallet.id == selected.id,
-              child: SizedBox(
-                // Minus the menu's padding and the item's.
-                width: _width - 32,
-                child: Row(
-                  children: [
-                    SourceBadge(wallet.kind, size: BadgeSize.small),
-                    const SizedBox(width: 12),
-                    Expanded(child: Text(wallet.name)),
-                    const SizedBox(width: 12),
-                    BalanceValue(balances.balanceOf(wallet)),
-                    const SizedBox(width: 12),
-                    SizedBox.square(
-                      dimension: 18,
-                      child: wallet.id == selected.id
-                          ? Icon(Icons.check, size: 18, color: c.text)
-                          : null,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-      ],
-      builder: (context, controller, _) => MergeSemantics(
-        child: Semantics(
-          hint: l.chooseWallet,
-          child: Material(
-            color: c.surface2,
-            borderRadius: radius,
-            child: Tappable(
-              borderRadius: 18,
-              focusNode: _picker,
-              onTap: () => _toggle(controller),
-              child: content,
-            ),
-          ),
-        ),
-      ),
-    );
   }
 }
 
@@ -604,11 +355,7 @@ class _CopyLineState extends State<_CopyLine> {
     super.dispose();
   }
 
-  String get _short {
-    final request = widget.request;
-    if (request.length <= 32) return request;
-    return '${request.substring(0, 24)}...${request.substring(request.length - 4)}';
-  }
+  String get _short => shortInvoice(widget.request);
 
   Future<void> _copy() async {
     final l = AppLocalizations.of(context);
@@ -766,33 +513,6 @@ class _InvoiceStatusState extends State<_InvoiceStatus> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ErrorNote extends StatelessWidget {
-  const _ErrorNote(this.message);
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = LumenColors.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(top: 2),
-          child: Icon(Icons.error_outline, size: 18, color: c.danger),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            message,
-            style: TextStyle(fontSize: 15, height: 1.4, color: c.danger),
-          ),
-        ),
-      ],
     );
   }
 }

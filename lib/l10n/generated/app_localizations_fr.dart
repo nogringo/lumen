@@ -341,4 +341,144 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get columnAmount => 'Montant';
+
+  @override
+  String get send => 'Envoyer';
+
+  @override
+  String get sendTo => 'À';
+
+  @override
+  String get sendToHint => 'Facture Lightning ou adresse Lightning';
+
+  @override
+  String get paste => 'Coller';
+
+  @override
+  String get payFrom => 'Payer depuis';
+
+  @override
+  String get chooseWalletThatPays => 'Choisir le portefeuille qui paie';
+
+  @override
+  String get amountSetByInvoice => 'Montant fixé par la facture';
+
+  @override
+  String get reviewPayment => 'Vérifier';
+
+  @override
+  String get checkingPayment => 'Vérification';
+
+  @override
+  String get youAreSending => 'Vous envoyez';
+
+  @override
+  String get detailTo => 'À';
+
+  @override
+  String get detailNote => 'Note';
+
+  @override
+  String get detailFrom => 'Depuis';
+
+  @override
+  String get detailNetwork => 'Réseau';
+
+  @override
+  String get detailFeePaid => 'Frais payés';
+
+  @override
+  String get lightningInvoice => 'Facture Lightning';
+
+  @override
+  String sendAmount(String amount) {
+    return 'Envoyer $amount sats';
+  }
+
+  @override
+  String get sendingPayment => 'Envoi en cours';
+
+  @override
+  String get editPayment => 'Modifier le paiement';
+
+  @override
+  String get paymentSent => 'Paiement envoyé';
+
+  @override
+  String sentTo(String label) {
+    return 'À $label';
+  }
+
+  @override
+  String sentAnnouncement(String amount, String name) {
+    return 'Paiement envoyé : $amount sats depuis $name';
+  }
+
+  @override
+  String get errorToEmpty =>
+      'Collez une facture Lightning ou une adresse Lightning.';
+
+  @override
+  String get errorToUnrecognized =>
+      'Ce n\'est ni une facture ni une adresse Lightning. Une facture commence par lnbc, une adresse ressemble à nom@exemple.com.';
+
+  @override
+  String get errorInvoiceNoAmount =>
+      'Cette facture laisse le montant libre, ce que Lumen ne sait pas encore payer. Demandez une facture avec un montant.';
+
+  @override
+  String get errorInvoiceExpired =>
+      'Cette facture a expiré. Demandez-en une nouvelle au destinataire.';
+
+  @override
+  String errorAmountRange(String label, String min, String max) {
+    return '$label accepte de $min à $max sats.';
+  }
+
+  @override
+  String recipientUnreachable(String label) {
+    return 'Lumen n\'a pas pu joindre $label. Vérifiez l\'adresse et votre connexion, puis réessayez.';
+  }
+
+  @override
+  String recipientRefused(String label) {
+    return '$label ne peut pas recevoir de paiement pour le moment. Vérifiez l\'adresse auprès du destinataire.';
+  }
+
+  @override
+  String recipientWrongInvoice(String label) {
+    return '$label a envoyé une facture d\'un autre montant, Lumen ne l\'a donc pas payée.';
+  }
+
+  @override
+  String notEnoughSats(String name, String balance) {
+    return '$name contient $balance sats, pas assez pour ce paiement. Payez depuis un autre portefeuille ou baissez le montant.';
+  }
+
+  @override
+  String sendUnreachable(String name) {
+    return 'Lumen n\'a pas pu joindre $name, rien n\'a donc été envoyé. Vérifiez qu\'il est en ligne, puis réessayez.';
+  }
+
+  @override
+  String get sendNoPermission =>
+      'Cette connexion ne peut pas payer. Dans votre portefeuille, créez une nouvelle connexion qui autorise les paiements.';
+
+  @override
+  String sendInsufficientBalance(String name) {
+    return '$name ne contient pas assez de sats pour ce paiement et ses frais. Payez depuis un autre portefeuille ou baissez le montant.';
+  }
+
+  @override
+  String get sendBudgetExceeded =>
+      'Cette connexion a épuisé son budget de dépenses. Augmentez-le dans les réglages NWC de votre portefeuille, ou payez depuis un autre portefeuille.';
+
+  @override
+  String get sendFailed =>
+      'Le paiement n\'est pas passé, souvent faute de route vers le destinataire. Réessayez plus tard, ou payez depuis un autre portefeuille.';
+
+  @override
+  String sendUnconfirmed(String name) {
+    return '$name n\'a pas confirmé le paiement à temps. Il peut encore aboutir : vérifiez son activité récente avant de réessayer.';
+  }
 }

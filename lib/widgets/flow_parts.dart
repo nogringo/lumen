@@ -1,0 +1,191 @@
+import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
+
+import '../l10n/generated/app_localizations.dart';
+import '../layout/layout.dart';
+import '../theme/lumen_colors.dart';
+import 'screen_parts.dart';
+
+/// What a transaction flow needs from the screen or dialog that holds it.
+class FlowFrame {
+  const FlowFrame({
+    required this.header,
+    required this.onDone,
+    required this.expand,
+  });
+
+  final Widget header;
+  final VoidCallback onDone;
+
+  /// Fills the screen height to keep the main button at the bottom.
+  final bool expand;
+
+  Widget get bottomGap => expand ? const Spacer() : const SizedBox(height: 28);
+}
+
+typedef FlowBuilder = Widget Function(FlowFrame frame);
+
+/// Full screen on phones at [location], a dialog over the current page on
+/// larger screens.
+Future<void> openFlow(
+  BuildContext context, {
+  required String location,
+  required String title,
+  required FlowBuilder builder,
+}) async {
+  if (LayoutSize.of(context) == LayoutSize.phone) {
+    await context.push(location);
+    return;
+  }
+  await showDialog<void>(
+    context: context,
+    builder: (_) => FlowDialog(title: title, builder: builder),
+  );
+}
+
+class FlowScreen extends StatelessWidget {
+  const FlowScreen({super.key, required this.title, required this.builder});
+
+  final String title;
+  final FlowBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: FillScroll(
+          padding: LayoutSize.of(context).screenPadding,
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: builder(
+                FlowFrame(
+                  expand: true,
+                  header: hasSidebar(context)
+                      ? PageTitle(title)
+                      : TopBar(title: title),
+                  onDone: () =>
+                      context.canPop() ? context.pop() : context.go('/'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FlowDialog extends StatelessWidget {
+  const FlowDialog({super.key, required this.title, required this.builder});
+
+  final String title;
+  final FlowBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Dialog(
+      insetPadding: const EdgeInsets.all(24),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 440),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 28),
+          child: builder(
+            FlowFrame(
+              expand: false,
+              header: Row(
+                children: [
+                  const SizedBox(width: 48),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ScreenTitle(
+                      child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    tooltip: l.close,
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.maybePop(context),
+                  ),
+                ],
+              ),
+              onDone: () => Navigator.pop(context),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ErrorNote extends StatelessWidget {
+  const ErrorNote(this.message, {super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(Icons.error_outline, size: 18, color: c.danger),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            message,
+            style: TextStyle(fontSize: 15, height: 1.4, color: c.danger),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// The check mark above a payment result.
+class SuccessMark extends StatelessWidget {
+  const SuccessMark({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return Center(
+      child: ExcludeSemantics(
+        child: Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            color: c.positive.withValues(alpha: 0.16),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(Icons.check, size: 36, color: c.positive),
+        ),
+      ),
+    );
+  }
+}
+
+/// The start and end of a long invoice, enough to compare it by eye.
+String shortInvoice(String request) {
+  if (request.length <= 32) return request;
+  return '${request.substring(0, 24)}...${request.substring(request.length - 4)}';
+}
+
+/// A secondary full-width button, such as Done after a payment.
+ButtonStyle quietButtonStyle(BuildContext context) {
+  final c = LumenColors.of(context);
+  return FilledButton.styleFrom(
+    backgroundColor: c.surface2,
+    foregroundColor: c.text,
+  );
+}

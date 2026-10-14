@@ -144,6 +144,119 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  Future<void> reviewPayment(WidgetTester tester) async {
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField).first,
+      fakeBolt11(5400, description: 'Coffee at the corner shop'),
+    );
+    await tester.pump();
+    await tester.ensureVisible(find.text('Review'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
+  }
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets('send meets the guidelines, $name, ${brightness.name}', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: twoWallets(),
+          size: size,
+          brightness: brightness,
+        );
+
+        await tester.tap(find.text('Send'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+
+        await tester.tap(find.text('Review'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('Paste a Lightning invoice or a Lightning address.'),
+          findsOneWidget,
+        );
+        await expectGuidelines(tester);
+
+        await tester.tap(find.text('Pay from'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+        if (size == phoneSize) {
+          await tester.tap(find.byTooltip('Back'));
+        } else {
+          await tester.tap(find.byTooltip('Close'));
+        }
+        await tester.pumpAndSettle();
+
+        await reviewPayment(tester);
+        await expectGuidelines(tester);
+
+        await tester.tap(find.text('Send 5,400 sats'));
+        await tester.pumpAndSettle();
+        expect(find.text('Payment sent'), findsOneWidget);
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('send lays out at 200% text, $name', (tester) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: twoWallets(),
+        size: size,
+        textScale: 2,
+      );
+
+      await tester.tap(find.text('Send'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'form');
+      await tester.tap(find.byTooltip(size == phoneSize ? 'Back' : 'Close'));
+      await tester.pumpAndSettle();
+
+      await reviewPayment(tester);
+      expect(tester.takeException(), isNull, reason: 'review');
+
+      await tester.ensureVisible(find.text('Send 5,400 sats'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send 5,400 sats'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'sent');
+      expect(find.text('Payment sent'), findsOneWidget);
+    }, variant: _platformFor(size));
+  }
+
+  testWidgets('the review reads the amount with its heading', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pumpLumen(tester, sources, wallets: twoWallets());
+
+    await reviewPayment(tester);
+
+    expect(
+      find.bySemanticsLabel('You are sending\n5,400 sats'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('From\nHome node'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel('Note\nCoffee at the corner shop'),
+      findsOneWidget,
+    );
+    handle.dispose();
+  });
+
   testWidgets('a wallet row reads as one item with its kind and unit', (
     tester,
   ) async {
