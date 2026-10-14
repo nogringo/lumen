@@ -177,6 +177,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get tryAgain => '再試行';
 
   @override
+  String get copyConnection => '接続文字列をコピー';
+
+  @override
+  String get copyConnectionTitle => '接続文字列をコピーしますか？';
+
+  @override
+  String get copyConnectionBody =>
+      'これを持つ人は誰でも、Lumen と同じようにこのウォレットを使えます。接続で許可されていれば支払いもできます。信頼できるアプリにだけ貼り付けてください。';
+
+  @override
+  String get copy => 'コピー';
+
+  @override
+  String get connectionCopied => '接続文字列をコピーしました。';
+
+  @override
   String walletOptions(String name) {
     return '$name のオプション';
   }

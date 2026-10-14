@@ -42,6 +42,11 @@ class FakeWallet implements Wallet {
   @override
   final String? lightningAddress;
 
+  String? connection = 'nostr+walletconnect://wallet?secret=fake';
+
+  @override
+  Future<String?> connectionString() async => connection;
+
   int balance;
   BalanceError? error;
   int fetchCount = 0;

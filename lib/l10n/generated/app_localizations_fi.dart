@@ -181,6 +181,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String get tryAgain => 'Yritä uudelleen';
 
   @override
+  String get copyConnection => 'Kopioi yhteysmerkkijono';
+
+  @override
+  String get copyConnectionTitle => 'Kopioidaanko yhteysmerkkijono?';
+
+  @override
+  String get copyConnectionBody =>
+      'Kuka tahansa, jolla se on, voi käyttää tätä lompakkoa kuten Lumen, myös maksaa, jos yhteys sen sallii. Liitä se vain sovellukseen, johon luotat.';
+
+  @override
+  String get copy => 'Kopioi';
+
+  @override
+  String get connectionCopied => 'Yhteysmerkkijono kopioitu.';
+
+  @override
   String walletOptions(String name) {
     return '$name: valinnat';
   }

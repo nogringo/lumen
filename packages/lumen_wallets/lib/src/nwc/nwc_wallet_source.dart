@@ -326,7 +326,7 @@ final class NwcWalletSource implements WalletSource {
     await _ndk.nwc.disconnect(connection);
   }
 
-  Future<void> _rename(String id, String name) async {
+  Future<ndk.NwcWallet> _saved(String id) async {
     final wallet =
         _adding[id] ??
         await _ndkWallet(id) ??
@@ -334,6 +334,11 @@ final class NwcWalletSource implements WalletSource {
             .whereType<ndk.NwcWallet>()
             .firstOrNull;
     if (wallet == null) throw StateError('No NWC wallet $id');
+    return wallet;
+  }
+
+  Future<void> _rename(String id, String name) async {
+    final wallet = await _saved(id);
     wallet.name = name;
     await _repo.storeWallet(wallet);
   }
@@ -379,6 +384,9 @@ final class _NwcWallet implements Wallet {
 
   @override
   final String? lightningAddress;
+
+  @override
+  Future<String> connectionString() async => (await _source._saved(id)).nwcUrl;
 
   @override
   Future<int> fetchBalance() => _source._fetchBalance(id);

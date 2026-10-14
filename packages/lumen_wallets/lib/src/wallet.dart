@@ -142,6 +142,11 @@ abstract interface class Wallet {
   /// The `name@domain` address that pays into this wallet, when known.
   String? get lightningAddress;
 
+  /// The string that connects another app to this wallet, such as a NIP-47
+  /// connection URI, or null when it has none. It grants what this connection
+  /// grants, so it is a secret.
+  Future<String?> connectionString();
+
   /// Balance in sats. Throws a [BalanceException] when it cannot be read.
   Future<int> fetchBalance();
 

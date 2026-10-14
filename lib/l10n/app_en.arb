@@ -227,6 +227,26 @@
   "@tryAgain": {
     "description": "Button that reloads a balance that failed."
   },
+  "copyConnection": "Copy connection string",
+  "@copyConnection": {
+    "description": "Wallet menu item that copies the wallet's NWC connection string."
+  },
+  "copyConnectionTitle": "Copy the connection string?",
+  "@copyConnectionTitle": {
+    "description": "Title of the dialog shown before copying the connection string."
+  },
+  "copyConnectionBody": "Anyone who has it can use this wallet as Lumen does, including paying if this connection allows it. Paste it only into an app you trust.",
+  "@copyConnectionBody": {
+    "description": "Warning in the dialog shown before copying the connection string."
+  },
+  "copy": "Copy",
+  "@copy": {
+    "description": "Button that copies the connection string."
+  },
+  "connectionCopied": "Connection string copied.",
+  "@connectionCopied": {
+    "description": "Shown in the dialog and announced to screen readers once the connection string is copied."
+  },
   "walletOptions": "{name} options",
   "@walletOptions": {
     "description": "Tooltip and accessible name of the wallet options menu button.",

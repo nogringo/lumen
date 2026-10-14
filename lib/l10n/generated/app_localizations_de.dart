@@ -181,6 +181,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tryAgain => 'Erneut versuchen';
 
   @override
+  String get copyConnection => 'Verbindungsstring kopieren';
+
+  @override
+  String get copyConnectionTitle => 'Verbindungsstring kopieren?';
+
+  @override
+  String get copyConnectionBody =>
+      'Wer ihn hat, kann diese Wallet wie Lumen nutzen und auch damit bezahlen, wenn die Verbindung das erlaubt. Füge ihn nur in eine App ein, der du vertraust.';
+
+  @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get connectionCopied => 'Verbindungsstring kopiert.';
+
+  @override
   String walletOptions(String name) {
     return 'Optionen für $name';
   }

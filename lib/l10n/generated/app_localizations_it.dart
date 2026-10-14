@@ -182,6 +182,22 @@ class AppLocalizationsIt extends AppLocalizations {
   String get tryAgain => 'Riprova';
 
   @override
+  String get copyConnection => 'Copia stringa di connessione';
+
+  @override
+  String get copyConnectionTitle => 'Copiare la stringa di connessione?';
+
+  @override
+  String get copyConnectionBody =>
+      'Chiunque la abbia può usare questo portafoglio come Lumen, anche per pagare se la connessione lo consente. Incollala solo in un\'app di cui ti fidi.';
+
+  @override
+  String get copy => 'Copia';
+
+  @override
+  String get connectionCopied => 'Stringa di connessione copiata.';
+
+  @override
   String walletOptions(String name) {
     return 'Opzioni di $name';
   }

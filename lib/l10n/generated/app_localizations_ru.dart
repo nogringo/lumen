@@ -183,6 +183,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tryAgain => 'Повторить';
 
   @override
+  String get copyConnection => 'Скопировать строку подключения';
+
+  @override
+  String get copyConnectionTitle => 'Скопировать строку подключения?';
+
+  @override
+  String get copyConnectionBody =>
+      'Любой, у кого она есть, может пользоваться этим кошельком как Lumen, в том числе платить, если подключение это разрешает. Вставляйте её только в приложение, которому доверяете.';
+
+  @override
+  String get copy => 'Скопировать';
+
+  @override
+  String get connectionCopied => 'Строка подключения скопирована.';
+
+  @override
   String walletOptions(String name) {
     return 'Параметры кошелька $name';
   }

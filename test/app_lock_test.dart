@@ -136,6 +136,22 @@ void main() {
     expect(AppLock.isLongEnough('é' * 12), isTrue);
   });
 
+  test(
+    'checking the passphrase counts tries and changes nothing else',
+    () async {
+      final store = MemoryLockStore();
+      final lock = await enabledLock(store);
+      final key = await lock.key!.extractBytes();
+
+      expect(await lock.check(wrong), PassphraseCheck.wrong);
+      expect(store.record!.failures, 1);
+      expect(await lock.check(passphrase), PassphraseCheck.correct);
+      expect(store.record!.failures, 0);
+      expect((lock.enabled, lock.locked), (true, false));
+      expect(await lock.key!.extractBytes(), key);
+    },
+  );
+
   test('turning App lock off needs the passphrase', () async {
     final store = MemoryLockStore();
     final lock = await enabledLock(store);

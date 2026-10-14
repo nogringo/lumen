@@ -182,6 +182,22 @@ class AppLocalizationsPt extends AppLocalizations {
   String get tryAgain => 'Tentar novamente';
 
   @override
+  String get copyConnection => 'Copiar cadeia de ligação';
+
+  @override
+  String get copyConnectionTitle => 'Copiar a cadeia de ligação?';
+
+  @override
+  String get copyConnectionBody =>
+      'Quem a tiver pode usar esta carteira como o Lumen, incluindo pagar se esta ligação o permitir. Cole-a apenas numa app em que confie.';
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get connectionCopied => 'Cadeia de ligação copiada.';
+
+  @override
   String walletOptions(String name) {
     return 'Opções de $name';
   }
@@ -900,6 +916,22 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get tryAgain => 'Tentar novamente';
+
+  @override
+  String get copyConnection => 'Copiar string de conexão';
+
+  @override
+  String get copyConnectionTitle => 'Copiar a string de conexão?';
+
+  @override
+  String get copyConnectionBody =>
+      'Quem tiver essa string pode usar esta carteira como o Lumen, inclusive pagar se a conexão permitir. Cole-a apenas em um app de confiança.';
+
+  @override
+  String get copy => 'Copiar';
+
+  @override
+  String get connectionCopied => 'String de conexão copiada.';
 
   @override
   String walletOptions(String name) {

@@ -403,6 +403,36 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get tryAgain;
 
+  /// Wallet menu item that copies the wallet's NWC connection string.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy connection string'**
+  String get copyConnection;
+
+  /// Title of the dialog shown before copying the connection string.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy the connection string?'**
+  String get copyConnectionTitle;
+
+  /// Warning in the dialog shown before copying the connection string.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who has it can use this wallet as Lumen does, including paying if this connection allows it. Paste it only into an app you trust.'**
+  String get copyConnectionBody;
+
+  /// Button that copies the connection string.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// Shown in the dialog and announced to screen readers once the connection string is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection string copied.'**
+  String get connectionCopied;
+
   /// Tooltip and accessible name of the wallet options menu button.
   ///
   /// In en, this message translates to:

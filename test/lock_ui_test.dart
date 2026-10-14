@@ -242,6 +242,92 @@ void main() {
     expect(find.text('Lock now'), findsNothing);
   });
 
+  String? Function() watchClipboard(WidgetTester tester) {
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map)['text'] as String;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    return () => copied;
+  }
+
+  Future<void> openCopyConnection(WidgetTester tester) async {
+    await tapAndSettle(tester, find.text('Home node'));
+    await tapAndSettle(tester, find.byTooltip('Home node options'));
+    await tapAndSettle(tester, find.text('Copy connection string'));
+    expect(find.text('Copy the connection string?'), findsOneWidget);
+  }
+
+  testWidgets('the connection string is copied after a warning', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final copied = watchClipboard(tester);
+    await pumpGate(tester);
+    await openCopyConnection(tester);
+    expect(find.bySemanticsLabel('Passphrase'), findsNothing);
+
+    await tapAndSettle(tester, find.text('Cancel'));
+    expect(copied(), isNull);
+
+    await tapAndSettle(tester, find.byTooltip('Home node options'));
+    await tapAndSettle(tester, find.text('Copy connection string'));
+    await tapAndSettle(tester, find.text('Copy'));
+    expect(copied(), 'nostr+walletconnect://wallet?secret=fake');
+    expect(find.text('Connection string copied.'), findsOneWidget);
+    expect(
+      tester
+          .getSemantics(find.widgetWithText(TextButton, 'Done'))
+          .flagsCollection
+          .isFocused
+          .toBoolOrNull(),
+      isTrue,
+    );
+
+    await tapAndSettle(tester, find.text('Done'));
+    expect(find.text('Copy the connection string?'), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('with App lock on, copying the connection string needs the '
+      'passphrase', (tester) async {
+    final copied = watchClipboard(tester);
+    await pumpGate(tester, locked: true);
+    await tester.enterText(find.bySemanticsLabel('Passphrase'), _passphrase);
+    await tapAndSettle(tester, find.text('Unlock'));
+    await openCopyConnection(tester);
+
+    await tapAndSettle(tester, find.text('Copy'));
+    expect(find.text('Enter your passphrase.'), findsOneWidget);
+
+    await tester.enterText(
+      find.bySemanticsLabel('Passphrase'),
+      'wrong horse battery',
+    );
+    await tapAndSettle(tester, find.text('Copy'));
+    expect(
+      find.text('This is not your passphrase. Check it and try again.'),
+      findsOneWidget,
+    );
+    expect(copied(), isNull);
+
+    await tester.enterText(find.bySemanticsLabel('Passphrase'), _passphrase);
+    await tapAndSettle(tester, find.text('Copy'));
+    expect(copied(), 'nostr+walletconnect://wallet?secret=fake');
+    expect(find.text('Connection string copied.'), findsOneWidget);
+  });
+
   testWidgets('the passphrase can be changed with the current one', (
     tester,
   ) async {

@@ -108,6 +108,11 @@ class AppLock extends ChangeNotifier {
     return result;
   }
 
+  /// Confirms the passphrase before a sensitive action, with the same tries
+  /// and waits as [unlock].
+  Future<PassphraseCheck> check(String passphrase) async =>
+      (await _open(passphrase)).$1;
+
   /// [decrypt] copies the saved data out of the key before App lock is off.
   Future<PassphraseCheck> disable(
     String passphrase, {

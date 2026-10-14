@@ -61,6 +61,44 @@ void main() {
         handle.dispose();
       }, variant: _platformFor(size));
 
+      testWidgets('the wallet menu and copy dialog meet the guidelines, $name, '
+          '${brightness.name}', (tester) async {
+        final handle = tester.ensureSemantics();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: twoWallets(),
+          size: size,
+          brightness: brightness,
+        );
+        await tester.tap(find.text('Home node').first);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byTooltip('Home node options'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+
+        await tester.tap(find.text('Copy connection string'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+
+        tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          (_) async => null,
+        );
+        addTearDown(
+          () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+            SystemChannels.platform,
+            null,
+          ),
+        );
+        await tester.tap(find.text('Copy'));
+        await tester.pumpAndSettle();
+        expect(find.text('Connection string copied.'), findsOneWidget);
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+
       testWidgets('welcome meets the guidelines, $name, ${brightness.name}', (
         tester,
       ) async {
@@ -432,6 +470,14 @@ void main() {
       await tester.tap(find.text('Rename'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'rename dialog');
+      await tester.tap(find.text('Cancel'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Offline node options'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Copy connection string'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'copy connection dialog');
     }, variant: _platformFor(size));
 
     testWidgets('welcome and connect lay out at 200% text, $name', (

@@ -79,6 +79,16 @@ void main() {
     expect((await repo.getWallet('w1')).name, 'Savings node');
   });
 
+  test('gives back the saved connection string', () async {
+    final saved = (await sources.nwc.load()).single;
+    expect(await saved.connectionString(), _uri);
+
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+    final added = await sources.nwc.add(uri: ' $uri\n', name: 'Phone');
+    expect(await added.connectionString(), uri);
+  });
+
   test('remove forgets the wallet', () async {
     final wallet = (await sources.nwc.load()).single;
 

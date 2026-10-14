@@ -173,6 +173,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tryAgain => '重试';
 
   @override
+  String get copyConnection => '复制连接字符串';
+
+  @override
+  String get copyConnectionTitle => '复制连接字符串？';
+
+  @override
+  String get copyConnectionBody =>
+      '任何拥有它的人都能像 Lumen 一样使用这个钱包，如果该连接允许，还可以付款。请只粘贴到您信任的应用中。';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get connectionCopied => '连接字符串已复制。';
+
+  @override
   String walletOptions(String name) {
     return '$name 选项';
   }

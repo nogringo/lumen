@@ -1,15 +1,18 @@
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
+import '../lock/gate_scope.dart';
 import '../theme/lumen_colors.dart';
 import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/activity.dart';
 import '../widgets/amount.dart';
+import '../widgets/passphrase_field.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/wallet_actions.dart';
 import '../widgets/wallet_kind_style.dart';
@@ -116,7 +119,7 @@ class _Balance extends StatelessWidget {
   }
 }
 
-enum _Action { rename, remove }
+enum _Action { rename, copyConnection, remove }
 
 class _WalletMenu extends StatelessWidget {
   const _WalletMenu(this.wallet);
@@ -131,6 +134,7 @@ class _WalletMenu extends StatelessWidget {
       icon: const Icon(Icons.more_horiz),
       onSelected: (action) => switch (action) {
         _Action.rename => _rename(context),
+        _Action.copyConnection => _copyConnection(context),
         _Action.remove => _remove(context),
       },
       itemBuilder: (context) => [
@@ -140,7 +144,17 @@ class _WalletMenu extends StatelessWidget {
             children: [
               const Icon(Icons.edit_outlined, size: 18),
               const SizedBox(width: 12),
-              Text(l.rename),
+              Flexible(child: Text(l.rename)),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          value: _Action.copyConnection,
+          child: Row(
+            children: [
+              const Icon(Icons.key_outlined, size: 18),
+              const SizedBox(width: 12),
+              Flexible(child: Text(l.copyConnection)),
             ],
           ),
         ),
@@ -150,7 +164,7 @@ class _WalletMenu extends StatelessWidget {
             children: [
               const Icon(Icons.delete_outline, size: 18),
               const SizedBox(width: 12),
-              Text(l.remove),
+              Flexible(child: Text(l.remove)),
             ],
           ),
         ),
@@ -165,6 +179,15 @@ class _WalletMenu extends StatelessWidget {
     );
     if (name == null || !context.mounted) return;
     await LumenScope.readWallets(context).rename(wallet, name);
+  }
+
+  Future<void> _copyConnection(BuildContext context) async {
+    final connection = await wallet.connectionString();
+    if (connection == null || !context.mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (_) => _CopyConnectionDialog(connection),
+    );
   }
 
   Future<void> _remove(BuildContext context) async {
@@ -253,6 +276,122 @@ class _RenameDialogState extends State<_RenameDialog> {
         ),
         TextButton(onPressed: _save, child: Text(l.save)),
       ],
+    );
+  }
+}
+
+/// Warns before the connection string reaches the clipboard, and asks for the
+/// passphrase first while App lock is on.
+class _CopyConnectionDialog extends StatefulWidget {
+  const _CopyConnectionDialog(this.connection);
+
+  final String connection;
+
+  @override
+  State<_CopyConnectionDialog> createState() => _CopyConnectionDialogState();
+}
+
+class _CopyConnectionDialogState extends State<_CopyConnectionDialog> {
+  final _passphrase = TextEditingController();
+  final _focus = FocusNode();
+  String? _error;
+  var _checking = false;
+  var _copied = false;
+
+  @override
+  void dispose() {
+    _passphrase.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  Future<void> _copy() async {
+    final l = AppLocalizations.of(context);
+    final lock = GateScope.of(context).lock;
+    if (_checking) return;
+    if (lock.enabled) {
+      if (_passphrase.text.isEmpty) {
+        setState(() => _error = l.errorPassphraseEmpty);
+        return reportFieldError(context, l.errorPassphraseEmpty, _focus);
+      }
+      _checking = true;
+      final check = await lock.check(_passphrase.text);
+      _checking = false;
+      if (!mounted) return;
+      final message = refusalMessage(l, check, lock.retryAt);
+      if (message != null) {
+        setState(() => _error = message);
+        return reportFieldError(context, message, _focus);
+      }
+    }
+    await Clipboard.setData(ClipboardData(text: widget.connection));
+    if (!mounted) return;
+    setState(() => _copied = true);
+    SemanticsService.sendAnnouncement(
+      View.of(context),
+      l.connectionCopied,
+      Directionality.of(context),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = LumenColors.of(context);
+    final locked = GateScope.of(context).lock.enabled;
+    return AlertDialog(
+      scrollable: true,
+      title: Text(l.copyConnectionTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l.copyConnectionBody),
+          if (_copied) ...[
+            const SizedBox(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Icon(Icons.check, size: 18, color: c.positive),
+                ),
+                const SizedBox(width: 8),
+                Expanded(child: Text(l.connectionCopied)),
+              ],
+            ),
+          ] else if (locked) ...[
+            const SizedBox(height: 20),
+            PassphraseField(
+              label: l.passphraseLabel,
+              controller: _passphrase,
+              focusNode: _focus,
+              errorText: _error,
+              autofillHints: const [AutofillHints.password],
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _copy(),
+              onChanged: (_) {
+                if (_error != null) setState(() => _error = null);
+              },
+            ),
+          ],
+        ],
+      ),
+      actions: _copied
+          ? [
+              TextButton(
+                autofocus: true,
+                onPressed: () => Navigator.pop(context),
+                child: Text(l.done),
+              ),
+            ]
+          : [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l.cancel),
+              ),
+              TextButton(onPressed: _copy, child: Text(l.copy)),
+            ],
     );
   }
 }
