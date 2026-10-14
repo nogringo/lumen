@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../lock/gate_scope.dart';
 import '../theme/lumen_colors.dart';
 import '../wallets/lumen_scope.dart';
 import '../widgets/amount.dart';
 import '../widgets/brand.dart';
+import '../widgets/screen_parts.dart';
 import '../widgets/tappable.dart';
 import '../widgets/wallet_kind_style.dart';
 import 'layout.dart';
@@ -56,70 +58,96 @@ class _Sidebar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final wallets = LumenScope.walletsOf(context);
+    final gate = GateScope.of(context);
     return SafeArea(
       right: false,
-      child: ListView(
+      child: FillScroll(
         padding: const EdgeInsets.fromLTRB(16, 28, 16, 28),
-        children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            child: Brand.logo(),
-          ),
-          const SizedBox(height: 24),
-          _NavItem(
-            leading: const Icon(Icons.home_outlined),
-            label: l.overview,
-            selected: location == '/',
-            onTap: () => context.go('/'),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-            child: Semantics(
-              header: true,
-              child: Text(
-                l.wallets,
-                style: Theme.of(context).textTheme.labelMedium,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Brand.logo(),
+            ),
+            const SizedBox(height: 24),
+            _NavItem(
+              leading: const Icon(Icons.home_outlined),
+              label: l.overview,
+              selected: location == '/',
+              onTap: () => context.go('/'),
+            ),
+            const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+              child: Semantics(
+                header: true,
+                child: Text(
+                  l.wallets,
+                  style: Theme.of(context).textTheme.labelMedium,
+                ),
               ),
             ),
-          ),
-          Semantics(
-            role: SemanticsRole.list,
-            container: true,
-            explicitChildNodes: true,
-            child: Column(
-              children: [
-                for (final wallet in wallets.wallets)
-                  Semantics(
-                    role: SemanticsRole.listItem,
-                    container: true,
-                    child: _NavItem(
-                      leading: SourceBadge(wallet.kind, size: BadgeSize.small),
-                      label: wallet.name,
-                      description: wallet.kind.subtitle(l),
-                      trailing: BalanceValue(
-                        wallets.balanceOf(wallet),
-                        fontSize: 14,
+            Semantics(
+              role: SemanticsRole.list,
+              container: true,
+              explicitChildNodes: true,
+              child: Column(
+                children: [
+                  for (final wallet in wallets.wallets)
+                    Semantics(
+                      role: SemanticsRole.listItem,
+                      container: true,
+                      child: _NavItem(
+                        leading: SourceBadge(
+                          wallet.kind,
+                          size: BadgeSize.small,
+                        ),
+                        label: wallet.name,
+                        description: wallet.kind.subtitle(l),
+                        trailing: BalanceValue(
+                          wallets.balanceOf(wallet),
+                          fontSize: 14,
+                        ),
+                        selected: location == '/wallet/${wallet.id}',
+                        onTap: () => context.go('/wallet/${wallet.id}'),
                       ),
-                      selected: location == '/wallet/${wallet.id}',
-                      onTap: () => context.go('/wallet/${wallet.id}'),
                     ),
-                  ),
-              ],
-            ),
-          ),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: TextButton.icon(
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                ],
               ),
-              onPressed: () => context.go('/connect'),
-              icon: const Icon(Icons.add),
-              label: Text(l.addWallet),
             ),
-          ),
-        ],
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                ),
+                onPressed: () => context.go('/connect'),
+                icon: const Icon(Icons.add),
+                label: Text(l.addWallet),
+              ),
+            ),
+            const Spacer(),
+            const SizedBox(height: 20),
+            _NavItem(
+              leading: const Icon(Icons.tune),
+              label: l.settings,
+              selected: location == '/settings',
+              onTap: () => context.go('/settings'),
+            ),
+            ListenableBuilder(
+              listenable: gate.lock,
+              builder: (context, _) => gate.lock.enabled
+                  ? _NavItem(
+                      leading: const Icon(Icons.lock_outline),
+                      label: l.lockNow,
+                      selected: false,
+                      onTap: gate.lockNow,
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
+        ),
       ),
     );
   }

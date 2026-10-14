@@ -7,6 +7,7 @@ import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/receive_screen.dart';
 import 'screens/send_screen.dart';
+import 'screens/settings_screen.dart';
 import 'screens/wallet_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'wallets/wallets_controller.dart';
@@ -62,6 +63,21 @@ GoRouter createRouter(WalletsController wallets) {
               state,
               ReceiveScreen(walletId: state.uri.queryParameters['wallet']),
             ),
+          ),
+          GoRoute(
+            path: '/settings',
+            pageBuilder: (context, state) =>
+                _page(context, state, const SettingsScreen()),
+          ),
+          GoRoute(
+            path: '/settings/lock',
+            pageBuilder: (context, state) =>
+                _page(context, state, const TurnOnScreen()),
+          ),
+          GoRoute(
+            path: '/settings/passphrase',
+            pageBuilder: (context, state) =>
+                _page(context, state, const ChangePassphraseScreen()),
           ),
           GoRoute(
             path: '/wallet/:id',

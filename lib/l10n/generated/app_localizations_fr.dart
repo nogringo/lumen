@@ -481,4 +481,131 @@ class AppLocalizationsFr extends AppLocalizations {
   String sendUnconfirmed(String name) {
     return '$name n\'a pas confirmé le paiement à temps. Il peut encore aboutir : vérifiez son activité récente avant de réessayer.';
   }
+
+  @override
+  String get settings => 'Réglages';
+
+  @override
+  String get security => 'Sécurité';
+
+  @override
+  String get appLock => 'Verrouillage';
+
+  @override
+  String get appLockHint =>
+      'Demande votre phrase de passe à l\'ouverture de Lumen et s\'en sert pour chiffrer vos portefeuilles';
+
+  @override
+  String get changePassphrase => 'Changer la phrase de passe';
+
+  @override
+  String get lockNow => 'Verrouiller maintenant';
+
+  @override
+  String get turnOnAppLock => 'Activer le verrouillage';
+
+  @override
+  String get passphraseLead =>
+      'Choisissez une phrase de passe d\'au moins 12 caractères. Quelques mots sans rapport entre eux sont longs et faciles à retenir.';
+
+  @override
+  String get passphraseWarning =>
+      'Si vous l\'oubliez, la seule issue est de réinitialiser Lumen, ce qui retire vos portefeuilles de cet appareil. Vos fonds restent chez vos services de portefeuille.';
+
+  @override
+  String get passphraseLabel => 'Phrase de passe';
+
+  @override
+  String get newPassphraseLabel => 'Nouvelle phrase de passe';
+
+  @override
+  String get confirmPassphraseLabel => 'Saisissez-la à nouveau';
+
+  @override
+  String get currentPassphraseLabel => 'Phrase de passe actuelle';
+
+  @override
+  String get showPassphrase => 'Afficher la phrase de passe';
+
+  @override
+  String get hidePassphrase => 'Masquer la phrase de passe';
+
+  @override
+  String get turnOn => 'Activer';
+
+  @override
+  String get errorPassphraseShort =>
+      'Utilisez au moins 12 caractères. Quelques mots à la suite sont faciles à retenir.';
+
+  @override
+  String get errorPassphraseMismatch =>
+      'Les deux phrases de passe diffèrent. Saisissez deux fois la même.';
+
+  @override
+  String get errorPassphraseWrong =>
+      'Ce n\'est pas votre phrase de passe. Vérifiez-la et réessayez.';
+
+  @override
+  String errorWaitSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Trop de phrases de passe erronées. Réessayez dans $count secondes.',
+      one: 'Trop de phrases de passe erronées. Réessayez dans 1 seconde.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorWaitMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Trop de phrases de passe erronées. Réessayez dans $count minutes.',
+      one: 'Trop de phrases de passe erronées. Réessayez dans 1 minute.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorLockSave =>
+      'Lumen n\'a pas pu enregistrer votre phrase de passe. Réessayez.';
+
+  @override
+  String get turnOffTitle => 'Désactiver le verrouillage ?';
+
+  @override
+  String get turnOffBody =>
+      'Lumen s\'ouvrira sans phrase de passe, et vos portefeuilles ne seront plus chiffrés.';
+
+  @override
+  String get turnOff => 'Désactiver';
+
+  @override
+  String get lockedTitle => 'Lumen est verrouillé';
+
+  @override
+  String get lockedLead =>
+      'Saisissez votre phrase de passe pour ouvrir vos portefeuilles.';
+
+  @override
+  String get unlock => 'Déverrouiller';
+
+  @override
+  String get forgotPassphrase => 'Phrase de passe oubliée ?';
+
+  @override
+  String get resetTitle => 'Réinitialiser Lumen ?';
+
+  @override
+  String get resetBody =>
+      'Lumen retire vos portefeuilles et le verrouillage de cet appareil. Vos fonds restent chez vos services de portefeuille : ajoutez à nouveau chaque portefeuille avec sa chaîne de connexion.';
+
+  @override
+  String get reset => 'Réinitialiser';
+
+  @override
+  String get errorPassphraseEmpty => 'Saisissez votre phrase de passe.';
 }

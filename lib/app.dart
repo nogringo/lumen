@@ -4,7 +4,9 @@ import 'package:material_ui/material_ui.dart';
 
 import 'l10n/generated/app_localizations.dart';
 import 'lock/app_gate.dart';
+import 'lock/gate_scope.dart';
 import 'router.dart';
+import 'screens/lock_screen.dart';
 import 'theme/lumen_theme.dart';
 import 'wallets/lumen_scope.dart';
 
@@ -53,56 +55,67 @@ class _LumenAppState extends State<LumenApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: widget.gate,
-      builder: (context, _) {
-        final session = widget.gate.session;
-        final router = _routerFor(session);
-        if (session == null || router == null) {
-          return MaterialApp(
-            title: 'Lumen',
-            debugShowCheckedModeBanner: false,
-            theme: lumenTheme(Brightness.light),
-            darkTheme: lumenTheme(Brightness.dark),
-            highContrastTheme: lumenTheme(Brightness.light, highContrast: true),
-            highContrastDarkTheme: lumenTheme(
-              Brightness.dark,
-              highContrast: true,
+    return GateScope(
+      gate: widget.gate,
+      child: ListenableBuilder(
+        listenable: widget.gate,
+        builder: (context, _) {
+          final session = widget.gate.session;
+          final router = _routerFor(session);
+          if (session == null || router == null) {
+            return MaterialApp(
+              title: 'Lumen',
+              debugShowCheckedModeBanner: false,
+              theme: lumenTheme(Brightness.light),
+              darkTheme: lumenTheme(Brightness.dark),
+              highContrastTheme: lumenTheme(
+                Brightness.light,
+                highContrast: true,
+              ),
+              highContrastDarkTheme: lumenTheme(
+                Brightness.dark,
+                highContrast: true,
+              ),
+              localizationsDelegates: _localizations,
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: widget.gate.lock.locked
+                  ? const LockScreen()
+                  : const Scaffold(),
+            );
+          }
+          return LumenScope(
+            sources: session.sources,
+            wallets: session.wallets,
+            child: MaterialApp.router(
+              title: 'Lumen',
+              debugShowCheckedModeBanner: false,
+              theme: lumenTheme(Brightness.light),
+              darkTheme: lumenTheme(Brightness.dark),
+              highContrastTheme: lumenTheme(
+                Brightness.light,
+                highContrast: true,
+              ),
+              highContrastDarkTheme: lumenTheme(
+                Brightness.dark,
+                highContrast: true,
+              ),
+              localizationsDelegates: _localizations,
+              supportedLocales: AppLocalizations.supportedLocales,
+              routerConfig: router,
+              builder: (context, child) => CallbackShortcuts(
+                bindings: {
+                  const SingleActivator(LogicalKeyboardKey.keyR, meta: true):
+                      _refresh,
+                  const SingleActivator(LogicalKeyboardKey.keyR, control: true):
+                      _refresh,
+                  const SingleActivator(LogicalKeyboardKey.f5): _refresh,
+                },
+                child: child!,
+              ),
             ),
-            localizationsDelegates: _localizations,
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: const Scaffold(),
           );
-        }
-        return LumenScope(
-          sources: session.sources,
-          wallets: session.wallets,
-          child: MaterialApp.router(
-            title: 'Lumen',
-            debugShowCheckedModeBanner: false,
-            theme: lumenTheme(Brightness.light),
-            darkTheme: lumenTheme(Brightness.dark),
-            highContrastTheme: lumenTheme(Brightness.light, highContrast: true),
-            highContrastDarkTheme: lumenTheme(
-              Brightness.dark,
-              highContrast: true,
-            ),
-            localizationsDelegates: _localizations,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: router,
-            builder: (context, child) => CallbackShortcuts(
-              bindings: {
-                const SingleActivator(LogicalKeyboardKey.keyR, meta: true):
-                    _refresh,
-                const SingleActivator(LogicalKeyboardKey.keyR, control: true):
-                    _refresh,
-                const SingleActivator(LogicalKeyboardKey.f5): _refresh,
-              },
-              child: child!,
-            ),
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 }

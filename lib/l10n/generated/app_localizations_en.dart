@@ -480,4 +480,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String sendUnconfirmed(String name) {
     return '$name did not confirm the payment in time. It may still go through: check its recent activity before you try again.';
   }
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get appLock => 'App lock';
+
+  @override
+  String get appLockHint =>
+      'Asks for your passphrase when Lumen opens, and encrypts your wallets with it';
+
+  @override
+  String get changePassphrase => 'Change passphrase';
+
+  @override
+  String get lockNow => 'Lock now';
+
+  @override
+  String get turnOnAppLock => 'Turn on App lock';
+
+  @override
+  String get passphraseLead =>
+      'Choose a passphrase of at least 12 characters. A few unrelated words are long and easy to remember.';
+
+  @override
+  String get passphraseWarning =>
+      'If you forget it, the only way back in is to reset Lumen, which removes your wallets from this device. Your funds stay with your wallet services.';
+
+  @override
+  String get passphraseLabel => 'Passphrase';
+
+  @override
+  String get newPassphraseLabel => 'New passphrase';
+
+  @override
+  String get confirmPassphraseLabel => 'Type it again';
+
+  @override
+  String get currentPassphraseLabel => 'Current passphrase';
+
+  @override
+  String get showPassphrase => 'Show passphrase';
+
+  @override
+  String get hidePassphrase => 'Hide passphrase';
+
+  @override
+  String get turnOn => 'Turn on';
+
+  @override
+  String get errorPassphraseShort =>
+      'Use at least 12 characters. A few words in a row are easy to remember.';
+
+  @override
+  String get errorPassphraseMismatch =>
+      'The two passphrases differ. Type the same one twice.';
+
+  @override
+  String get errorPassphraseWrong =>
+      'This is not your passphrase. Check it and try again.';
+
+  @override
+  String errorWaitSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Too many wrong passphrases. Try again in $count seconds.',
+      one: 'Too many wrong passphrases. Try again in 1 second.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorWaitMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Too many wrong passphrases. Try again in $count minutes.',
+      one: 'Too many wrong passphrases. Try again in 1 minute.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorLockSave =>
+      'Lumen could not save your passphrase. Try again.';
+
+  @override
+  String get turnOffTitle => 'Turn off App lock?';
+
+  @override
+  String get turnOffBody =>
+      'Lumen will open without a passphrase, and your wallets will no longer be encrypted.';
+
+  @override
+  String get turnOff => 'Turn off';
+
+  @override
+  String get lockedTitle => 'Lumen is locked';
+
+  @override
+  String get lockedLead => 'Enter your passphrase to open your wallets.';
+
+  @override
+  String get unlock => 'Unlock';
+
+  @override
+  String get forgotPassphrase => 'Forgot your passphrase?';
+
+  @override
+  String get resetTitle => 'Reset Lumen?';
+
+  @override
+  String get resetBody =>
+      'Lumen removes your wallets and App lock from this device. Your funds stay with your wallet services: add each wallet again with its connection string.';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get errorPassphraseEmpty => 'Enter your passphrase.';
 }

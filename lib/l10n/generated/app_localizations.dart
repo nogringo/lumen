@@ -847,6 +847,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} did not confirm the payment in time. It may still go through: check its recent activity before you try again.'**
   String sendUnconfirmed(String name);
+
+  /// Title of the Settings screen, and label of the button that opens it.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// Group title in Settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// Settings switch that asks for a passphrase when Lumen opens.
+  ///
+  /// In en, this message translates to:
+  /// **'App lock'**
+  String get appLock;
+
+  /// Explanation under the App lock switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Asks for your passphrase when Lumen opens, and encrypts your wallets with it'**
+  String get appLockHint;
+
+  /// Settings row, and title of the screen that changes the App lock passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Change passphrase'**
+  String get changePassphrase;
+
+  /// Button that locks Lumen at once.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock now'**
+  String get lockNow;
+
+  /// Title of the screen that sets the App lock passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on App lock'**
+  String get turnOnAppLock;
+
+  /// Explanation at the top of the screen that sets the passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a passphrase of at least 12 characters. A few unrelated words are long and easy to remember.'**
+  String get passphraseLead;
+
+  /// Warning on the screen that sets the passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'If you forget it, the only way back in is to reset Lumen, which removes your wallets from this device. Your funds stay with your wallet services.'**
+  String get passphraseWarning;
+
+  /// Label of the passphrase field.
+  ///
+  /// In en, this message translates to:
+  /// **'Passphrase'**
+  String get passphraseLabel;
+
+  /// Label of the field for the new passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'New passphrase'**
+  String get newPassphraseLabel;
+
+  /// Label of the field that confirms the new passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Type it again'**
+  String get confirmPassphraseLabel;
+
+  /// Label of the field for the passphrase in use.
+  ///
+  /// In en, this message translates to:
+  /// **'Current passphrase'**
+  String get currentPassphraseLabel;
+
+  /// Tooltip of the button that reveals a passphrase field.
+  ///
+  /// In en, this message translates to:
+  /// **'Show passphrase'**
+  String get showPassphrase;
+
+  /// Tooltip of the button that hides a passphrase field again.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide passphrase'**
+  String get hidePassphrase;
+
+  /// Button that sets the passphrase and turns App lock on.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on'**
+  String get turnOn;
+
+  /// Error under a new passphrase that is too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 12 characters. A few words in a row are easy to remember.'**
+  String get errorPassphraseShort;
+
+  /// Error under the confirmation field.
+  ///
+  /// In en, this message translates to:
+  /// **'The two passphrases differ. Type the same one twice.'**
+  String get errorPassphraseMismatch;
+
+  /// Error under a passphrase field when the passphrase does not match.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not your passphrase. Check it and try again.'**
+  String get errorPassphraseWrong;
+
+  /// Error after repeated wrong passphrases, with the wait left under a minute.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Too many wrong passphrases. Try again in 1 second.} other{Too many wrong passphrases. Try again in {count} seconds.}}'**
+  String errorWaitSeconds(int count);
+
+  /// Error after repeated wrong passphrases, with the wait left in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Too many wrong passphrases. Try again in 1 minute.} other{Too many wrong passphrases. Try again in {count} minutes.}}'**
+  String errorWaitMinutes(int count);
+
+  /// Error when App lock could not be turned on or changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not save your passphrase. Try again.'**
+  String get errorLockSave;
+
+  /// Title of the dialog that turns App lock off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off App lock?'**
+  String get turnOffTitle;
+
+  /// Explanation in the dialog that turns App lock off.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen will open without a passphrase, and your wallets will no longer be encrypted.'**
+  String get turnOffBody;
+
+  /// Button that turns App lock off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off'**
+  String get turnOff;
+
+  /// Title of the lock screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen is locked'**
+  String get lockedTitle;
+
+  /// Explanation on the lock screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your passphrase to open your wallets.'**
+  String get lockedLead;
+
+  /// Button on the lock screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock'**
+  String get unlock;
+
+  /// Link on the lock screen that offers to reset Lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your passphrase?'**
+  String get forgotPassphrase;
+
+  /// Title of the dialog that resets Lumen after a forgotten passphrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Lumen?'**
+  String get resetTitle;
+
+  /// Explanation in the reset dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen removes your wallets and App lock from this device. Your funds stay with your wallet services: add each wallet again with its connection string.'**
+  String get resetBody;
+
+  /// Button that resets Lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// Error under the passphrase field when it is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your passphrase.'**
+  String get errorPassphraseEmpty;
 }
 
 class _AppLocalizationsDelegate

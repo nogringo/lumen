@@ -652,5 +652,147 @@
         "type": "String"
       }
     }
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Title of the Settings screen, and label of the button that opens it."
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Group title in Settings."
+  },
+  "appLock": "App lock",
+  "@appLock": {
+    "description": "Settings switch that asks for a passphrase when Lumen opens."
+  },
+  "appLockHint": "Asks for your passphrase when Lumen opens, and encrypts your wallets with it",
+  "@appLockHint": {
+    "description": "Explanation under the App lock switch."
+  },
+  "changePassphrase": "Change passphrase",
+  "@changePassphrase": {
+    "description": "Settings row, and title of the screen that changes the App lock passphrase."
+  },
+  "lockNow": "Lock now",
+  "@lockNow": {
+    "description": "Button that locks Lumen at once."
+  },
+  "turnOnAppLock": "Turn on App lock",
+  "@turnOnAppLock": {
+    "description": "Title of the screen that sets the App lock passphrase."
+  },
+  "passphraseLead": "Choose a passphrase of at least 12 characters. A few unrelated words are long and easy to remember.",
+  "@passphraseLead": {
+    "description": "Explanation at the top of the screen that sets the passphrase."
+  },
+  "passphraseWarning": "If you forget it, the only way back in is to reset Lumen, which removes your wallets from this device. Your funds stay with your wallet services.",
+  "@passphraseWarning": {
+    "description": "Warning on the screen that sets the passphrase."
+  },
+  "passphraseLabel": "Passphrase",
+  "@passphraseLabel": {
+    "description": "Label of the passphrase field."
+  },
+  "newPassphraseLabel": "New passphrase",
+  "@newPassphraseLabel": {
+    "description": "Label of the field for the new passphrase."
+  },
+  "confirmPassphraseLabel": "Type it again",
+  "@confirmPassphraseLabel": {
+    "description": "Label of the field that confirms the new passphrase."
+  },
+  "currentPassphraseLabel": "Current passphrase",
+  "@currentPassphraseLabel": {
+    "description": "Label of the field for the passphrase in use."
+  },
+  "showPassphrase": "Show passphrase",
+  "@showPassphrase": {
+    "description": "Tooltip of the button that reveals a passphrase field."
+  },
+  "hidePassphrase": "Hide passphrase",
+  "@hidePassphrase": {
+    "description": "Tooltip of the button that hides a passphrase field again."
+  },
+  "turnOn": "Turn on",
+  "@turnOn": {
+    "description": "Button that sets the passphrase and turns App lock on."
+  },
+  "errorPassphraseShort": "Use at least 12 characters. A few words in a row are easy to remember.",
+  "@errorPassphraseShort": {
+    "description": "Error under a new passphrase that is too short."
+  },
+  "errorPassphraseMismatch": "The two passphrases differ. Type the same one twice.",
+  "@errorPassphraseMismatch": {
+    "description": "Error under the confirmation field."
+  },
+  "errorPassphraseWrong": "This is not your passphrase. Check it and try again.",
+  "@errorPassphraseWrong": {
+    "description": "Error under a passphrase field when the passphrase does not match."
+  },
+  "errorWaitSeconds": "{count, plural, =1{Too many wrong passphrases. Try again in 1 second.} other{Too many wrong passphrases. Try again in {count} seconds.}}",
+  "@errorWaitSeconds": {
+    "description": "Error after repeated wrong passphrases, with the wait left under a minute.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorWaitMinutes": "{count, plural, =1{Too many wrong passphrases. Try again in 1 minute.} other{Too many wrong passphrases. Try again in {count} minutes.}}",
+  "@errorWaitMinutes": {
+    "description": "Error after repeated wrong passphrases, with the wait left in minutes.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLockSave": "Lumen could not save your passphrase. Try again.",
+  "@errorLockSave": {
+    "description": "Error when App lock could not be turned on or changed."
+  },
+  "turnOffTitle": "Turn off App lock?",
+  "@turnOffTitle": {
+    "description": "Title of the dialog that turns App lock off."
+  },
+  "turnOffBody": "Lumen will open without a passphrase, and your wallets will no longer be encrypted.",
+  "@turnOffBody": {
+    "description": "Explanation in the dialog that turns App lock off."
+  },
+  "turnOff": "Turn off",
+  "@turnOff": {
+    "description": "Button that turns App lock off."
+  },
+  "lockedTitle": "Lumen is locked",
+  "@lockedTitle": {
+    "description": "Title of the lock screen."
+  },
+  "lockedLead": "Enter your passphrase to open your wallets.",
+  "@lockedLead": {
+    "description": "Explanation on the lock screen."
+  },
+  "unlock": "Unlock",
+  "@unlock": {
+    "description": "Button on the lock screen."
+  },
+  "forgotPassphrase": "Forgot your passphrase?",
+  "@forgotPassphrase": {
+    "description": "Link on the lock screen that offers to reset Lumen."
+  },
+  "resetTitle": "Reset Lumen?",
+  "@resetTitle": {
+    "description": "Title of the dialog that resets Lumen after a forgotten passphrase."
+  },
+  "resetBody": "Lumen removes your wallets and App lock from this device. Your funds stay with your wallet services: add each wallet again with its connection string.",
+  "@resetBody": {
+    "description": "Explanation in the reset dialog."
+  },
+  "reset": "Reset",
+  "@reset": {
+    "description": "Button that resets Lumen."
+  },
+  "errorPassphraseEmpty": "Enter your passphrase.",
+  "@errorPassphraseEmpty": {
+    "description": "Error under the passphrase field when it is empty."
   }
 }

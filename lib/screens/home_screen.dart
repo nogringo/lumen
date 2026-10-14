@@ -33,7 +33,18 @@ class HomeScreen extends StatelessWidget {
               if (sidebar)
                 PageTitle(l.overview)
               else
-                const SizedBox(height: 48, child: Brand.title()),
+                Row(
+                  children: [
+                    const Expanded(
+                      child: SizedBox(height: 48, child: Brand.title()),
+                    ),
+                    IconButton(
+                      tooltip: l.settings,
+                      icon: const Icon(Icons.tune),
+                      onPressed: () => context.push('/settings'),
+                    ),
+                  ],
+                ),
               const SizedBox(height: 24),
               _TotalBalance(wallets),
               const SizedBox(height: 24),
