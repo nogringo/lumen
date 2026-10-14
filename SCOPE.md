@@ -8,7 +8,7 @@ Android, iOS, macOS, Windows, Linux and web.
 
 ## Languages
 
-English and French. Lumen follows the system language and falls back to English.
+English, French, German, Spanish, Finnish, Italian, Japanese, Portuguese (Portugal and Brazil), Russian and Simplified Chinese. Lumen follows the system language and falls back to English.
 
 ## Features
 

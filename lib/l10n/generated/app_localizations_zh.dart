@@ -1,0 +1,576 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Chinese (`zh`).
+class AppLocalizationsZh extends AppLocalizations {
+  AppLocalizationsZh([String locale = 'zh']) : super(locale);
+
+  @override
+  String get tagline => '您持有比特币的所有方式，尽在一处。';
+
+  @override
+  String get supportedWallets => '支持的钱包';
+
+  @override
+  String get kindLightning => 'Lightning';
+
+  @override
+  String get kindEcash => 'Ecash';
+
+  @override
+  String get kindOnchain => '链上';
+
+  @override
+  String get kindLiquid => 'Liquid';
+
+  @override
+  String get lightningViaNwc => 'Lightning（通过 NWC）';
+
+  @override
+  String get addAWallet => '添加钱包';
+
+  @override
+  String get add => '添加';
+
+  @override
+  String get addWallet => '添加钱包';
+
+  @override
+  String get back => '返回';
+
+  @override
+  String get connectNwcTitle => '通过 NWC 连接';
+
+  @override
+  String get connectNwcLead => '从您钱包的 NWC 设置中复制连接字符串。';
+
+  @override
+  String get connectionStringLabel => '连接字符串';
+
+  @override
+  String get connectionStringHint => '以 nostr+walletconnect:// 开头';
+
+  @override
+  String get nameLabel => '名称';
+
+  @override
+  String get connect => '连接';
+
+  @override
+  String get errorUriEmpty => '请粘贴您钱包 NWC 设置中的连接字符串。';
+
+  @override
+  String get errorUriNotNwc => '这不是 NWC 连接字符串。它应以 nostr+walletconnect:// 开头';
+
+  @override
+  String get errorUriIncomplete => '此连接字符串不完整。请从您的钱包重新完整复制。';
+
+  @override
+  String get errorUriDuplicate => '此钱包已在 Lumen 中。';
+
+  @override
+  String get balanceNoPermission => '此连接无法读取余额。请在您的钱包中新建一个允许读取余额的连接。';
+
+  @override
+  String get errorNameEmpty => '请为此钱包命名。';
+
+  @override
+  String get overview => '概览';
+
+  @override
+  String get totalBalance => '总余额';
+
+  @override
+  String get wallets => '钱包';
+
+  @override
+  String get satsUnit => 'sats';
+
+  @override
+  String amountSats(String amount) {
+    return '$amount sats';
+  }
+
+  @override
+  String get balanceLoading => '正在加载余额';
+
+  @override
+  String get balanceUnavailable => '不可用';
+
+  @override
+  String walletsNotCounted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '有 $count 个钱包未计入：其余额不可用。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get walletUnreachable => 'Lumen 无法连接到此钱包。';
+
+  @override
+  String get tryAgain => '重试';
+
+  @override
+  String walletOptions(String name) {
+    return '$name 选项';
+  }
+
+  @override
+  String get rename => '重命名';
+
+  @override
+  String get remove => '移除';
+
+  @override
+  String get renameTitle => '重命名钱包';
+
+  @override
+  String get save => '保存';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String removeTitle(String name) {
+    return '移除 $name？';
+  }
+
+  @override
+  String get removeBody => 'Lumen 将忘记此连接。钱包及其资金不受影响，您之后可以重新连接。';
+
+  @override
+  String get refreshBalances => '刷新余额';
+
+  @override
+  String get refreshBalance => '刷新余额';
+
+  @override
+  String get receive => '收款';
+
+  @override
+  String get receiveInto => '收款至';
+
+  @override
+  String get chooseWallet => '选择收款钱包';
+
+  @override
+  String get amountLabel => '金额（sats）';
+
+  @override
+  String get createInvoice => '创建发票';
+
+  @override
+  String get creatingInvoice => '正在创建发票';
+
+  @override
+  String get errorAmountEmpty => '请输入至少 1 sat 的金额。';
+
+  @override
+  String get receiveUnreachable => 'Lumen 无法从此钱包获取发票。请确认钱包在线，然后重试。';
+
+  @override
+  String get receiveNoPermission => '此连接无法创建发票。请在您的钱包中新建一个允许收款的连接。';
+
+  @override
+  String invoiceQrLabel(String amount) {
+    return '金额为 $amount sats 的 Lightning 发票二维码。发票文本在下方，附有复制按钮。';
+  }
+
+  @override
+  String invoiceText(String text) {
+    return '发票 $text';
+  }
+
+  @override
+  String get editAmount => '修改金额';
+
+  @override
+  String get copyInvoice => '复制发票';
+
+  @override
+  String get invoiceCopied => '已复制发票';
+
+  @override
+  String get shareInvoice => '分享发票';
+
+  @override
+  String get waitingForPayment => '等待付款';
+
+  @override
+  String get expiresSoon => '不到 1 分钟后过期';
+
+  @override
+  String expiresInMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: '$minutes 分钟后过期',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiresInHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: '$hours 小时后过期',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invoiceExpired => '此发票已过期。请创建新发票以接收这笔付款。';
+
+  @override
+  String get newInvoice => '新发票';
+
+  @override
+  String get paymentReceived => '已收到付款';
+
+  @override
+  String receivedInto(String name) {
+    return '收款至 $name';
+  }
+
+  @override
+  String receivedAnnouncement(String amount, String name) {
+    return '已收到付款：$amount sats，存入 $name';
+  }
+
+  @override
+  String get done => '完成';
+
+  @override
+  String get close => '关闭';
+
+  @override
+  String get recentActivity => '最近活动';
+
+  @override
+  String get activityLoading => '正在加载活动';
+
+  @override
+  String get noActivity => '暂无付款。';
+
+  @override
+  String get activityUnreachable => 'Lumen 无法加载此钱包的活动。';
+
+  @override
+  String get activityNoPermission => '此连接无法列出交易。请在您的钱包中新建一个允许列出交易的连接。';
+
+  @override
+  String activityNotShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '未显示 $count 个钱包的活动：无法加载。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionReceived => '已收款';
+
+  @override
+  String get transactionSent => '已付款';
+
+  @override
+  String amountReceived(String amount) {
+    return '收到 $amount sats';
+  }
+
+  @override
+  String amountSent(String amount) {
+    return '发送 $amount sats';
+  }
+
+  @override
+  String transactionWalletWhen(String wallet, String when) {
+    return '$wallet，$when';
+  }
+
+  @override
+  String get justNow => '刚刚';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes 分钟前';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '$hours 小时前';
+  }
+
+  @override
+  String get yesterday => '昨天';
+
+  @override
+  String get columnDescription => '描述';
+
+  @override
+  String get columnWallet => '钱包';
+
+  @override
+  String get columnDate => '日期';
+
+  @override
+  String get columnAmount => '金额';
+
+  @override
+  String get send => '发送';
+
+  @override
+  String get sendTo => '收款方';
+
+  @override
+  String get sendToHint => 'Lightning 发票或 Lightning 地址';
+
+  @override
+  String get paste => '粘贴';
+
+  @override
+  String get payFrom => '付款钱包';
+
+  @override
+  String get chooseWalletThatPays => '选择付款钱包';
+
+  @override
+  String get amountSetByInvoice => '金额由发票指定';
+
+  @override
+  String get reviewPayment => '核对';
+
+  @override
+  String get checkingPayment => '正在核对';
+
+  @override
+  String get youAreSending => '您将发送';
+
+  @override
+  String get detailTo => '收款方';
+
+  @override
+  String get detailNote => '备注';
+
+  @override
+  String get detailFrom => '付款方';
+
+  @override
+  String get detailNetwork => '网络';
+
+  @override
+  String get detailFeePaid => '已付手续费';
+
+  @override
+  String get lightningInvoice => 'Lightning 发票';
+
+  @override
+  String sendAmount(String amount) {
+    return '发送 $amount sats';
+  }
+
+  @override
+  String get sendingPayment => '正在发送';
+
+  @override
+  String get editPayment => '修改付款';
+
+  @override
+  String get paymentSent => '付款已发送';
+
+  @override
+  String sentTo(String label) {
+    return '付给 $label';
+  }
+
+  @override
+  String sentAnnouncement(String amount, String name) {
+    return '付款已发送：$amount sats，来自 $name';
+  }
+
+  @override
+  String get errorToEmpty => '请粘贴 Lightning 发票或 Lightning 地址。';
+
+  @override
+  String get errorToUnrecognized =>
+      '这不是 Lightning 发票或地址。发票以 lnbc 开头，地址形如 name@example.com。';
+
+  @override
+  String get errorInvoiceNoAmount => '此发票未指定金额，Lumen 暂不支持支付。请向收款方索取带金额的发票。';
+
+  @override
+  String get errorInvoiceExpired => '此发票已过期。请向收款方索取新发票。';
+
+  @override
+  String errorAmountRange(String label, String min, String max) {
+    return '$label 接受 $min 至 $max sats。';
+  }
+
+  @override
+  String recipientUnreachable(String label) {
+    return 'Lumen 无法连接到 $label。请检查地址和网络连接，然后重试。';
+  }
+
+  @override
+  String recipientRefused(String label) {
+    return '$label 目前无法收款。请向收款方核实地址。';
+  }
+
+  @override
+  String recipientWrongInvoice(String label) {
+    return '$label 发来的发票金额不符，因此 Lumen 没有支付。';
+  }
+
+  @override
+  String notEnoughSats(String name, String balance) {
+    return '$name 只有 $balance sats，不足以支付此笔付款。请换用其他钱包付款，或降低金额。';
+  }
+
+  @override
+  String sendUnreachable(String name) {
+    return 'Lumen 无法连接到 $name，因此未发送任何款项。请确认钱包在线，然后重试。';
+  }
+
+  @override
+  String get sendNoPermission => '此连接无法付款。请在您的钱包中新建一个允许付款的连接。';
+
+  @override
+  String sendInsufficientBalance(String name) {
+    return '$name 的 sats 不足以支付此笔付款及手续费。请换用其他钱包付款，或降低金额。';
+  }
+
+  @override
+  String get sendBudgetExceeded => '此连接的支出额度已用完。请在您钱包的 NWC 设置中提高额度，或换用其他钱包付款。';
+
+  @override
+  String get sendFailed => '付款未成功，通常是因为找不到通往收款方的路由。请稍后重试，或换用其他钱包付款。';
+
+  @override
+  String sendUnconfirmed(String name) {
+    return '$name 未能及时确认付款。付款可能仍会完成：重试前请先查看其最近活动。';
+  }
+
+  @override
+  String get settings => '设置';
+
+  @override
+  String get security => '安全';
+
+  @override
+  String get appLock => '应用锁';
+
+  @override
+  String get appLockHint => '打开 Lumen 时要求输入密码短语，并用它加密您的钱包';
+
+  @override
+  String get changePassphrase => '更改密码短语';
+
+  @override
+  String get lockNow => '立即锁定';
+
+  @override
+  String get turnOnAppLock => '开启应用锁';
+
+  @override
+  String get passphraseLead => '请设置至少 12 个字符的密码短语。几个互不相关的词组合起来既够长又好记。';
+
+  @override
+  String get passphraseWarning =>
+      '如果忘记密码短语，唯一的办法是重置 Lumen，这会从本设备移除您的钱包。您的资金仍保留在各钱包服务中。';
+
+  @override
+  String get passphraseLabel => '密码短语';
+
+  @override
+  String get newPassphraseLabel => '新密码短语';
+
+  @override
+  String get confirmPassphraseLabel => '再次输入';
+
+  @override
+  String get currentPassphraseLabel => '当前密码短语';
+
+  @override
+  String get showPassphrase => '显示密码短语';
+
+  @override
+  String get hidePassphrase => '隐藏密码短语';
+
+  @override
+  String get turnOn => '开启';
+
+  @override
+  String get errorPassphraseShort => '请至少使用 12 个字符。几个词连在一起就很好记。';
+
+  @override
+  String get errorPassphraseMismatch => '两次输入的密码短语不一致。请输入相同的密码短语。';
+
+  @override
+  String get errorPassphraseWrong => '密码短语不正确。请检查后重试。';
+
+  @override
+  String errorWaitSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '密码短语错误次数过多。请在 $count 秒后重试。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorWaitMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '密码短语错误次数过多。请在 $count 分钟后重试。',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorLockSave => 'Lumen 无法保存您的密码短语。请重试。';
+
+  @override
+  String get turnOffTitle => '关闭应用锁？';
+
+  @override
+  String get turnOffBody => 'Lumen 打开时将不再要求密码短语，您的钱包也将不再加密。';
+
+  @override
+  String get turnOff => '关闭';
+
+  @override
+  String get lockedTitle => 'Lumen 已锁定';
+
+  @override
+  String get lockedLead => '输入密码短语以打开您的钱包。';
+
+  @override
+  String get unlock => '解锁';
+
+  @override
+  String get forgotPassphrase => '忘记密码短语？';
+
+  @override
+  String get resetTitle => '重置 Lumen？';
+
+  @override
+  String get resetBody =>
+      'Lumen 将从本设备移除您的钱包和应用锁。您的资金仍保留在各钱包服务中：请用各自的连接字符串重新添加每个钱包。';
+
+  @override
+  String get reset => '重置';
+
+  @override
+  String get errorPassphraseEmpty => '请输入您的密码短语。';
+}

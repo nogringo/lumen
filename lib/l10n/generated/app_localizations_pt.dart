@@ -1,0 +1,1216 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Portuguese (`pt`).
+class AppLocalizationsPt extends AppLocalizations {
+  AppLocalizationsPt([String locale = 'pt']) : super(locale);
+
+  @override
+  String get tagline => 'Todas as formas de guardar bitcoin, num só lugar.';
+
+  @override
+  String get supportedWallets => 'Carteiras suportadas';
+
+  @override
+  String get kindLightning => 'Lightning';
+
+  @override
+  String get kindEcash => 'Ecash';
+
+  @override
+  String get kindOnchain => 'On-chain';
+
+  @override
+  String get kindLiquid => 'Liquid';
+
+  @override
+  String get lightningViaNwc => 'Lightning via NWC';
+
+  @override
+  String get addAWallet => 'Adicionar uma carteira';
+
+  @override
+  String get add => 'Adicionar';
+
+  @override
+  String get addWallet => 'Adicionar carteira';
+
+  @override
+  String get back => 'Voltar';
+
+  @override
+  String get connectNwcTitle => 'Ligar com NWC';
+
+  @override
+  String get connectNwcLead =>
+      'Copie a cadeia de ligação das definições NWC da sua carteira.';
+
+  @override
+  String get connectionStringLabel => 'Cadeia de ligação';
+
+  @override
+  String get connectionStringHint => 'Começa por nostr+walletconnect://';
+
+  @override
+  String get nameLabel => 'Nome';
+
+  @override
+  String get connect => 'Ligar';
+
+  @override
+  String get errorUriEmpty =>
+      'Cole a cadeia de ligação das definições NWC da sua carteira.';
+
+  @override
+  String get errorUriNotNwc =>
+      'Isto não é uma cadeia de ligação NWC. Deve começar por nostr+walletconnect://';
+
+  @override
+  String get errorUriIncomplete =>
+      'Esta cadeia de ligação está incompleta. Copie-a novamente da sua carteira, por inteiro.';
+
+  @override
+  String get errorUriDuplicate => 'Esta carteira já está no Lumen.';
+
+  @override
+  String get balanceNoPermission =>
+      'Esta ligação não pode ler o saldo. Na sua carteira, crie uma nova ligação que permita ler o saldo.';
+
+  @override
+  String get errorNameEmpty => 'Dê um nome a esta carteira.';
+
+  @override
+  String get overview => 'Visão geral';
+
+  @override
+  String get totalBalance => 'Saldo total';
+
+  @override
+  String get wallets => 'Carteiras';
+
+  @override
+  String get satsUnit => 'sats';
+
+  @override
+  String amountSats(String amount) {
+    return '$amount sats';
+  }
+
+  @override
+  String get balanceLoading => 'A carregar o saldo';
+
+  @override
+  String get balanceUnavailable => 'Indisponível';
+
+  @override
+  String walletsNotCounted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count carteiras não são contabilizadas: os seus saldos estão indisponíveis.',
+      one: '1 carteira não é contabilizada: o seu saldo está indisponível.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get walletUnreachable =>
+      'O Lumen não conseguiu contactar esta carteira.';
+
+  @override
+  String get tryAgain => 'Tentar novamente';
+
+  @override
+  String walletOptions(String name) {
+    return 'Opções de $name';
+  }
+
+  @override
+  String get rename => 'Mudar o nome';
+
+  @override
+  String get remove => 'Remover';
+
+  @override
+  String get renameTitle => 'Mudar o nome da carteira';
+
+  @override
+  String get save => 'Guardar';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String removeTitle(String name) {
+    return 'Remover $name?';
+  }
+
+  @override
+  String get removeBody =>
+      'O Lumen esquece esta ligação. A carteira e os seus fundos não são afetados, e pode voltar a ligá-la mais tarde.';
+
+  @override
+  String get refreshBalances => 'Atualizar saldos';
+
+  @override
+  String get refreshBalance => 'Atualizar saldo';
+
+  @override
+  String get receive => 'Receber';
+
+  @override
+  String get receiveInto => 'Para';
+
+  @override
+  String get chooseWallet => 'Escolher a carteira que recebe';
+
+  @override
+  String get amountLabel => 'Montante em sats';
+
+  @override
+  String get createInvoice => 'Criar fatura';
+
+  @override
+  String get creatingInvoice => 'A criar fatura';
+
+  @override
+  String get errorAmountEmpty => 'Introduza um montante de pelo menos 1 sat.';
+
+  @override
+  String get receiveUnreachable =>
+      'O Lumen não conseguiu obter uma fatura desta carteira. Verifique se está online e tente novamente.';
+
+  @override
+  String get receiveNoPermission =>
+      'Esta ligação não pode criar faturas. Na sua carteira, crie uma nova ligação que permita receber pagamentos.';
+
+  @override
+  String invoiceQrLabel(String amount) {
+    return 'Código QR da fatura Lightning de $amount sats. O texto da fatura está abaixo, com um botão para o copiar.';
+  }
+
+  @override
+  String invoiceText(String text) {
+    return 'Fatura $text';
+  }
+
+  @override
+  String get editAmount => 'Editar montante';
+
+  @override
+  String get copyInvoice => 'Copiar fatura';
+
+  @override
+  String get invoiceCopied => 'Fatura copiada';
+
+  @override
+  String get shareInvoice => 'Partilhar fatura';
+
+  @override
+  String get waitingForPayment => 'A aguardar pagamento';
+
+  @override
+  String get expiresSoon => 'Expira em menos de um minuto';
+
+  @override
+  String expiresInMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Expira em $minutes minutos',
+      one: 'Expira em 1 minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiresInHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Expira em $hours horas',
+      one: 'Expira em 1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invoiceExpired =>
+      'Esta fatura expirou. Crie uma nova para receber este pagamento.';
+
+  @override
+  String get newInvoice => 'Nova fatura';
+
+  @override
+  String get paymentReceived => 'Pagamento recebido';
+
+  @override
+  String receivedInto(String name) {
+    return 'Em $name';
+  }
+
+  @override
+  String receivedAnnouncement(String amount, String name) {
+    return 'Pagamento recebido: $amount sats em $name';
+  }
+
+  @override
+  String get done => 'Concluir';
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get recentActivity => 'Atividade recente';
+
+  @override
+  String get activityLoading => 'A carregar a atividade';
+
+  @override
+  String get noActivity => 'Ainda não há pagamentos.';
+
+  @override
+  String get activityUnreachable =>
+      'O Lumen não conseguiu carregar a atividade desta carteira.';
+
+  @override
+  String get activityNoPermission =>
+      'Esta ligação não pode listar transações. Na sua carteira, crie uma nova ligação que permita listar transações.';
+
+  @override
+  String activityNotShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'A atividade de $count carteiras não é mostrada: não foi possível carregá-la.',
+      one: 'A atividade de 1 carteira não é mostrada: não foi possível carregá-la.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionReceived => 'Recebido';
+
+  @override
+  String get transactionSent => 'Enviado';
+
+  @override
+  String amountReceived(String amount) {
+    return '$amount sats recebidos';
+  }
+
+  @override
+  String amountSent(String amount) {
+    return '$amount sats enviados';
+  }
+
+  @override
+  String transactionWalletWhen(String wallet, String when) {
+    return '$wallet, $when';
+  }
+
+  @override
+  String get justNow => 'Agora mesmo';
+
+  @override
+  String minutesAgo(int minutes) {
+    return 'Há $minutes min';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return 'Há $hours h';
+  }
+
+  @override
+  String get yesterday => 'Ontem';
+
+  @override
+  String get columnDescription => 'Descrição';
+
+  @override
+  String get columnWallet => 'Carteira';
+
+  @override
+  String get columnDate => 'Data';
+
+  @override
+  String get columnAmount => 'Montante';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get sendTo => 'Para';
+
+  @override
+  String get sendToHint => 'Fatura Lightning ou endereço Lightning';
+
+  @override
+  String get paste => 'Colar';
+
+  @override
+  String get payFrom => 'Pagar a partir de';
+
+  @override
+  String get chooseWalletThatPays => 'Escolher a carteira que paga';
+
+  @override
+  String get amountSetByInvoice => 'Montante definido pela fatura';
+
+  @override
+  String get reviewPayment => 'Rever';
+
+  @override
+  String get checkingPayment => 'A verificar';
+
+  @override
+  String get youAreSending => 'Está a enviar';
+
+  @override
+  String get detailTo => 'Para';
+
+  @override
+  String get detailNote => 'Nota';
+
+  @override
+  String get detailFrom => 'De';
+
+  @override
+  String get detailNetwork => 'Rede';
+
+  @override
+  String get detailFeePaid => 'Taxa paga';
+
+  @override
+  String get lightningInvoice => 'Fatura Lightning';
+
+  @override
+  String sendAmount(String amount) {
+    return 'Enviar $amount sats';
+  }
+
+  @override
+  String get sendingPayment => 'A enviar';
+
+  @override
+  String get editPayment => 'Editar pagamento';
+
+  @override
+  String get paymentSent => 'Pagamento enviado';
+
+  @override
+  String sentTo(String label) {
+    return 'Para $label';
+  }
+
+  @override
+  String sentAnnouncement(String amount, String name) {
+    return 'Pagamento enviado: $amount sats de $name';
+  }
+
+  @override
+  String get errorToEmpty =>
+      'Cole uma fatura Lightning ou um endereço Lightning.';
+
+  @override
+  String get errorToUnrecognized =>
+      'Isto não é uma fatura nem um endereço Lightning. Uma fatura começa por lnbc, um endereço tem o formato nome@exemplo.com.';
+
+  @override
+  String get errorInvoiceNoAmount =>
+      'Esta fatura deixa o montante em aberto, o que o Lumen ainda não consegue pagar. Peça ao destinatário uma fatura com montante.';
+
+  @override
+  String get errorInvoiceExpired =>
+      'Esta fatura expirou. Peça uma nova ao destinatário.';
+
+  @override
+  String errorAmountRange(String label, String min, String max) {
+    return '$label aceita de $min a $max sats.';
+  }
+
+  @override
+  String recipientUnreachable(String label) {
+    return 'O Lumen não conseguiu contactar $label. Verifique o endereço e a sua ligação e tente novamente.';
+  }
+
+  @override
+  String recipientRefused(String label) {
+    return '$label não pode receber pagamentos neste momento. Confirme o endereço com o destinatário.';
+  }
+
+  @override
+  String recipientWrongInvoice(String label) {
+    return '$label enviou uma fatura de outro montante, por isso o Lumen não a pagou.';
+  }
+
+  @override
+  String notEnoughSats(String name, String balance) {
+    return '$name tem $balance sats, o que não chega para este pagamento. Pague a partir de outra carteira ou reduza o montante.';
+  }
+
+  @override
+  String sendUnreachable(String name) {
+    return 'O Lumen não conseguiu contactar $name, por isso nada foi enviado. Verifique se está online e tente novamente.';
+  }
+
+  @override
+  String get sendNoPermission =>
+      'Esta ligação não pode pagar. Na sua carteira, crie uma nova ligação que permita pagamentos.';
+
+  @override
+  String sendInsufficientBalance(String name) {
+    return '$name não tem sats suficientes para este pagamento e a respetiva taxa. Pague a partir de outra carteira ou reduza o montante.';
+  }
+
+  @override
+  String get sendBudgetExceeded =>
+      'Esta ligação esgotou o seu limite de gastos. Aumente-o nas definições NWC da sua carteira ou pague a partir de outra carteira.';
+
+  @override
+  String get sendFailed =>
+      'O pagamento não foi concluído, muitas vezes por falta de uma rota até ao destinatário. Tente novamente mais tarde ou pague a partir de outra carteira.';
+
+  @override
+  String sendUnconfirmed(String name) {
+    return '$name não confirmou o pagamento a tempo. Ainda pode ser concluído: verifique a atividade recente da carteira antes de tentar novamente.';
+  }
+
+  @override
+  String get settings => 'Definições';
+
+  @override
+  String get security => 'Segurança';
+
+  @override
+  String get appLock => 'Bloqueio da app';
+
+  @override
+  String get appLockHint =>
+      'Pede a sua frase-passe quando o Lumen abre e usa-a para cifrar as suas carteiras';
+
+  @override
+  String get changePassphrase => 'Alterar frase-passe';
+
+  @override
+  String get lockNow => 'Bloquear agora';
+
+  @override
+  String get turnOnAppLock => 'Ativar o bloqueio da app';
+
+  @override
+  String get passphraseLead =>
+      'Escolha uma frase-passe com pelo menos 12 caracteres. Algumas palavras sem relação entre si são longas e fáceis de memorizar.';
+
+  @override
+  String get passphraseWarning =>
+      'Se a esquecer, a única forma de voltar a entrar é repor o Lumen, o que remove as suas carteiras deste dispositivo. Os seus fundos ficam nos seus serviços de carteira.';
+
+  @override
+  String get passphraseLabel => 'Frase-passe';
+
+  @override
+  String get newPassphraseLabel => 'Nova frase-passe';
+
+  @override
+  String get confirmPassphraseLabel => 'Escreva-a novamente';
+
+  @override
+  String get currentPassphraseLabel => 'Frase-passe atual';
+
+  @override
+  String get showPassphrase => 'Mostrar frase-passe';
+
+  @override
+  String get hidePassphrase => 'Ocultar frase-passe';
+
+  @override
+  String get turnOn => 'Ativar';
+
+  @override
+  String get errorPassphraseShort =>
+      'Use pelo menos 12 caracteres. Algumas palavras seguidas são fáceis de memorizar.';
+
+  @override
+  String get errorPassphraseMismatch =>
+      'As duas frases-passe são diferentes. Escreva a mesma duas vezes.';
+
+  @override
+  String get errorPassphraseWrong =>
+      'Esta não é a sua frase-passe. Verifique-a e tente novamente.';
+
+  @override
+  String errorWaitSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Demasiadas frases-passe erradas. Tente novamente dentro de $count segundos.',
+      one: 'Demasiadas frases-passe erradas. Tente novamente dentro de 1 segundo.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorWaitMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'Demasiadas frases-passe erradas. Tente novamente dentro de $count minutos.',
+      one: 'Demasiadas frases-passe erradas. Tente novamente dentro de 1 minuto.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorLockSave =>
+      'O Lumen não conseguiu guardar a sua frase-passe. Tente novamente.';
+
+  @override
+  String get turnOffTitle => 'Desativar o bloqueio da app?';
+
+  @override
+  String get turnOffBody =>
+      'O Lumen vai abrir sem frase-passe e as suas carteiras deixam de estar cifradas.';
+
+  @override
+  String get turnOff => 'Desativar';
+
+  @override
+  String get lockedTitle => 'O Lumen está bloqueado';
+
+  @override
+  String get lockedLead =>
+      'Introduza a sua frase-passe para abrir as suas carteiras.';
+
+  @override
+  String get unlock => 'Desbloquear';
+
+  @override
+  String get forgotPassphrase => 'Esqueceu-se da frase-passe?';
+
+  @override
+  String get resetTitle => 'Repor o Lumen?';
+
+  @override
+  String get resetBody =>
+      'O Lumen remove as suas carteiras e o bloqueio da app deste dispositivo. Os seus fundos ficam nos seus serviços de carteira: adicione novamente cada carteira com a respetiva cadeia de ligação.';
+
+  @override
+  String get reset => 'Repor';
+
+  @override
+  String get errorPassphraseEmpty => 'Introduza a sua frase-passe.';
+}
+
+/// The translations for Portuguese, as used in Brazil (`pt_BR`).
+class AppLocalizationsPtBr extends AppLocalizationsPt {
+  AppLocalizationsPtBr() : super('pt_BR');
+
+  @override
+  String get tagline =>
+      'Todas as formas de guardar seus bitcoins, em um só lugar.';
+
+  @override
+  String get supportedWallets => 'Carteiras compatíveis';
+
+  @override
+  String get kindLightning => 'Lightning';
+
+  @override
+  String get kindEcash => 'Ecash';
+
+  @override
+  String get kindOnchain => 'On-chain';
+
+  @override
+  String get kindLiquid => 'Liquid';
+
+  @override
+  String get lightningViaNwc => 'Lightning via NWC';
+
+  @override
+  String get addAWallet => 'Adicionar uma carteira';
+
+  @override
+  String get add => 'Adicionar';
+
+  @override
+  String get addWallet => 'Adicionar carteira';
+
+  @override
+  String get back => 'Voltar';
+
+  @override
+  String get connectNwcTitle => 'Conectar com NWC';
+
+  @override
+  String get connectNwcLead =>
+      'Copie a string de conexão nas configurações NWC da sua carteira.';
+
+  @override
+  String get connectionStringLabel => 'String de conexão';
+
+  @override
+  String get connectionStringHint => 'Começa com nostr+walletconnect://';
+
+  @override
+  String get nameLabel => 'Nome';
+
+  @override
+  String get connect => 'Conectar';
+
+  @override
+  String get errorUriEmpty =>
+      'Cole a string de conexão das configurações NWC da sua carteira.';
+
+  @override
+  String get errorUriNotNwc =>
+      'Isto não é uma string de conexão NWC. Ela deve começar com nostr+walletconnect://';
+
+  @override
+  String get errorUriIncomplete =>
+      'Esta string de conexão está incompleta. Copie-a de novo da sua carteira, por inteiro.';
+
+  @override
+  String get errorUriDuplicate => 'Esta carteira já está no Lumen.';
+
+  @override
+  String get balanceNoPermission =>
+      'Esta conexão não pode ler o saldo. Na sua carteira, crie uma nova conexão que permita ler o saldo.';
+
+  @override
+  String get errorNameEmpty => 'Dê um nome a esta carteira.';
+
+  @override
+  String get overview => 'Visão geral';
+
+  @override
+  String get totalBalance => 'Saldo total';
+
+  @override
+  String get wallets => 'Carteiras';
+
+  @override
+  String get satsUnit => 'sats';
+
+  @override
+  String amountSats(String amount) {
+    return '$amount sats';
+  }
+
+  @override
+  String get balanceLoading => 'Carregando saldo';
+
+  @override
+  String get balanceUnavailable => 'Indisponível';
+
+  @override
+  String walletsNotCounted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count carteiras não foram incluídas: os saldos delas estão indisponíveis.',
+      one: '1 carteira não foi incluída: o saldo dela está indisponível.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get walletUnreachable =>
+      'O Lumen não conseguiu acessar esta carteira.';
+
+  @override
+  String get tryAgain => 'Tentar novamente';
+
+  @override
+  String walletOptions(String name) {
+    return 'Opções de $name';
+  }
+
+  @override
+  String get rename => 'Renomear';
+
+  @override
+  String get remove => 'Remover';
+
+  @override
+  String get renameTitle => 'Renomear carteira';
+
+  @override
+  String get save => 'Salvar';
+
+  @override
+  String get cancel => 'Cancelar';
+
+  @override
+  String removeTitle(String name) {
+    return 'Remover $name?';
+  }
+
+  @override
+  String get removeBody =>
+      'O Lumen esquece esta conexão. A carteira e os fundos dela não são afetados, e você pode conectá-la de novo depois.';
+
+  @override
+  String get refreshBalances => 'Atualizar saldos';
+
+  @override
+  String get refreshBalance => 'Atualizar saldo';
+
+  @override
+  String get receive => 'Receber';
+
+  @override
+  String get receiveInto => 'Em';
+
+  @override
+  String get chooseWallet => 'Escolha a carteira que recebe';
+
+  @override
+  String get amountLabel => 'Valor em sats';
+
+  @override
+  String get createInvoice => 'Criar fatura';
+
+  @override
+  String get creatingInvoice => 'Criando fatura';
+
+  @override
+  String get errorAmountEmpty => 'Digite um valor de pelo menos 1 sat.';
+
+  @override
+  String get receiveUnreachable =>
+      'O Lumen não conseguiu obter uma fatura desta carteira. Verifique se ela está online e tente novamente.';
+
+  @override
+  String get receiveNoPermission =>
+      'Esta conexão não pode criar faturas. Na sua carteira, crie uma nova conexão que permita receber pagamentos.';
+
+  @override
+  String invoiceQrLabel(String amount) {
+    return 'QR code da fatura Lightning de $amount sats. O texto da fatura está abaixo, com um botão para copiar.';
+  }
+
+  @override
+  String invoiceText(String text) {
+    return 'Fatura $text';
+  }
+
+  @override
+  String get editAmount => 'Editar valor';
+
+  @override
+  String get copyInvoice => 'Copiar fatura';
+
+  @override
+  String get invoiceCopied => 'Fatura copiada';
+
+  @override
+  String get shareInvoice => 'Compartilhar fatura';
+
+  @override
+  String get waitingForPayment => 'Aguardando pagamento';
+
+  @override
+  String get expiresSoon => 'Expira em menos de um minuto';
+
+  @override
+  String expiresInMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Expira em $minutes minutos',
+      one: 'Expira em 1 minuto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiresInHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Expira em $hours horas',
+      one: 'Expira em 1 hora',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invoiceExpired =>
+      'Esta fatura expirou. Crie uma nova para receber este pagamento.';
+
+  @override
+  String get newInvoice => 'Nova fatura';
+
+  @override
+  String get paymentReceived => 'Pagamento recebido';
+
+  @override
+  String receivedInto(String name) {
+    return 'Em $name';
+  }
+
+  @override
+  String receivedAnnouncement(String amount, String name) {
+    return 'Pagamento recebido: $amount sats em $name';
+  }
+
+  @override
+  String get done => 'Concluído';
+
+  @override
+  String get close => 'Fechar';
+
+  @override
+  String get recentActivity => 'Atividade recente';
+
+  @override
+  String get activityLoading => 'Carregando atividade';
+
+  @override
+  String get noActivity => 'Nenhum pagamento ainda.';
+
+  @override
+  String get activityUnreachable =>
+      'O Lumen não conseguiu carregar a atividade desta carteira.';
+
+  @override
+  String get activityNoPermission =>
+      'Esta conexão não pode listar transações. Na sua carteira, crie uma nova conexão que permita listar transações.';
+
+  @override
+  String activityNotShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          'A atividade de $count carteiras não é exibida: não foi possível carregá-la.',
+      one: 'A atividade de 1 carteira não é exibida: não foi possível carregá-la.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get transactionReceived => 'Recebido';
+
+  @override
+  String get transactionSent => 'Enviado';
+
+  @override
+  String amountReceived(String amount) {
+    return '$amount sats recebidos';
+  }
+
+  @override
+  String amountSent(String amount) {
+    return '$amount sats enviados';
+  }
+
+  @override
+  String transactionWalletWhen(String wallet, String when) {
+    return '$wallet, $when';
+  }
+
+  @override
+  String get justNow => 'Agora mesmo';
+
+  @override
+  String minutesAgo(int minutes) {
+    return 'Há $minutes min';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return 'Há $hours h';
+  }
+
+  @override
+  String get yesterday => 'Ontem';
+
+  @override
+  String get columnDescription => 'Descrição';
+
+  @override
+  String get columnWallet => 'Carteira';
+
+  @override
+  String get columnDate => 'Data';
+
+  @override
+  String get columnAmount => 'Valor';
+
+  @override
+  String get send => 'Enviar';
+
+  @override
+  String get sendTo => 'Para';
+
+  @override
+  String get sendToHint => 'Fatura Lightning ou endereço Lightning';
+
+  @override
+  String get paste => 'Colar';
+
+  @override
+  String get payFrom => 'Pagar com';
+
+  @override
+  String get chooseWalletThatPays => 'Escolha a carteira que paga';
+
+  @override
+  String get amountSetByInvoice => 'Valor definido pela fatura';
+
+  @override
+  String get reviewPayment => 'Revisar';
+
+  @override
+  String get checkingPayment => 'Verificando';
+
+  @override
+  String get youAreSending => 'Você está enviando';
+
+  @override
+  String get detailTo => 'Para';
+
+  @override
+  String get detailNote => 'Nota';
+
+  @override
+  String get detailFrom => 'De';
+
+  @override
+  String get detailNetwork => 'Rede';
+
+  @override
+  String get detailFeePaid => 'Taxa paga';
+
+  @override
+  String get lightningInvoice => 'Fatura Lightning';
+
+  @override
+  String sendAmount(String amount) {
+    return 'Enviar $amount sats';
+  }
+
+  @override
+  String get sendingPayment => 'Enviando';
+
+  @override
+  String get editPayment => 'Editar pagamento';
+
+  @override
+  String get paymentSent => 'Pagamento enviado';
+
+  @override
+  String sentTo(String label) {
+    return 'Para $label';
+  }
+
+  @override
+  String sentAnnouncement(String amount, String name) {
+    return 'Pagamento enviado: $amount sats de $name';
+  }
+
+  @override
+  String get errorToEmpty =>
+      'Cole uma fatura Lightning ou um endereço Lightning.';
+
+  @override
+  String get errorToUnrecognized =>
+      'Isto não é uma fatura nem um endereço Lightning. Uma fatura começa com lnbc, um endereço é parecido com nome@exemplo.com.';
+
+  @override
+  String get errorInvoiceNoAmount =>
+      'Esta fatura deixa o valor em aberto, e o Lumen ainda não consegue pagá-la. Peça ao destinatário uma fatura com valor.';
+
+  @override
+  String get errorInvoiceExpired =>
+      'Esta fatura expirou. Peça uma nova ao destinatário.';
+
+  @override
+  String errorAmountRange(String label, String min, String max) {
+    return '$label aceita de $min a $max sats.';
+  }
+
+  @override
+  String recipientUnreachable(String label) {
+    return 'O Lumen não conseguiu acessar $label. Verifique o endereço e a sua conexão e tente novamente.';
+  }
+
+  @override
+  String recipientRefused(String label) {
+    return '$label não pode receber pagamentos agora. Confira o endereço com o destinatário.';
+  }
+
+  @override
+  String recipientWrongInvoice(String label) {
+    return '$label enviou uma fatura de outro valor, então o Lumen não a pagou.';
+  }
+
+  @override
+  String notEnoughSats(String name, String balance) {
+    return '$name tem $balance sats, o que não basta para este pagamento. Pague com outra carteira ou diminua o valor.';
+  }
+
+  @override
+  String sendUnreachable(String name) {
+    return 'O Lumen não conseguiu acessar $name, então nada foi enviado. Verifique se ela está online e tente novamente.';
+  }
+
+  @override
+  String get sendNoPermission =>
+      'Esta conexão não pode pagar. Na sua carteira, crie uma nova conexão que permita pagamentos.';
+
+  @override
+  String sendInsufficientBalance(String name) {
+    return '$name não tem sats suficientes para este pagamento e a taxa. Pague com outra carteira ou diminua o valor.';
+  }
+
+  @override
+  String get sendBudgetExceeded =>
+      'Esta conexão esgotou o limite de gastos. Aumente-o nas configurações NWC da sua carteira ou pague com outra carteira.';
+
+  @override
+  String get sendFailed =>
+      'O pagamento não foi concluído, muitas vezes por falta de rota até o destinatário. Tente novamente mais tarde ou pague com outra carteira.';
+
+  @override
+  String sendUnconfirmed(String name) {
+    return '$name não confirmou o pagamento a tempo. Ele ainda pode ser concluído: confira a atividade recente dela antes de tentar novamente.';
+  }
+
+  @override
+  String get settings => 'Configurações';
+
+  @override
+  String get security => 'Segurança';
+
+  @override
+  String get appLock => 'Bloqueio do app';
+
+  @override
+  String get appLockHint =>
+      'Pede sua frase-senha quando o Lumen abre e criptografa suas carteiras com ela';
+
+  @override
+  String get changePassphrase => 'Alterar frase-senha';
+
+  @override
+  String get lockNow => 'Bloquear agora';
+
+  @override
+  String get turnOnAppLock => 'Ativar bloqueio do app';
+
+  @override
+  String get passphraseLead =>
+      'Escolha uma frase-senha de pelo menos 12 caracteres. Algumas palavras sem relação entre si são longas e fáceis de lembrar.';
+
+  @override
+  String get passphraseWarning =>
+      'Se você esquecê-la, a única forma de voltar a entrar é redefinir o Lumen, o que remove suas carteiras deste dispositivo. Seus fundos continuam nos serviços das suas carteiras.';
+
+  @override
+  String get passphraseLabel => 'Frase-senha';
+
+  @override
+  String get newPassphraseLabel => 'Nova frase-senha';
+
+  @override
+  String get confirmPassphraseLabel => 'Digite de novo';
+
+  @override
+  String get currentPassphraseLabel => 'Frase-senha atual';
+
+  @override
+  String get showPassphrase => 'Mostrar frase-senha';
+
+  @override
+  String get hidePassphrase => 'Ocultar frase-senha';
+
+  @override
+  String get turnOn => 'Ativar';
+
+  @override
+  String get errorPassphraseShort =>
+      'Use pelo menos 12 caracteres. Algumas palavras em sequência são fáceis de lembrar.';
+
+  @override
+  String get errorPassphraseMismatch =>
+      'As duas frases-senha são diferentes. Digite a mesma duas vezes.';
+
+  @override
+  String get errorPassphraseWrong =>
+      'Esta não é a sua frase-senha. Confira e tente novamente.';
+
+  @override
+  String errorWaitSeconds(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Muitas frases-senha erradas. Tente novamente em $count segundos.',
+      one: 'Muitas frases-senha erradas. Tente novamente em 1 segundo.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String errorWaitMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Muitas frases-senha erradas. Tente novamente em $count minutos.',
+      one: 'Muitas frases-senha erradas. Tente novamente em 1 minuto.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get errorLockSave =>
+      'O Lumen não conseguiu salvar sua frase-senha. Tente novamente.';
+
+  @override
+  String get turnOffTitle => 'Desativar bloqueio do app?';
+
+  @override
+  String get turnOffBody =>
+      'O Lumen vai abrir sem frase-senha, e suas carteiras não serão mais criptografadas.';
+
+  @override
+  String get turnOff => 'Desativar';
+
+  @override
+  String get lockedTitle => 'O Lumen está bloqueado';
+
+  @override
+  String get lockedLead => 'Digite sua frase-senha para abrir suas carteiras.';
+
+  @override
+  String get unlock => 'Desbloquear';
+
+  @override
+  String get forgotPassphrase => 'Esqueceu sua frase-senha?';
+
+  @override
+  String get resetTitle => 'Redefinir o Lumen?';
+
+  @override
+  String get resetBody =>
+      'O Lumen remove suas carteiras e o bloqueio do app deste dispositivo. Seus fundos continuam nos serviços das suas carteiras: adicione cada carteira de novo com a string de conexão dela.';
+
+  @override
+  String get reset => 'Redefinir';
+
+  @override
+  String get errorPassphraseEmpty => 'Digite sua frase-senha.';
+}
