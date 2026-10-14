@@ -1,0 +1,195 @@
+{
+  "@@locale": "en",
+  "tagline": "Every way you hold bitcoin, in one place.",
+  "@tagline": {
+    "description": "Welcome screen subtitle under the Lumen wordmark."
+  },
+  "supportedWallets": "Supported wallets",
+  "@supportedWallets": {
+    "description": "Accessible name of the list of wallet types on the welcome screen."
+  },
+  "kindLightning": "Lightning",
+  "@kindLightning": {
+    "description": "Wallet type: Lightning."
+  },
+  "kindEcash": "Ecash",
+  "@kindEcash": {
+    "description": "Wallet type: Cashu ecash."
+  },
+  "kindOnchain": "On-chain",
+  "@kindOnchain": {
+    "description": "Wallet type: Bitcoin on-chain."
+  },
+  "kindLiquid": "Liquid",
+  "@kindLiquid": {
+    "description": "Wallet type: Liquid sidechain."
+  },
+  "lightningViaNwc": "Lightning via NWC",
+  "@lightningViaNwc": {
+    "description": "Subtitle of a Lightning wallet connected with Nostr Wallet Connect."
+  },
+  "addAWallet": "Add a wallet",
+  "@addAWallet": {
+    "description": "Main button of the welcome screen."
+  },
+  "add": "Add",
+  "@add": {
+    "description": "Short link next to the Wallets heading on Home."
+  },
+  "addWallet": "Add wallet",
+  "@addWallet": {
+    "description": "Link in the desktop sidebar, and accessible name of the short Add link."
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Tooltip and accessible name of the back button."
+  },
+  "connectNwcTitle": "Connect with NWC",
+  "@connectNwcTitle": {
+    "description": "Title of the screen that adds a wallet with an NWC connection string."
+  },
+  "connectNwcLead": "Copy the connection string from your wallet's NWC settings.",
+  "@connectNwcLead": {
+    "description": "Explanation under the NWC screen title."
+  },
+  "connectionStringLabel": "Connection string",
+  "@connectionStringLabel": {
+    "description": "Label of the NWC connection string field."
+  },
+  "connectionStringHint": "Starts with nostr+walletconnect://",
+  "@connectionStringHint": {
+    "description": "Hint under the connection string field. Keep nostr+walletconnect:// as is."
+  },
+  "nameLabel": "Name",
+  "@nameLabel": {
+    "description": "Label of the wallet name field."
+  },
+  "connect": "Connect",
+  "@connect": {
+    "description": "Button that checks the connection string and saves the wallet."
+  },
+  "connecting": "Connecting...",
+  "@connecting": {
+    "description": "Button label while Lumen checks the connection."
+  },
+  "errorUriEmpty": "Paste the connection string from your wallet's NWC settings.",
+  "@errorUriEmpty": {
+    "description": "Error when the connection string field is empty."
+  },
+  "errorUriNotNwc": "This is not an NWC connection string. It should start with nostr+walletconnect://",
+  "@errorUriNotNwc": {
+    "description": "Error when the text is not an NWC connection string. Keep nostr+walletconnect:// as is."
+  },
+  "errorUriIncomplete": "This connection string is incomplete. Copy it again from your wallet, in full.",
+  "@errorUriIncomplete": {
+    "description": "Error when the connection string misses its secret, relay or wallet key."
+  },
+  "errorUriDuplicate": "This wallet is already in Lumen.",
+  "@errorUriDuplicate": {
+    "description": "Error when this connection is already saved."
+  },
+  "errorUriUnreachable": "Lumen could not reach this wallet. Check that it is online and that the connection is still active, then try again.",
+  "@errorUriUnreachable": {
+    "description": "Error when the wallet does not answer over its relays."
+  },
+  "errorUriNoBalance": "This connection cannot read the balance. In your wallet, create a new connection that allows reading the balance.",
+  "@errorUriNoBalance": {
+    "description": "Error when the connection lacks the permission to read the balance."
+  },
+  "errorNameEmpty": "Give this wallet a name.",
+  "@errorNameEmpty": {
+    "description": "Error when the wallet name is empty."
+  },
+  "overview": "Overview",
+  "@overview": {
+    "description": "Title of the desktop overview page and its sidebar entry."
+  },
+  "totalBalance": "Total balance",
+  "@totalBalance": {
+    "description": "Label above the sum of all wallet balances."
+  },
+  "wallets": "Wallets",
+  "@wallets": {
+    "description": "Heading of the wallet list."
+  },
+  "satsUnit": "sats",
+  "@satsUnit": {
+    "description": "Unit shown after an amount. Satoshis, usually left untranslated."
+  },
+  "amountSats": "{amount} sats",
+  "@amountSats": {
+    "description": "Amount with its unit, read by screen readers.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "balanceLoading": "Loading balance",
+  "@balanceLoading": {
+    "description": "Accessible label of the spinner shown while a balance loads."
+  },
+  "balanceUnavailable": "Unavailable",
+  "@balanceUnavailable": {
+    "description": "Shown instead of a balance when the wallet could not be reached."
+  },
+  "walletsUnreachable": "{count, plural, =1{1 wallet could not be reached.} other{{count} wallets could not be reached.}}",
+  "@walletsUnreachable": {
+    "description": "Note under the total balance when some wallets are left out of it.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletUnreachable": "Lumen could not reach this wallet.",
+  "@walletUnreachable": {
+    "description": "Shown on a wallet screen when its balance could not be read."
+  },
+  "tryAgain": "Try again",
+  "@tryAgain": {
+    "description": "Button that reloads a balance that failed."
+  },
+  "walletOptions": "{name} options",
+  "@walletOptions": {
+    "description": "Tooltip and accessible name of the wallet options menu button.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "rename": "Rename",
+  "@rename": {
+    "description": "Menu item that renames a wallet."
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Menu item and confirm button that remove a wallet from Lumen."
+  },
+  "renameTitle": "Rename wallet",
+  "@renameTitle": {
+    "description": "Title of the rename dialog."
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button that saves the new wallet name."
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Button that closes a dialog without changes."
+  },
+  "removeTitle": "Remove {name}?",
+  "@removeTitle": {
+    "description": "Title of the remove confirmation dialog.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "removeBody": "Lumen forgets this connection. The wallet and its funds are not affected, and you can connect it again later.",
+  "@removeBody": {
+    "description": "Body of the remove confirmation dialog."
+  }
+}

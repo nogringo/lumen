@@ -7,6 +7,9 @@ version: 0.1.0+1
 environment:
   sdk: ^3.13.5
 
+workspace:
+  - packages/lumen_wallets
+
 dependencies:
   flutter:
     sdk: flutter
@@ -16,7 +19,9 @@ dependencies:
   go_router: ^18.0.2
   intl: ^0.20.3
   lucide_icons_flutter: ^3.1.25
-  ndk: ^0.10.1
+  lumen_wallets:
+    path: packages/lumen_wallets
+  material_ui: ^1.6.0
   ndk_flutter: ^0.10.1
 
 dev_dependencies:
