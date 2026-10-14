@@ -91,6 +91,10 @@ final class Transaction {
     required this.sats,
     required this.at,
     this.description,
+    this.paymentHash,
+    this.feeSats,
+    this.preimage,
+    this.invoice,
   });
 
   /// Unique within its wallet, such as the payment hash.
@@ -101,6 +105,18 @@ final class Transaction {
   /// When the payment settled.
   final DateTime at;
   final String? description;
+
+  /// Lightning only, like [preimage] and [invoice].
+  final String? paymentHash;
+
+  /// The fee the wallet paid, when it says.
+  final int? feeSats;
+
+  /// Proof that a Lightning payment was made.
+  final String? preimage;
+
+  /// The BOLT11 request that was paid.
+  final String? invoice;
 
   bool get isIncoming => direction == TransactionDirection.incoming;
 }

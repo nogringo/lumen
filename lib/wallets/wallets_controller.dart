@@ -125,6 +125,19 @@ class WalletsController extends ChangeNotifier {
     ];
   }
 
+  /// Transaction [id] of [wallet], from the history or else from the latest
+  /// activity.
+  Future<Transaction?> transaction(Wallet wallet, String id) async {
+    final saved = await _history
+        .find(wallet.id, id)
+        .catchError((Object _) => null);
+    if (saved != null) return saved;
+    for (final t in activityOf(wallet).transactions ?? const <Transaction>[]) {
+      if (t.id == id) return t;
+    }
+    return null;
+  }
+
   Future<void> load() async {
     for (final source in _sources) {
       _wallets.addAll(await source.load());

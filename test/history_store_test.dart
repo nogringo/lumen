@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/wallets/history_store.dart';
-import 'package:sembast/sembast_io.dart';
+import 'package:lumen_wallets/lumen_wallets.dart';
+import 'package:sembast/sembast_io.dart' show databaseFactoryIo;
 
 import 'fakes.dart';
 
@@ -43,7 +44,19 @@ void main() {
 
   test('transactions are sealed on disk and open again', () async {
     final history = await open();
-    await history.save('a', [tx('hash1', description: 'Coffee at Mia')]);
+    await history.save('a', [
+      Transaction(
+        id: 'hash1',
+        direction: TransactionDirection.outgoing,
+        sats: 5400,
+        at: DateTime(2026, 10, 15, 9, 30),
+        description: 'Coffee at Mia',
+        paymentHash: 'hash1',
+        feeSats: 3,
+        preimage: 'proof',
+        invoice: 'lnbc54u1',
+      ),
+    ]);
     await history.writeSync('a', const HistorySync(offset: 25));
     await history.close();
 
@@ -53,8 +66,14 @@ void main() {
 
     final reopened = await open();
     addTearDown(reopened.close);
-    final saved = await reopened.read({'a'}, limit: 10);
-    expect(saved.single.transaction.description, 'Coffee at Mia');
+    final saved = (await reopened.find('a', 'hash1'))!;
+    expect(saved.description, 'Coffee at Mia');
+    expect(saved.at, DateTime(2026, 10, 15, 9, 30));
+    expect(
+      (saved.paymentHash, saved.feeSats, saved.preimage, saved.invoice),
+      ('hash1', 3, 'proof', 'lnbc54u1'),
+    );
+    expect(await reopened.find('a', 'other'), isNull);
     expect((await reopened.readSync('a')).offset, 25);
   });
 

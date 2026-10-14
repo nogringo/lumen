@@ -38,6 +38,9 @@ class HistoryStore {
 
   static const keyName = 'lumen.history.key';
 
+  /// Raised when records gain fields, so every wallet walks its list again.
+  static const _format = 2;
+
   /// Opens the history on disk, or in IndexedDB on the web. Its key lives in
   /// [storage], so App lock seals it with the wallets. A history the key no
   /// longer opens, as after a reset, starts again empty.
@@ -111,18 +114,27 @@ class HistoryStore {
     return [for (final record in found) _decode(record.value)];
   }
 
+  /// The saved transaction [id] of [walletId], or null.
+  Future<Transaction?> find(String walletId, String id) async {
+    final value = await _transactions.record(_recordKey(walletId, id)).get(_db);
+    return value == null ? null : _decode(value).transaction;
+  }
+
   Future<HistorySync> readSync(String walletId) async {
     final saved = await _syncs.record(walletId).get(_db);
-    if (saved == null) return const HistorySync();
+    if (saved == null || saved['format'] != _format) return const HistorySync();
     return HistorySync(
       offset: saved['offset'] as int,
       complete: saved['complete'] as bool,
     );
   }
 
-  Future<void> writeSync(String walletId, HistorySync sync) => _syncs
-      .record(walletId)
-      .put(_db, {'offset': sync.offset, 'complete': sync.complete});
+  Future<void> writeSync(String walletId, HistorySync sync) =>
+      _syncs.record(walletId).put(_db, {
+        'offset': sync.offset,
+        'complete': sync.complete,
+        'format': _format,
+      });
 
   /// Forgets everything saved for [walletId].
   Future<void> delete(String walletId) => _db.transaction((txn) async {
@@ -144,6 +156,10 @@ class HistoryStore {
     'sats': t.sats,
     'at': t.at.millisecondsSinceEpoch,
     'description': t.description,
+    'paymentHash': t.paymentHash,
+    'feeSats': t.feeSats,
+    'preimage': t.preimage,
+    'invoice': t.invoice,
   };
 
   static SavedTransaction _decode(Map<String, Object?> json) => (
@@ -156,6 +172,10 @@ class HistoryStore {
       sats: json['sats'] as int,
       at: DateTime.fromMillisecondsSinceEpoch(json['at'] as int),
       description: json['description'] as String?,
+      paymentHash: json['paymentHash'] as String?,
+      feeSats: json['feeSats'] as int?,
+      preimage: json['preimage'] as String?,
+      invoice: json['invoice'] as String?,
     ),
   );
 }

@@ -20,5 +20,15 @@ Transaction? nwcTransaction(TransactionResult result) {
     description: description == null || description.isEmpty
         ? null
         : description,
+    paymentHash: result.paymentHash,
+    feeSats: switch (result.feesPaid) {
+      final msats? => (msats / 1000).ceil(),
+      null => null,
+    },
+    preimage: _present(result.preimage),
+    invoice: _present(result.invoice),
   );
 }
+
+String? _present(String? value) =>
+    value == null || value.trim().isEmpty ? null : value.trim();

@@ -329,6 +329,16 @@ void main() {
       expect(wallet.listedOffsets.length, lessThan(5));
     });
 
+    test('finds a payment saved earlier or listed just now', () async {
+      final wallet = FakeWallet('a', 'Home node')..transactions = payments(30);
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      await controller.loadOlder(wallet);
+
+      expect((await controller.transaction(wallet, 't29'))?.id, 't29');
+      expect(await controller.transaction(wallet, 'missing'), isNull);
+    });
+
     test('remove forgets the wallet history', () async {
       final kept = FakeWallet('a', 'Home node')..transactions = payments(3);
       final removed = FakeWallet('b', 'Old')

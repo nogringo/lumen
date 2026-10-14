@@ -8,10 +8,16 @@ TransactionResult _result({
   String? state,
   String? description,
   int? settledAt,
+  int? feesPaid,
+  String? preimage,
+  String? invoice,
 }) => TransactionResult(
   type: type,
   state: state,
   description: description,
+  feesPaid: feesPaid,
+  preimage: preimage,
+  invoice: invoice,
   paymentHash: 'hash',
   amount: 40000500,
   createdAt: 1760000000,
@@ -41,6 +47,30 @@ void main() {
     for (final state in ['pending', 'failed', 'expired']) {
       expect(nwcTransaction(_result(state: state)), isNull, reason: state);
     }
+  });
+
+  test('keeps the Lightning details, fees rounded up to whole sats', () {
+    final transaction = nwcTransaction(
+      _result(
+        type: 'outgoing',
+        feesPaid: 1500,
+        preimage: 'proof',
+        invoice: 'lnbc1',
+      ),
+    )!;
+
+    expect(transaction.paymentHash, 'hash');
+    expect(transaction.feeSats, 2);
+    expect(transaction.preimage, 'proof');
+    expect(transaction.invoice, 'lnbc1');
+  });
+
+  test('a missing fee or blank preimage stays unknown', () {
+    final transaction = nwcTransaction(_result(preimage: ''))!;
+
+    expect(transaction.feeSats, isNull);
+    expect(transaction.preimage, isNull);
+    expect(transaction.invoice, isNull);
   });
 
   test('drops a blank description', () {
