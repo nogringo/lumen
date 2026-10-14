@@ -487,6 +487,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get security => 'Turvallisuus';
 
   @override
+  String get general => 'Yleiset';
+
+  @override
+  String get language => 'Kieli';
+
+  @override
+  String get deviceLanguage => 'Laitteen kieli';
+
+  @override
   String get appLock => 'Sovelluslukitus';
 
   @override

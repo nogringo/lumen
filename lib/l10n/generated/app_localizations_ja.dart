@@ -479,6 +479,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get security => 'セキュリティ';
 
   @override
+  String get general => '一般';
+
+  @override
+  String get language => '言語';
+
+  @override
+  String get deviceLanguage => '端末の言語';
+
+  @override
   String get appLock => 'アプリロック';
 
   @override

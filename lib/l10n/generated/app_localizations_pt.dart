@@ -490,6 +490,15 @@ class AppLocalizationsPt extends AppLocalizations {
   String get security => 'Segurança';
 
   @override
+  String get general => 'Geral';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get deviceLanguage => 'Idioma do dispositivo';
+
+  @override
   String get appLock => 'Bloqueio da app';
 
   @override
@@ -1095,6 +1104,15 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get security => 'Segurança';
+
+  @override
+  String get general => 'Geral';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get deviceLanguage => 'Idioma do dispositivo';
 
   @override
   String get appLock => 'Bloqueio do app';

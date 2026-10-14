@@ -877,6 +877,24 @@ abstract class AppLocalizations {
   /// **'Security'**
   String get security;
 
+  /// Group title in Settings, above Language.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// Settings row, and title of the dialog that picks the language of Lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Language choice that follows the language of the phone or computer.
+  ///
+  /// In en, this message translates to:
+  /// **'Device language'**
+  String get deviceLanguage;
+
   /// Settings switch that asks for a passphrase when Lumen opens.
   ///
   /// In en, this message translates to:

@@ -9,6 +9,7 @@ import 'lock/app_gate.dart';
 import 'lock/app_lock.dart';
 import 'lock/lock_store.dart';
 import 'lock/sealed_storage.dart';
+import 'settings/language.dart';
 import 'wallets/wallet_cache.dart';
 import 'wallets/wallets_controller.dart';
 
@@ -33,6 +34,7 @@ Future<void> main() async {
       return LumenSession(sources, wallets);
     },
   );
-  await gate.start();
-  runApp(LumenApp(gate: gate));
+  final language = LanguageSetting(PrefsLanguageStore());
+  await Future.wait([language.load(), gate.start()]);
+  runApp(LumenApp(gate: gate, language: language));
 }

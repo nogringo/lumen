@@ -6,6 +6,7 @@ import 'package:lumen/lock/app_gate.dart';
 import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/lock/lock_store.dart';
 import 'package:lumen/lock/sealed_storage.dart';
+import 'package:lumen/settings/language.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
@@ -60,7 +61,9 @@ void main() {
         }
       }),
     );
-    await tester.pumpWidget(LumenApp(gate: gate));
+    await tester.pumpWidget(
+      LumenApp(gate: gate, language: LanguageSetting(MemoryLanguageStore())),
+    );
     await tester.pumpAndSettle();
     return gate;
   }
@@ -91,7 +94,7 @@ void main() {
   }
 
   bool switchOn(WidgetTester tester) => tester
-      .getSemantics(find.byType(MergeSemantics).first)
+      .getSemantics(find.text('App lock'))
       .flagsCollection
       .isToggled
       .toBoolOrNull()!;
@@ -380,7 +383,7 @@ void main() {
     await openSettings(tester);
 
     expect(
-      tester.getSemantics(find.byType(MergeSemantics).first),
+      tester.getSemantics(find.text('App lock')),
       matchesSemantics(
         label:
             'App lock\nAsks for your passphrase when Lumen opens, and '

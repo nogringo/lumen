@@ -57,6 +57,11 @@ English, French, German, Spanish, Finnish, Italian, Japanese, Portuguese (Portug
 - A forgotten passphrase can only be answered by resetting Lumen, which removes every wallet and App lock from the device.
 - Biometrics will come later, as a shortcut that unlocks the data key from the platform keystore.
 
+### Language
+
+- Lumen follows the device language by default. Settings can pick another of the supported languages, each listed in its own words.
+- The choice applies at once, including on the lock screen, and survives a restart and a reset.
+
 ## Screens
 
 Based on the mockups, trimmed to the features above:
@@ -69,7 +74,7 @@ Based on the mockups, trimmed to the features above:
 | Wallet | 09, 21 (layout only) | Name, balance, Send, Receive and the wallet's recent activity. The options menu holds Rename and Remove. |
 | Send | 10, 11, 12, 22 | Lightning only. The amount is typed in a field, not on a keypad. A Paste button replaces Scan. No fiat value, no fee estimate before sending (NWC has none), no receipt sharing or payment hash. |
 | Receive | 13, 23 | Lightning only, so no network switch. The amount is typed first, then the invoice is created. |
-| Settings | 14, 24 | Only the Security group: the App lock switch, then Change passphrase and Lock now while it is on. Turning App lock on opens a passphrase screen, turning it off asks for the passphrase in a dialog. |
+| Settings | 14, 24 | A General group with Language, which opens a dialog of languages, then the Security group: the App lock switch, then Change passphrase and Lock now while it is on. Turning App lock on opens a passphrase screen, turning it off asks for the passphrase in a dialog. |
 | Locked | 15, 25 | A passphrase field instead of the system prompt, with Unlock and Forgot your passphrase. |
 
 The three layouts (phone, tablet, desktop), both themes and the accessibility requirements from the mockups apply to every screen.
@@ -86,3 +91,4 @@ The three layouts (phone, tablet, desktop), both themes and the accessibility re
 - `share_plus`
 - `serverpod_argon2` (Argon2id for the App lock passphrase)
 - `cryptography` (AES-256-GCM for the data sealed by App lock)
+- `shared_preferences` (the language, which is not secret and is read before unlocking)

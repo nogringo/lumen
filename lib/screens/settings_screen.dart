@@ -5,6 +5,7 @@ import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
 import '../lock/app_lock.dart';
 import '../lock/gate_scope.dart';
+import '../settings/language.dart';
 import '../theme/lumen_colors.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/passphrase_field.dart';
@@ -33,35 +34,52 @@ class SettingsScreen extends StatelessWidget {
                   : Alignment.topCenter,
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 560),
-                child: ListenableBuilder(
-                  listenable: gate.lock,
-                  builder: (context, _) {
-                    final on = gate.lock.enabled;
-                    return _Group(
-                      title: l.security,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _Group(
+                      title: l.general,
                       children: [
-                        _SwitchRow(
-                          title: l.appLock,
-                          hint: l.appLockHint,
-                          value: on,
-                          onChanged: () =>
-                              on ? _turnOff(context) : openTurnOn(context),
+                        _LinkRow(
+                          icon: Icons.language,
+                          title: l.language,
+                          value: _languageName(context),
+                          onTap: () => _pickLanguage(context),
                         ),
-                        if (on) ...[
-                          _LinkRow(
-                            icon: Icons.password,
-                            title: l.changePassphrase,
-                            onTap: () => openChangePassphrase(context),
-                          ),
-                          _LinkRow(
-                            icon: Icons.lock_outline,
-                            title: l.lockNow,
-                            onTap: gate.lockNow,
-                          ),
-                        ],
                       ],
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 24),
+                    ListenableBuilder(
+                      listenable: gate.lock,
+                      builder: (context, _) {
+                        final on = gate.lock.enabled;
+                        return _Group(
+                          title: l.security,
+                          children: [
+                            _SwitchRow(
+                              title: l.appLock,
+                              hint: l.appLockHint,
+                              value: on,
+                              onChanged: () =>
+                                  on ? _turnOff(context) : openTurnOn(context),
+                            ),
+                            if (on) ...[
+                              _LinkRow(
+                                icon: Icons.password,
+                                title: l.changePassphrase,
+                                onTap: () => openChangePassphrase(context),
+                              ),
+                              _LinkRow(
+                                icon: Icons.lock_outline,
+                                title: l.lockNow,
+                                onTap: gate.lockNow,
+                              ),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -75,7 +93,24 @@ class SettingsScreen extends StatelessWidget {
     context: context,
     builder: (_) => const _TurnOffDialog(),
   );
+
+  InlineSpan _languageName(BuildContext context) {
+    final locale = LanguageScope.of(context).locale;
+    return locale == null
+        ? TextSpan(text: AppLocalizations.of(context).deviceLanguage)
+        : languageSpan(locale);
+  }
+
+  Future<void> _pickLanguage(BuildContext context) => showDialog<void>(
+    context: context,
+    builder: (_) => const _LanguageDialog(),
+  );
 }
+
+/// A language name tagged with its locale, so screen readers pronounce it in
+/// that language.
+TextSpan languageSpan(Locale locale) =>
+    TextSpan(text: languageNames[locale], locale: locale);
 
 Future<void> openTurnOn(BuildContext context) => openFlow(
   context,
@@ -230,11 +265,15 @@ class _LinkRow extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.onTap,
+    this.value,
   });
 
   final IconData icon;
   final String title;
   final VoidCallback onTap;
+
+  /// The current choice, under the title.
+  final InlineSpan? value;
 
   @override
   Widget build(BuildContext context) {
@@ -252,14 +291,121 @@ class _LinkRow extends StatelessWidget {
                 Icon(icon, color: c.text2),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: c.text,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: c.text,
+                        ),
+                      ),
+                      if (value case final value?) ...[
+                        const SizedBox(height: 3),
+                        Text.rich(
+                          value,
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.4,
+                            color: c.text2,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LanguageDialog extends StatelessWidget {
+  const _LanguageDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final setting = LanguageScope.of(context);
+
+    void choose(Locale? locale) {
+      setting.choose(locale);
+      Navigator.pop(context);
+    }
+
+    return AlertDialog(
+      title: Text(l.language),
+      scrollable: true,
+      contentPadding: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _LanguageOption(
+            name: TextSpan(text: l.deviceLanguage),
+            picked: setting.locale == null,
+            onTap: () => choose(null),
+          ),
+          for (final locale in languageNames.keys)
+            _LanguageOption(
+              name: languageSpan(locale),
+              picked: setting.locale == locale,
+              onTap: () => choose(locale),
+            ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+      ],
+    );
+  }
+}
+
+class _LanguageOption extends StatelessWidget {
+  const _LanguageOption({
+    required this.name,
+    required this.picked,
+    required this.onTap,
+  });
+
+  final InlineSpan name;
+  final bool picked;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return MergeSemantics(
+      child: Tappable(
+        onTap: onTap,
+        checked: picked,
+        selected: picked,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 48),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text.rich(
+                    name,
+                    style: TextStyle(fontSize: 16, color: c.text),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                SizedBox.square(
+                  dimension: 20,
+                  child: picked
+                      ? Icon(Icons.check, size: 20, color: c.text)
+                      : null,
                 ),
               ],
             ),

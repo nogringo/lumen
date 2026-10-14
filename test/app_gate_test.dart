@@ -5,6 +5,7 @@ import 'package:lumen/lock/app_gate.dart';
 import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/lock/lock_store.dart';
 import 'package:lumen/lock/sealed_storage.dart';
+import 'package:lumen/settings/language.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 
@@ -167,7 +168,9 @@ void main() {
       await g.start();
       await g.enableLock(passphrase);
     });
-    await tester.pumpWidget(LumenApp(gate: g));
+    await tester.pumpWidget(
+      LumenApp(gate: g, language: LanguageSetting(MemoryLanguageStore())),
+    );
     await tester.pumpAndSettle();
     expect(find.text('Home node'), findsOneWidget);
 

@@ -488,6 +488,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get security => 'Security';
 
   @override
+  String get general => 'General';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get deviceLanguage => 'Device language';
+
+  @override
   String get appLock => 'App lock';
 
   @override

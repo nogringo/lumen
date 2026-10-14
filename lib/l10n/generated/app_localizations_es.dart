@@ -489,6 +489,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get security => 'Seguridad';
 
   @override
+  String get general => 'General';
+
+  @override
+  String get language => 'Idioma';
+
+  @override
+  String get deviceLanguage => 'Idioma del dispositivo';
+
+  @override
   String get appLock => 'Bloqueo de la app';
 
   @override

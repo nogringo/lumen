@@ -466,6 +466,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get security => '安全';
 
   @override
+  String get general => '通用';
+
+  @override
+  String get language => '语言';
+
+  @override
+  String get deviceLanguage => '设备语言';
+
+  @override
   String get appLock => '应用锁';
 
   @override

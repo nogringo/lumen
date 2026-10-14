@@ -14,6 +14,7 @@ import 'package:lumen/lock/app_gate.dart';
 import 'package:lumen/lock/app_lock.dart';
 import 'package:lumen/lock/lock_store.dart';
 import 'package:lumen/lock/sealed_storage.dart';
+import 'package:lumen/settings/language.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -235,6 +236,7 @@ Future<WalletsController> pumpLumen(
   Size size = phoneSize,
   Brightness brightness = Brightness.light,
   double textScale = 1,
+  LanguageSetting? language,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -246,7 +248,12 @@ Future<WalletsController> pumpLumen(
   final controller = await tester.runAsync(() => loadedController(wallets));
   final gate = testGate(sources, controller!);
   await tester.runAsync(gate.start);
-  await tester.pumpWidget(LumenApp(gate: gate));
+  await tester.pumpWidget(
+    LumenApp(
+      gate: gate,
+      language: language ?? LanguageSetting(MemoryLanguageStore()),
+    ),
+  );
   await tester.runAsync(controller.refreshAll);
   await tester.pumpAndSettle();
   return controller;

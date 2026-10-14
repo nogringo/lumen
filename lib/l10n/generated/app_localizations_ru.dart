@@ -495,6 +495,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get security => 'Безопасность';
 
   @override
+  String get general => 'Общие';
+
+  @override
+  String get language => 'Язык';
+
+  @override
+  String get deviceLanguage => 'Язык устройства';
+
+  @override
   String get appLock => 'Блокировка приложения';
 
   @override

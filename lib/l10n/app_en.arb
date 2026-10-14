@@ -661,6 +661,18 @@
   "@security": {
     "description": "Group title in Settings."
   },
+  "general": "General",
+  "@general": {
+    "description": "Group title in Settings, above Language."
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Settings row, and title of the dialog that picks the language of Lumen."
+  },
+  "deviceLanguage": "Device language",
+  "@deviceLanguage": {
+    "description": "Language choice that follows the language of the phone or computer."
+  },
   "appLock": "App lock",
   "@appLock": {
     "description": "Settings switch that asks for a passphrase when Lumen opens."

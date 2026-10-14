@@ -11,6 +11,7 @@ class Tappable extends StatefulWidget {
     this.borderRadius = 12,
     this.selected = false,
     this.toggled,
+    this.checked,
     this.focusNode,
   });
 
@@ -21,6 +22,9 @@ class Tappable extends StatefulWidget {
 
   /// Makes the row a switch for screen readers, on or off.
   final bool? toggled;
+
+  /// Makes the row one choice of several for screen readers, picked or not.
+  final bool? checked;
   final FocusNode? focusNode;
 
   @override
@@ -34,10 +38,13 @@ class _TappableState extends State<Tappable> {
   Widget build(BuildContext context) {
     final c = LumenColors.of(context);
     final radius = BorderRadius.circular(widget.borderRadius);
+    final plain = widget.toggled == null && widget.checked == null;
     return Semantics(
-      button: widget.toggled == null,
+      button: plain,
       toggled: widget.toggled,
-      selected: widget.toggled == null ? widget.selected : null,
+      checked: widget.checked,
+      inMutuallyExclusiveGroup: widget.checked == null ? null : true,
+      selected: plain ? widget.selected : null,
       child: Material(
         color: widget.selected ? c.surface2 : Colors.transparent,
         borderRadius: radius,
