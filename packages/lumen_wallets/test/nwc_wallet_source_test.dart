@@ -122,6 +122,23 @@ void main() {
     );
   });
 
+  test('an unreachable wallet cannot create an invoice', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
+    final wallet = await sources.nwc.add(uri: uri, name: 'Phone');
+
+    await expectLater(
+      wallet.createInvoice(21),
+      throwsA(
+        isA<ReceiveException>().having(
+          (e) => e.error,
+          'error',
+          ReceiveError.unreachable,
+        ),
+      ),
+    );
+  });
+
   test('adding a malformed string fails with its format error', () async {
     await expectLater(
       sources.nwc.add(uri: 'lnbc1...', name: 'Nope'),

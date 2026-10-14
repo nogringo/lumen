@@ -1,6 +1,6 @@
 # Lumen
 
-Every way you hold bitcoin, in one place. Lumen v1 reads the balance of Lightning wallets connected over Nostr Wallet Connect (NIP-47), on Android, iOS, macOS, Windows, Linux and web. See [SCOPE.md](SCOPE.md) for what v1 covers and [mockups/](mockups/index.html) for the design and accessibility requirements.
+Every way you hold bitcoin, in one place. Lumen v1 reads the balance of Lightning wallets connected over Nostr Wallet Connect (NIP-47) and receives Lightning payments into them, on Android, iOS, macOS, Windows, Linux and web. See [SCOPE.md](SCOPE.md) for what v1 covers and [mockups/](mockups/index.html) for the design and accessibility requirements.
 
 ## Layout
 

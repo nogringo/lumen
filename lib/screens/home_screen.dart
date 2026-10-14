@@ -10,6 +10,7 @@ import '../wallets/wallets_controller.dart';
 import '../widgets/amount.dart';
 import '../widgets/brand.dart';
 import '../widgets/screen_parts.dart';
+import '../widgets/wallet_actions.dart';
 import '../widgets/wallet_row.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,6 +35,8 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 48, child: Brand.title()),
               const SizedBox(height: 24),
               _TotalBalance(wallets),
+              const SizedBox(height: 24),
+              const WalletActions(),
               if (!sidebar) ...[
                 const SizedBox(height: 24),
                 SectionHead(

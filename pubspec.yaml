@@ -22,6 +22,8 @@ dependencies:
     path: packages/lumen_wallets
   material_ui: ^1.6.0
   ndk_flutter: ^0.10.1
+  qr: ^3.0.2
+  share_plus: ^13.3.1
 
 dev_dependencies:
   flutter_test:

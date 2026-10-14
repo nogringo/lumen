@@ -158,4 +158,109 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get refreshBalance => 'Actualiser le solde';
+
+  @override
+  String get receive => 'Recevoir';
+
+  @override
+  String get receiveInto => 'Vers';
+
+  @override
+  String get chooseWallet => 'Choisir le portefeuille qui reçoit';
+
+  @override
+  String get amountLabel => 'Montant en sats';
+
+  @override
+  String get createInvoice => 'Créer la facture';
+
+  @override
+  String get creatingInvoice => 'Création de la facture';
+
+  @override
+  String get errorAmountEmpty => 'Saisissez un montant d\'au moins 1 sat.';
+
+  @override
+  String get receiveUnreachable =>
+      'Lumen n\'a pas pu obtenir de facture de ce portefeuille. Vérifiez qu\'il est en ligne, puis réessayez.';
+
+  @override
+  String get receiveNoPermission =>
+      'Cette connexion ne peut pas créer de factures. Dans votre portefeuille, créez une nouvelle connexion qui autorise la réception de paiements.';
+
+  @override
+  String invoiceQrLabel(String amount) {
+    return 'QR code de la facture Lightning de $amount sats. Le texte de la facture est en dessous, avec un bouton pour le copier.';
+  }
+
+  @override
+  String invoiceText(String text) {
+    return 'Facture $text';
+  }
+
+  @override
+  String get editAmount => 'Modifier le montant';
+
+  @override
+  String get copyInvoice => 'Copier la facture';
+
+  @override
+  String get invoiceCopied => 'Facture copiée';
+
+  @override
+  String get shareInvoice => 'Partager la facture';
+
+  @override
+  String get waitingForPayment => 'En attente du paiement';
+
+  @override
+  String get expiresSoon => 'Expire dans moins d\'une minute';
+
+  @override
+  String expiresInMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Expire dans $minutes minutes',
+      one: 'Expire dans 1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiresInHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Expire dans $hours heures',
+      one: 'Expire dans 1 heure',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invoiceExpired =>
+      'Cette facture a expiré. Créez-en une nouvelle pour recevoir ce paiement.';
+
+  @override
+  String get newInvoice => 'Nouvelle facture';
+
+  @override
+  String get paymentReceived => 'Paiement reçu';
+
+  @override
+  String receivedInto(String name) {
+    return 'Vers $name';
+  }
+
+  @override
+  String receivedAnnouncement(String amount, String name) {
+    return 'Paiement reçu : $amount sats vers $name';
+  }
+
+  @override
+  String get done => 'Terminé';
+
+  @override
+  String get close => 'Fermer';
 }

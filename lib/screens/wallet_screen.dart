@@ -10,6 +10,7 @@ import '../wallets/lumen_scope.dart';
 import '../wallets/wallets_controller.dart';
 import '../widgets/amount.dart';
 import '../widgets/screen_parts.dart';
+import '../widgets/wallet_actions.dart';
 import '../widgets/wallet_kind_style.dart';
 
 class WalletScreen extends StatelessWidget {
@@ -76,6 +77,8 @@ class WalletScreen extends StatelessWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 24),
+              WalletActions(wallet: wallet),
             ],
           ),
         ),

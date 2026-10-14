@@ -137,3 +137,25 @@ class ScreenTitle extends StatelessWidget {
     );
   }
 }
+
+/// A label above the field, read together with it by screen readers.
+class LabeledField extends StatelessWidget {
+  const LabeledField({super.key, required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return MergeSemantics(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(label, style: Theme.of(context).textTheme.labelMedium),
+          const SizedBox(height: 8),
+          child,
+        ],
+      ),
+    );
+  }
+}

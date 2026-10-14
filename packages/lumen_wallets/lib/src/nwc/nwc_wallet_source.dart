@@ -5,7 +5,7 @@ import 'dart:math';
 
 import 'package:ndk/domain_layer/repositories/wallets_repo.dart';
 import 'package:ndk/entities.dart' as ndk show NwcWallet, WalletType;
-import 'package:ndk/ndk.dart' show Ndk, NwcMethod;
+import 'package:ndk/ndk.dart' show Ndk, NwcConnection, NwcMethod;
 
 import '../wallet.dart';
 import 'nwc_uri.dart';
@@ -22,6 +22,7 @@ final class NwcWalletSource implements WalletSource {
   final Map<String, Future<void>> _registering = {};
 
   static const _timeout = Duration(seconds: 30);
+  static const _paymentCheckInterval = Duration(seconds: 5);
 
   @override
   Future<List<Wallet>> load() async => [
@@ -102,6 +103,110 @@ final class NwcWalletSource implements WalletSource {
     }
   }
 
+  /// The registered wallet with a live connection, reconnecting if needed.
+  Future<ndk.NwcWallet> _connected(String id) async {
+    await _registered(id);
+    final wallet = await _ndk.wallets.reconnectWallet(id) as ndk.NwcWallet;
+    if (wallet.connection == null) throw StateError('NWC wallet $id offline');
+    return wallet;
+  }
+
+  Future<Invoice> _createInvoice(String id, int sats) async {
+    final ndk.NwcWallet wallet;
+    try {
+      wallet = await _connected(id).timeout(_timeout);
+    } catch (_) {
+      throw const ReceiveException(ReceiveError.unreachable);
+    }
+    final connection = wallet.connection!;
+    final permissions = connection.permissions;
+    if (permissions.isNotEmpty &&
+        !permissions.contains(NwcMethod.MAKE_INVOICE.name)) {
+      throw const ReceiveException(ReceiveError.noPermission);
+    }
+
+    try {
+      final response = await _ndk.nwc
+          .makeInvoice(connection, amountSats: sats)
+          .timeout(_timeout);
+      final expiresAt = response.expiresAt;
+      return Invoice(
+        request: response.invoice,
+        sats: response.amountSat,
+        paymentHash: response.paymentHash.isEmpty ? null : response.paymentHash,
+        expiresAt: expiresAt == null
+            ? null
+            : DateTime.fromMillisecondsSinceEpoch(expiresAt * 1000),
+      );
+    } catch (_) {
+      await _dropConnection(wallet);
+      throw const ReceiveException(ReceiveError.unreachable);
+    }
+  }
+
+  /// Listens for the wallet's payment notifications, and also looks the
+  /// invoice up regularly since not every wallet sends them.
+  Stream<void> _watchPayment(String id, Invoice invoice) {
+    final controller = StreamController<void>();
+    StreamSubscription<void>? notifications;
+    NwcConnection? listening;
+    Timer? timer;
+    var checking = false;
+    var stopped = false;
+
+    bool matches(String request, String paymentHash) =>
+        request == invoice.request || paymentHash == invoice.paymentHash;
+
+    void paid() {
+      if (stopped || controller.isClosed) return;
+      controller.add(null);
+      controller.close();
+    }
+
+    Future<void> check() async {
+      if (checking || stopped || controller.isClosed) return;
+      checking = true;
+      try {
+        final connection = (await _connected(id).timeout(_timeout)).connection!;
+        if (stopped) return;
+        if (!identical(connection, listening)) {
+          await notifications?.cancel();
+          listening = connection;
+          notifications = connection.paymentsReceivedStream
+              .where((n) => matches(n.invoice, n.paymentHash))
+              .listen((_) => paid());
+        }
+        if (connection.permissions.contains(NwcMethod.LOOKUP_INVOICE.name)) {
+          final hash = invoice.paymentHash;
+          final found = await _ndk.nwc
+              .lookupInvoice(
+                connection,
+                paymentHash: hash,
+                invoice: hash == null ? invoice.request : null,
+              )
+              .timeout(_timeout);
+          if (found.settledAt != null || found.state == 'settled') paid();
+        }
+      } catch (_) {
+        // Tried again on the next tick.
+      } finally {
+        checking = false;
+      }
+    }
+
+    controller
+      ..onListen = () {
+        check();
+        timer = Timer.periodic(_paymentCheckInterval, (_) => check());
+      }
+      ..onCancel = () {
+        stopped = true;
+        timer?.cancel();
+        return notifications?.cancel();
+      };
+    return controller.stream;
+  }
+
   /// ndk never reconnects a wallet that holds a connection, even a dead one,
   /// so drop it to let the next refresh connect again.
   Future<void> _dropConnection(ndk.NwcWallet wallet) async {
@@ -164,6 +269,13 @@ final class _NwcWallet implements Wallet {
 
   @override
   Future<int> fetchBalance() => _source._fetchBalance(id);
+
+  @override
+  Future<Invoice> createInvoice(int sats) => _source._createInvoice(id, sats);
+
+  @override
+  Stream<void> watchPayment(Invoice invoice) =>
+      _source._watchPayment(id, invoice);
 
   @override
   Future<void> rename(String name) async {

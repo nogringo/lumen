@@ -1,38 +1,16 @@
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'fakes.dart';
 
-const _phone = Size(390, 844);
-const _desktop = Size(1440, 900);
-
 void main() {
   late WalletSources sources;
 
   setUpAll(() => sources = memorySources());
   tearDownAll(() => sources.dispose());
-
-  Future<void> pumpLumen(
-    WidgetTester tester, {
-    required List<FakeWallet> wallets,
-    Size size = _phone,
-    Brightness brightness = Brightness.light,
-    double textScale = 1,
-  }) async {
-    tester.view.physicalSize = size;
-    tester.view.devicePixelRatio = 1;
-    tester.platformDispatcher.platformBrightnessTestValue = brightness;
-    tester.platformDispatcher.textScaleFactorTestValue = textScale;
-    addTearDown(tester.view.reset);
-    addTearDown(tester.platformDispatcher.clearAllTestValues);
-
-    final controller = await tester.runAsync(() => loadedController(wallets));
-    await tester.pumpWidget(testApp(sources, controller!));
-    await tester.runAsync(controller.refreshAll);
-    await tester.pumpAndSettle();
-  }
 
   List<FakeWallet> twoWallets() => [
     FakeWallet('home', 'Home node', balance: 152300),
@@ -47,20 +25,24 @@ void main() {
   }
 
   for (final brightness in Brightness.values) {
-    for (final (name, size) in [('phone', _phone), ('desktop', _desktop)]) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
       testWidgets('home meets the guidelines, $name, ${brightness.name}', (
         tester,
       ) async {
         final handle = tester.ensureSemantics();
         await pumpLumen(
           tester,
+          sources,
           wallets: twoWallets(),
           size: size,
           brightness: brightness,
         );
         await expectGuidelines(tester);
         handle.dispose();
-      });
+      }, variant: _platformFor(size));
 
       testWidgets('welcome meets the guidelines, $name, ${brightness.name}', (
         tester,
@@ -68,21 +50,93 @@ void main() {
         final handle = tester.ensureSemantics();
         await pumpLumen(
           tester,
+          sources,
           wallets: [],
           size: size,
           brightness: brightness,
         );
         await expectGuidelines(tester);
         handle.dispose();
-      });
+      }, variant: _platformFor(size));
     }
+  }
+
+  Future<void> openInvoice(WidgetTester tester) async {
+    await tester.tap(find.text('Receive'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField), '21000');
+    await tester.tap(find.text('Create invoice'));
+    await tester.pumpAndSettle();
+  }
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets('receive meets the guidelines, $name, ${brightness.name}', (
+        tester,
+      ) async {
+        final handle = tester.ensureSemantics();
+        final wallets = twoWallets();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: wallets,
+          size: size,
+          brightness: brightness,
+        );
+
+        await tester.tap(find.text('Receive'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+
+        await tester.tap(find.text('Into'));
+        await tester.pumpAndSettle();
+        expect(find.byType(MenuItemButton), findsNWidgets(2));
+        await expectGuidelines(tester);
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextField), '21000');
+        await tester.tap(find.text('Create invoice'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+
+        wallets.first.pay();
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('receive lays out at 200% text, $name', (tester) async {
+      final wallets = twoWallets();
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: wallets,
+        size: size,
+        textScale: 2,
+      );
+
+      await openInvoice(tester);
+      expect(tester.takeException(), isNull, reason: 'invoice');
+
+      wallets.first.pay();
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'paid');
+      expect(find.text('Payment received'), findsOneWidget);
+    }, variant: _platformFor(size));
   }
 
   testWidgets('a wallet row reads as one item with its kind and unit', (
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpLumen(tester, wallets: twoWallets());
+    await pumpLumen(tester, sources, wallets: twoWallets());
 
     expect(
       find.bySemanticsLabel(
@@ -103,7 +157,7 @@ void main() {
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpLumen(tester, wallets: twoWallets());
+    await pumpLumen(tester, sources, wallets: twoWallets());
 
     final total = tester.getSemantics(
       find.bySemanticsLabel(
@@ -119,7 +173,7 @@ void main() {
 
   testWidgets('the short Add link is announced as Add wallet', (tester) async {
     final handle = tester.ensureSemantics();
-    await pumpLumen(tester, wallets: twoWallets());
+    await pumpLumen(tester, sources, wallets: twoWallets());
 
     final add = tester.getSemantics(find.bySemanticsLabel('Add wallet'));
     expect(add.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
@@ -130,7 +184,7 @@ void main() {
     tester,
   ) async {
     final handle = tester.ensureSemantics();
-    await pumpLumen(tester, wallets: twoWallets());
+    await pumpLumen(tester, sources, wallets: twoWallets());
 
     await tester.tap(find.text('Home node'));
     await tester.pumpAndSettle();
@@ -142,11 +196,19 @@ void main() {
     handle.dispose();
   });
 
-  for (final (name, size) in [('phone', _phone), ('desktop', _desktop)]) {
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
     testWidgets('every screen lays out at 200% text, $name', (tester) async {
-      await pumpLumen(tester, wallets: twoWallets(), size: size, textScale: 2);
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: twoWallets(),
+        size: size,
+        textScale: 2,
+      );
       expect(tester.takeException(), isNull, reason: 'home');
 
+      await tester.ensureVisible(find.text('Offline node').first);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Offline node').first);
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'wallet');
@@ -157,25 +219,25 @@ void main() {
       await tester.tap(find.text('Rename'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'rename dialog');
-    });
+    }, variant: _platformFor(size));
 
     testWidgets('welcome and connect lay out at 200% text, $name', (
       tester,
     ) async {
-      await pumpLumen(tester, wallets: [], size: size, textScale: 2);
+      await pumpLumen(tester, sources, wallets: [], size: size, textScale: 2);
       expect(tester.takeException(), isNull, reason: 'welcome');
 
       await tester.tap(find.text('Add a wallet'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'connect');
-    });
+    }, variant: _platformFor(size));
   }
 
-  for (final (name, size) in [('phone', _phone), ('desktop', _desktop)]) {
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
     testWidgets('welcome and connect fit without scrolling, $name', (
       tester,
     ) async {
-      await pumpLumen(tester, wallets: [], size: size);
+      await pumpLumen(tester, sources, wallets: [], size: size);
       expect(_maxScroll(tester), 0, reason: 'welcome');
 
       await tester.tap(find.text('Add a wallet'));
@@ -185,7 +247,7 @@ void main() {
         find.widgetWithText(FilledButton, 'Connect'),
       );
       expect(button.bottom, lessThanOrEqualTo(size.height - 32));
-    });
+    }, variant: _platformFor(size));
   }
 
   testWidgets('a connection without balance permission says how to fix it', (
@@ -193,6 +255,7 @@ void main() {
   ) async {
     await pumpLumen(
       tester,
+      sources,
       wallets: [
         FakeWallet('ro', 'Read only', error: BalanceError.noPermission),
       ],
@@ -213,7 +276,7 @@ void main() {
   testWidgets('an invalid connection string shows an inline fix', (
     tester,
   ) async {
-    await pumpLumen(tester, wallets: []);
+    await pumpLumen(tester, sources, wallets: []);
 
     await tester.tap(find.text('Add a wallet'));
     await tester.pumpAndSettle();
@@ -242,3 +305,8 @@ double _maxScroll(WidgetTester tester) => tester
     )
     .position
     .maxScrollExtent;
+
+/// Desktop runs as macOS, whose default compact density shrinks controls.
+TestVariant<Object?> _platformFor(Size size) => size == desktopSize
+    ? TargetPlatformVariant.only(TargetPlatform.macOS)
+    : const DefaultTestVariant();

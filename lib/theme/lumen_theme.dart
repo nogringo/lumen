@@ -62,6 +62,8 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
 
   return ThemeData(
     brightness: brightness,
+    // Desktop defaults to compact, which shrinks 48 dp targets to 40.
+    visualDensity: VisualDensity.standard,
     fontFamily: 'Geist',
     colorScheme: ColorScheme(
       brightness: brightness,
@@ -161,6 +163,42 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
       ),
       titleTextStyle: text.titleMedium,
       contentTextStyle: TextStyle(fontSize: 15, height: 1.5, color: c.text2),
+    ),
+    menuTheme: MenuThemeData(
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(c.surface3),
+        surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
+        padding: const WidgetStatePropertyAll(EdgeInsets.all(6)),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        ),
+      ),
+    ),
+    menuButtonTheme: MenuButtonThemeData(
+      style: ButtonStyle(
+        foregroundColor: WidgetStatePropertyAll(c.text),
+        minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        ),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+        textStyle: const WidgetStatePropertyAll(
+          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+        ),
+        side: focusSide(c.focus),
+        // Focus shows as the ring alone, as in Tappable.
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.pressed)) {
+            return c.text.withValues(alpha: 0.10);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return c.text.withValues(alpha: 0.06);
+          }
+          return Colors.transparent;
+        }),
+      ),
     ),
     popupMenuTheme: PopupMenuThemeData(
       color: c.surface2,

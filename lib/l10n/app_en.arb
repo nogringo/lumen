@@ -191,5 +191,142 @@
   "refreshBalance": "Refresh balance",
   "@refreshBalance": {
     "description": "Accessibility action on a wallet balance that reloads it."
+  },
+  "receive": "Receive",
+  "@receive": {
+    "description": "Action that opens the receive flow, and title of that screen."
+  },
+  "receiveInto": "Into",
+  "@receiveInto": {
+    "description": "Label above the wallet that will receive the payment."
+  },
+  "chooseWallet": "Choose the wallet that receives",
+  "@chooseWallet": {
+    "description": "Accessibility hint of the wallet picker on the receive screen."
+  },
+  "amountLabel": "Amount in sats",
+  "@amountLabel": {
+    "description": "Label of the amount field."
+  },
+  "createInvoice": "Create invoice",
+  "@createInvoice": {
+    "description": "Button that asks the wallet for a Lightning invoice."
+  },
+  "creatingInvoice": "Creating invoice",
+  "@creatingInvoice": {
+    "description": "Button label while the wallet creates the invoice."
+  },
+  "errorAmountEmpty": "Enter an amount of at least 1 sat.",
+  "@errorAmountEmpty": {
+    "description": "Error when the amount to receive is empty or zero."
+  },
+  "receiveUnreachable": "Lumen could not get an invoice from this wallet. Check that it is online, then try again.",
+  "@receiveUnreachable": {
+    "description": "Error when the wallet did not create the invoice."
+  },
+  "receiveNoPermission": "This connection cannot create invoices. In your wallet, create a new connection that allows receiving payments.",
+  "@receiveNoPermission": {
+    "description": "Error when the NWC connection lacks the permission to create invoices."
+  },
+  "invoiceQrLabel": "QR code of the Lightning invoice for {amount} sats. The invoice text is below, with a copy button.",
+  "@invoiceQrLabel": {
+    "description": "Accessible description of the invoice QR code.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "invoiceText": "Invoice {text}",
+  "@invoiceText": {
+    "description": "Accessible label of the shortened invoice text.",
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "editAmount": "Edit amount",
+  "@editAmount": {
+    "description": "Link that goes back to the amount field."
+  },
+  "copyInvoice": "Copy invoice",
+  "@copyInvoice": {
+    "description": "Tooltip and accessible name of the copy button."
+  },
+  "invoiceCopied": "Invoice copied",
+  "@invoiceCopied": {
+    "description": "Announced to screen readers after copying the invoice."
+  },
+  "shareInvoice": "Share invoice",
+  "@shareInvoice": {
+    "description": "Tooltip and accessible name of the share button."
+  },
+  "waitingForPayment": "Waiting for payment",
+  "@waitingForPayment": {
+    "description": "Status under the invoice until it is paid."
+  },
+  "expiresSoon": "Expires in less than a minute",
+  "@expiresSoon": {
+    "description": "Time left on an invoice, under one minute."
+  },
+  "expiresInMinutes": "{minutes, plural, =1{Expires in 1 minute} other{Expires in {minutes} minutes}}",
+  "@expiresInMinutes": {
+    "description": "Time left on an invoice.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "expiresInHours": "{hours, plural, =1{Expires in 1 hour} other{Expires in {hours} hours}}",
+  "@expiresInHours": {
+    "description": "Time left on an invoice.",
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "invoiceExpired": "This invoice expired. Create a new one to receive this payment.",
+  "@invoiceExpired": {
+    "description": "Shown when the invoice can no longer be paid."
+  },
+  "newInvoice": "New invoice",
+  "@newInvoice": {
+    "description": "Button that replaces an expired invoice."
+  },
+  "paymentReceived": "Payment received",
+  "@paymentReceived": {
+    "description": "Title shown once the invoice is paid."
+  },
+  "receivedInto": "Into {name}",
+  "@receivedInto": {
+    "description": "Wallet that received the payment, under the amount.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "receivedAnnouncement": "Payment received: {amount} sats into {name}",
+  "@receivedAnnouncement": {
+    "description": "Announced to screen readers when the invoice is paid.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "Done",
+  "@done": {
+    "description": "Button that closes the receive flow after a payment."
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Tooltip and accessible name of the dialog close button."
   }
 }

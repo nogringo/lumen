@@ -157,4 +157,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refreshBalance => 'Refresh balance';
+
+  @override
+  String get receive => 'Receive';
+
+  @override
+  String get receiveInto => 'Into';
+
+  @override
+  String get chooseWallet => 'Choose the wallet that receives';
+
+  @override
+  String get amountLabel => 'Amount in sats';
+
+  @override
+  String get createInvoice => 'Create invoice';
+
+  @override
+  String get creatingInvoice => 'Creating invoice';
+
+  @override
+  String get errorAmountEmpty => 'Enter an amount of at least 1 sat.';
+
+  @override
+  String get receiveUnreachable =>
+      'Lumen could not get an invoice from this wallet. Check that it is online, then try again.';
+
+  @override
+  String get receiveNoPermission =>
+      'This connection cannot create invoices. In your wallet, create a new connection that allows receiving payments.';
+
+  @override
+  String invoiceQrLabel(String amount) {
+    return 'QR code of the Lightning invoice for $amount sats. The invoice text is below, with a copy button.';
+  }
+
+  @override
+  String invoiceText(String text) {
+    return 'Invoice $text';
+  }
+
+  @override
+  String get editAmount => 'Edit amount';
+
+  @override
+  String get copyInvoice => 'Copy invoice';
+
+  @override
+  String get invoiceCopied => 'Invoice copied';
+
+  @override
+  String get shareInvoice => 'Share invoice';
+
+  @override
+  String get waitingForPayment => 'Waiting for payment';
+
+  @override
+  String get expiresSoon => 'Expires in less than a minute';
+
+  @override
+  String expiresInMinutes(int minutes) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'Expires in $minutes minutes',
+      one: 'Expires in 1 minute',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String expiresInHours(int hours) {
+    String _temp0 = intl.Intl.pluralLogic(
+      hours,
+      locale: localeName,
+      other: 'Expires in $hours hours',
+      one: 'Expires in 1 hour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get invoiceExpired =>
+      'This invoice expired. Create a new one to receive this payment.';
+
+  @override
+  String get newInvoice => 'New invoice';
+
+  @override
+  String get paymentReceived => 'Payment received';
+
+  @override
+  String receivedInto(String name) {
+    return 'Into $name';
+  }
+
+  @override
+  String receivedAnnouncement(String amount, String name) {
+    return 'Payment received: $amount sats into $name';
+  }
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get close => 'Close';
 }

@@ -355,6 +355,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh balance'**
   String get refreshBalance;
+
+  /// Action that opens the receive flow, and title of that screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get receive;
+
+  /// Label above the wallet that will receive the payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Into'**
+  String get receiveInto;
+
+  /// Accessibility hint of the wallet picker on the receive screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the wallet that receives'**
+  String get chooseWallet;
+
+  /// Label of the amount field.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount in sats'**
+  String get amountLabel;
+
+  /// Button that asks the wallet for a Lightning invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Create invoice'**
+  String get createInvoice;
+
+  /// Button label while the wallet creates the invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating invoice'**
+  String get creatingInvoice;
+
+  /// Error when the amount to receive is empty or zero.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount of at least 1 sat.'**
+  String get errorAmountEmpty;
+
+  /// Error when the wallet did not create the invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not get an invoice from this wallet. Check that it is online, then try again.'**
+  String get receiveUnreachable;
+
+  /// Error when the NWC connection lacks the permission to create invoices.
+  ///
+  /// In en, this message translates to:
+  /// **'This connection cannot create invoices. In your wallet, create a new connection that allows receiving payments.'**
+  String get receiveNoPermission;
+
+  /// Accessible description of the invoice QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code of the Lightning invoice for {amount} sats. The invoice text is below, with a copy button.'**
+  String invoiceQrLabel(String amount);
+
+  /// Accessible label of the shortened invoice text.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {text}'**
+  String invoiceText(String text);
+
+  /// Link that goes back to the amount field.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit amount'**
+  String get editAmount;
+
+  /// Tooltip and accessible name of the copy button.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy invoice'**
+  String get copyInvoice;
+
+  /// Announced to screen readers after copying the invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice copied'**
+  String get invoiceCopied;
+
+  /// Tooltip and accessible name of the share button.
+  ///
+  /// In en, this message translates to:
+  /// **'Share invoice'**
+  String get shareInvoice;
+
+  /// Status under the invoice until it is paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for payment'**
+  String get waitingForPayment;
+
+  /// Time left on an invoice, under one minute.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires in less than a minute'**
+  String get expiresSoon;
+
+  /// Time left on an invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =1{Expires in 1 minute} other{Expires in {minutes} minutes}}'**
+  String expiresInMinutes(int minutes);
+
+  /// Time left on an invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours, plural, =1{Expires in 1 hour} other{Expires in {hours} hours}}'**
+  String expiresInHours(int hours);
+
+  /// Shown when the invoice can no longer be paid.
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice expired. Create a new one to receive this payment.'**
+  String get invoiceExpired;
+
+  /// Button that replaces an expired invoice.
+  ///
+  /// In en, this message translates to:
+  /// **'New invoice'**
+  String get newInvoice;
+
+  /// Title shown once the invoice is paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received'**
+  String get paymentReceived;
+
+  /// Wallet that received the payment, under the amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Into {name}'**
+  String receivedInto(String name);
+
+  /// Announced to screen readers when the invoice is paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received: {amount} sats into {name}'**
+  String receivedAnnouncement(String amount, String name);
+
+  /// Button that closes the receive flow after a payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// Tooltip and accessible name of the dialog close button.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 }
 
 class _AppLocalizationsDelegate

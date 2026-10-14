@@ -5,6 +5,7 @@ import 'layout/app_shell.dart';
 import 'layout/layout.dart';
 import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/receive_screen.dart';
 import 'screens/wallet_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'wallets/wallets_controller.dart';
@@ -15,7 +16,8 @@ GoRouter createRouter(WalletsController wallets) {
     redirect: (context, state) {
       final path = state.uri.path;
       final empty = wallets.wallets.isEmpty;
-      if (empty && (path == '/' || path.startsWith('/wallet/'))) {
+      if (empty &&
+          (path == '/' || path == '/receive' || path.startsWith('/wallet/'))) {
         return '/welcome';
       }
       if (!empty && path == '/welcome') return '/';
@@ -40,6 +42,14 @@ GoRouter createRouter(WalletsController wallets) {
             path: '/connect',
             pageBuilder: (context, state) =>
                 _page(context, state, const ConnectNwcScreen()),
+          ),
+          GoRoute(
+            path: '/receive',
+            pageBuilder: (context, state) => _page(
+              context,
+              state,
+              ReceiveScreen(walletId: state.uri.queryParameters['wallet']),
+            ),
           ),
           GoRoute(
             path: '/wallet/:id',

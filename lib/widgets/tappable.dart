@@ -10,12 +10,14 @@ class Tappable extends StatefulWidget {
     required this.child,
     this.borderRadius = 12,
     this.selected = false,
+    this.focusNode,
   });
 
   final VoidCallback onTap;
   final Widget child;
   final double borderRadius;
   final bool selected;
+  final FocusNode? focusNode;
 
   @override
   State<Tappable> createState() => _TappableState();
@@ -36,6 +38,7 @@ class _TappableState extends State<Tappable> {
         borderRadius: radius,
         child: InkWell(
           onTap: widget.onTap,
+          focusNode: widget.focusNode,
           onFocusChange: (focused) => setState(() => _focused = focused),
           borderRadius: radius,
           focusColor: Colors.transparent,
