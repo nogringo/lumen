@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -204,5 +205,59 @@ void main() {
       [for (final item in controller.recentActivity) item.transaction.id],
       ['kept'],
     );
+  });
+
+  test('a background refresh skips wallets tried recently', () async {
+    var now = DateTime(2026, 10, 15);
+    await withClock(Clock(() => now), () async {
+      final wallet = FakeWallet('a', 'Home node', balance: 5);
+      final controller = await loadedController([wallet]);
+      await controller.refreshAll();
+      final before = wallet.fetchCount;
+
+      now = now.add(const Duration(seconds: 29));
+      await controller.refreshStale();
+      expect(wallet.fetchCount, before);
+
+      now = now.add(const Duration(seconds: 1));
+      await controller.refreshStale();
+      expect(wallet.fetchCount, before + 1);
+    });
+  });
+
+  test('a background refresh keeps a failed wallet unavailable', () async {
+    final wallet = FakeWallet('a', 'Offline', error: BalanceError.unreachable)
+      ..activityError = ActivityError.unreachable;
+    final controller = await loadedController([
+      wallet,
+    ], staleAfter: Duration.zero);
+    await controller.refreshAll();
+    var notified = false;
+    controller.addListener(() => notified = true);
+
+    final refreshing = controller.refreshStale();
+    expect(notified, isFalse);
+    expect(controller.balanceOf(wallet).failed, isTrue);
+    expect(controller.balanceOf(wallet).loading, isFalse);
+    expect(controller.activityOf(wallet).error, ActivityError.unreachable);
+    await refreshing;
+
+    expect(controller.balanceOf(wallet).failed, isTrue);
+  });
+
+  test('trying again shows loading during a background refresh', () async {
+    final wallet = FakeWallet('a', 'Offline', error: BalanceError.unreachable);
+    final controller = await loadedController([
+      wallet,
+    ], staleAfter: Duration.zero);
+    await controller.refreshAll();
+
+    final background = controller.refreshStale();
+    final retry = controller.refresh(wallet);
+    expect(controller.balanceOf(wallet).loading, isTrue);
+    await Future.wait([background, retry]);
+
+    expect(wallet.fetchCount, 2);
+    expect(controller.balanceOf(wallet).failed, isTrue);
   });
 }

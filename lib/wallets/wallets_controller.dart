@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 
@@ -29,7 +30,14 @@ class ActivityState {
 typedef WalletTransaction = ({Wallet wallet, Transaction transaction});
 
 class WalletsController extends ChangeNotifier {
-  WalletsController(this._sources, {required this._cache});
+  WalletsController(
+    this._sources, {
+    required this._cache,
+    this.staleAfter = const Duration(seconds: 30),
+  });
+
+  /// How long [refreshStale] leaves a wallet alone after an attempt.
+  final Duration staleAfter;
 
   final List<WalletSource> _sources;
   final WalletCache _cache;
@@ -37,6 +45,7 @@ class WalletsController extends ChangeNotifier {
   final Map<String, BalanceState> _balances = {};
   final Map<String, ActivityState> _activity = {};
   final Map<String, Future<void>> _refreshing = {};
+  final Map<String, DateTime> _attemptedAt = {};
   final _listRevision = ValueNotifier(0);
 
   List<Wallet> get wallets => List.unmodifiable(_wallets);
@@ -101,10 +110,39 @@ class WalletsController extends ChangeNotifier {
   Future<void> refreshAll() =>
       Future.wait([for (final w in _wallets) refresh(w)]);
 
-  Future<void> refresh(Wallet wallet) =>
-      _refreshing[wallet.id] ??= _refresh(wallet);
+  /// Background refresh, for when the app comes back to the foreground. It
+  /// skips wallets tried within [staleAfter] and shows no loading state, so a
+  /// wallet that stays unreachable does not flicker.
+  Future<void> refreshStale() => Future.wait([
+    for (final w in _wallets)
+      if (_isStale(w)) refresh(w, quiet: true),
+  ]);
+
+  bool _isStale(Wallet wallet) {
+    final at = _attemptedAt[wallet.id];
+    return at == null || clock.now().difference(at) >= staleAfter;
+  }
+
+  /// A [quiet] refresh keeps the current state on screen until it settles.
+  Future<void> refresh(Wallet wallet, {bool quiet = false}) {
+    if (!quiet) _showLoading(wallet);
+    return _refreshing[wallet.id] ??= _refresh(wallet);
+  }
+
+  void _showLoading(Wallet wallet) {
+    _balances[wallet.id] = BalanceState(
+      sats: _balances[wallet.id]?.sats,
+      loading: true,
+    );
+    _activity[wallet.id] = ActivityState(
+      transactions: _activity[wallet.id]?.transactions,
+      loading: true,
+    );
+    notifyListeners();
+  }
 
   Future<void> _refresh(Wallet wallet) async {
+    _attemptedAt[wallet.id] = clock.now();
     try {
       await Future.wait([_refreshBalance(wallet), _refreshActivity(wallet)]);
     } finally {
@@ -113,11 +151,6 @@ class WalletsController extends ChangeNotifier {
   }
 
   Future<void> _refreshBalance(Wallet wallet) async {
-    _balances[wallet.id] = BalanceState(
-      sats: _balances[wallet.id]?.sats,
-      loading: true,
-    );
-    notifyListeners();
     BalanceState result;
     try {
       result = BalanceState(sats: await wallet.fetchBalance());
@@ -136,8 +169,6 @@ class WalletsController extends ChangeNotifier {
 
   Future<void> _refreshActivity(Wallet wallet) async {
     final known = _activity[wallet.id]?.transactions;
-    _activity[wallet.id] = ActivityState(transactions: known, loading: true);
-    notifyListeners();
     ActivityState result;
     try {
       result = ActivityState(transactions: await wallet.fetchTransactions());
@@ -177,6 +208,7 @@ class WalletsController extends ChangeNotifier {
     _wallets.remove(wallet);
     _balances.remove(wallet.id);
     _activity.remove(wallet.id);
+    _attemptedAt.remove(wallet.id);
     _listChanged();
     unawaited(_cache.delete(wallet.id).catchError((Object _) {}));
   }

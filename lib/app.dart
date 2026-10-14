@@ -23,7 +23,7 @@ class LumenApp extends StatefulWidget {
 
 class _LumenAppState extends State<LumenApp> {
   late final AppLifecycleListener _lifecycle = AppLifecycleListener(
-    onResume: _refresh,
+    onResume: () => widget.gate.session?.wallets.refreshStale(),
   );
   LumenSession? _routedSession;
   GoRouter? _router;

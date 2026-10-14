@@ -222,10 +222,13 @@ String fakeBolt11(
 Future<WalletsController> loadedController(
   List<Wallet> wallets, {
   WalletCache? cache,
+  Duration staleAfter = const Duration(seconds: 30),
 }) async {
-  final controller = WalletsController([
-    FakeSource(wallets),
-  ], cache: cache ?? MemoryWalletCache());
+  final controller = WalletsController(
+    [FakeSource(wallets)],
+    cache: cache ?? MemoryWalletCache(),
+    staleAfter: staleAfter,
+  );
   await controller.load();
   return controller;
 }
