@@ -1,6 +1,5 @@
 import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -72,7 +71,7 @@ class WalletScreen extends StatelessWidget {
                       foregroundColor: c.text,
                       minimumSize: const Size(0, 48),
                     ),
-                    icon: const Icon(LucideIcons.rotateCw, size: 18),
+                    icon: const Icon(Icons.refresh, size: 18),
                     label: Text(l.tryAgain),
                   ),
                 ),
@@ -123,7 +122,7 @@ class _WalletMenu extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return PopupMenuButton<_Action>(
       tooltip: l.walletOptions(wallet.name),
-      icon: const Icon(LucideIcons.ellipsis),
+      icon: const Icon(Icons.more_horiz),
       onSelected: (action) => switch (action) {
         _Action.rename => _rename(context),
         _Action.remove => _remove(context),
@@ -133,7 +132,7 @@ class _WalletMenu extends StatelessWidget {
           value: _Action.rename,
           child: Row(
             children: [
-              const Icon(LucideIcons.pencil, size: 18),
+              const Icon(Icons.edit_outlined, size: 18),
               const SizedBox(width: 12),
               Text(l.rename),
             ],
@@ -143,7 +142,7 @@ class _WalletMenu extends StatelessWidget {
           value: _Action.remove,
           child: Row(
             children: [
-              const Icon(LucideIcons.trash2, size: 18),
+              const Icon(Icons.delete_outline, size: 18),
               const SizedBox(width: 12),
               Text(l.remove),
             ],

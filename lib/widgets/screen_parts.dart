@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -15,7 +14,7 @@ class LumenBackButton extends StatelessWidget {
       style: IconButton.styleFrom(
         backgroundColor: LumenColors.of(context).surface2,
       ),
-      icon: const Icon(LucideIcons.chevronLeft),
+      icon: const Icon(Icons.chevron_left),
       onPressed: () => context.canPop() ? context.pop() : context.go('/'),
     );
   }

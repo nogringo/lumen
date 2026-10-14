@@ -1,6 +1,5 @@
 import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -68,7 +67,7 @@ class _Sidebar extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           _NavItem(
-            leading: const Icon(LucideIcons.house),
+            leading: const Icon(Icons.home_outlined),
             label: l.overview,
             selected: location == '/',
             onTap: () => context.go('/'),
@@ -116,7 +115,7 @@ class _Sidebar extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 12),
               ),
               onPressed: () => context.go('/connect'),
-              icon: const Icon(LucideIcons.plus),
+              icon: const Icon(Icons.add),
               label: Text(l.addWallet),
             ),
           ),

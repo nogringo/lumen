@@ -1,6 +1,5 @@
 import 'package:flutter/semantics.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -41,7 +40,7 @@ class HomeScreen extends StatelessWidget {
                   title: l.wallets,
                   action: TextButton.icon(
                     onPressed: () => context.push('/connect'),
-                    icon: const Icon(LucideIcons.plus),
+                    icon: const Icon(Icons.add),
                     label: Text(l.add, semanticsLabel: l.addWallet),
                   ),
                 ),
@@ -97,7 +96,7 @@ class _TotalBalance extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              Icon(LucideIcons.circleAlert, size: 16, color: c.text2),
+              Icon(Icons.error_outline, size: 16, color: c.text2),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(

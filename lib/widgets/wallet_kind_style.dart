@@ -1,4 +1,3 @@
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -7,10 +6,10 @@ import '../theme/lumen_colors.dart';
 
 extension WalletKindStyle on WalletKind {
   IconData get icon => switch (this) {
-    WalletKind.lightning => LucideIcons.zap,
-    WalletKind.ecash => LucideIcons.coins,
-    WalletKind.onchain => LucideIcons.box,
-    WalletKind.liquid => LucideIcons.droplet,
+    WalletKind.lightning => Icons.bolt,
+    WalletKind.ecash => Icons.toll_outlined,
+    WalletKind.onchain => Icons.inventory_2_outlined,
+    WalletKind.liquid => Icons.water_drop_outlined,
   };
 
   Color color(LumenColors c) => switch (this) {

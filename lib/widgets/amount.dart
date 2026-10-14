@@ -1,5 +1,4 @@
 import 'package:intl/intl.dart';
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -97,7 +96,7 @@ class BalanceValue extends StatelessWidget {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(LucideIcons.circleAlert, size: 16, color: c.text2),
+          Icon(Icons.error_outline, size: 16, color: c.text2),
           const SizedBox(width: 6),
           Flexible(
             child: Text(

@@ -1,4 +1,3 @@
-import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../theme/lumen_colors.dart';
@@ -21,7 +20,7 @@ class LogoMark extends StatelessWidget {
           color: c.accent,
           borderRadius: BorderRadius.circular(_small ? 12 : 28),
         ),
-        child: Icon(LucideIcons.sun, size: _small ? 22 : 48, color: c.onAccent),
+        child: Icon(Icons.wb_sunny_outlined, size: _small ? 22 : 48, color: c.onAccent),
       ),
     );
   }
