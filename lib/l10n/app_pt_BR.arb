@@ -134,6 +134,7 @@
   "appLockHint": "Pede sua frase-senha quando o Lumen abre e criptografa suas carteiras com ela",
   "changePassphrase": "Alterar frase-senha",
   "lockNow": "Bloquear agora",
+  "keyboardShortcut": "Atalho de teclado: {keys}",
   "turnOnAppLock": "Ativar bloqueio do app",
   "passphraseLead": "Escolha uma frase-senha de pelo menos 12 caracteres. Algumas palavras sem relação entre si são longas e fáceis de lembrar.",
   "passphraseWarning": "Se você esquecê-la, a única forma de voltar a entrar é redefinir o Lumen, o que remove suas carteiras deste dispositivo. Seus fundos continuam nos serviços das suas carteiras.",

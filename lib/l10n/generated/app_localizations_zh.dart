@@ -487,6 +487,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lockNow => '立即锁定';
 
   @override
+  String keyboardShortcut(String keys) {
+    return '键盘快捷键：$keys';
+  }
+
+  @override
   String get turnOnAppLock => '开启应用锁';
 
   @override

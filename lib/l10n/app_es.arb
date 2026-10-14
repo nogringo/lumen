@@ -134,6 +134,7 @@
   "appLockHint": "Pide tu frase de contraseña al abrir Lumen y cifra tus billeteras con ella",
   "changePassphrase": "Cambiar frase de contraseña",
   "lockNow": "Bloquear ahora",
+  "keyboardShortcut": "Atajo de teclado: {keys}",
   "turnOnAppLock": "Activar el bloqueo de la app",
   "passphraseLead": "Elige una frase de contraseña de al menos 12 caracteres. Unas cuantas palabras sin relación entre sí son largas y fáciles de recordar.",
   "passphraseWarning": "Si la olvidas, la única forma de volver a entrar es restablecer Lumen, lo que quita tus billeteras de este dispositivo. Tus fondos siguen en tus servicios de billetera.",

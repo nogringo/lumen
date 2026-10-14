@@ -511,6 +511,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get lockNow => 'Verrouiller maintenant';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Raccourci clavier : $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'Activer le verrouillage';
 
   @override

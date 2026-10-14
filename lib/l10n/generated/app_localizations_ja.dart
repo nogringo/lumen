@@ -500,6 +500,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lockNow => '今すぐロック';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'キーボードショートカット: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'アプリロックをオンにする';
 
   @override

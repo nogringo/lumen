@@ -134,6 +134,7 @@
   "appLockHint": "Demande votre phrase de passe à l'ouverture de Lumen et s'en sert pour chiffrer vos portefeuilles",
   "changePassphrase": "Changer la phrase de passe",
   "lockNow": "Verrouiller maintenant",
+  "keyboardShortcut": "Raccourci clavier : {keys}",
   "turnOnAppLock": "Activer le verrouillage",
   "passphraseLead": "Choisissez une phrase de passe d'au moins 12 caractères. Quelques mots sans rapport entre eux sont longs et faciles à retenir.",
   "passphraseWarning": "Si vous l'oubliez, la seule issue est de réinitialiser Lumen, ce qui retire vos portefeuilles de cet appareil. Vos fonds restent chez vos services de portefeuille.",

@@ -117,6 +117,12 @@ class _LumenAppState extends State<LumenApp> {
                       control: true,
                     ): _refresh,
                     const SingleActivator(LogicalKeyboardKey.f5): _refresh,
+                    const SingleActivator(LogicalKeyboardKey.keyL, meta: true):
+                        widget.gate.lockNow,
+                    const SingleActivator(
+                      LogicalKeyboardKey.keyL,
+                      control: true,
+                    ): widget.gate.lockNow,
                   },
                   child: child!,
                 ),

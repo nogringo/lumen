@@ -511,6 +511,11 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lockNow => 'Bloquear ahora';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Atajo de teclado: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'Activar el bloqueo de la app';
 
   @override

@@ -689,6 +689,15 @@
   "@lockNow": {
     "description": "Button that locks Lumen at once."
   },
+  "keyboardShortcut": "Keyboard shortcut: {keys}",
+  "@keyboardShortcut": {
+    "description": "Read by screen readers after a command that has a keyboard shortcut. keys is the key combination, like Ctrl+L.",
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
   "turnOnAppLock": "Turn on App lock",
   "@turnOnAppLock": {
     "description": "Title of the screen that sets the App lock passphrase."

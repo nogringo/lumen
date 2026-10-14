@@ -517,6 +517,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lockNow => 'Заблокировать сейчас';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Сочетание клавиш: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'Включить блокировку приложения';
 
   @override

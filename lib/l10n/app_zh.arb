@@ -134,6 +134,7 @@
   "appLockHint": "打开 Lumen 时要求输入密码短语，并用它加密您的钱包",
   "changePassphrase": "更改密码短语",
   "lockNow": "立即锁定",
+  "keyboardShortcut": "键盘快捷键：{keys}",
   "turnOnAppLock": "开启应用锁",
   "passphraseLead": "请设置至少 12 个字符的密码短语。几个互不相关的词组合起来既够长又好记。",
   "passphraseWarning": "如果忘记密码短语，唯一的办法是重置 Lumen，这会从本设备移除您的钱包。您的资金仍保留在各钱包服务中。",

@@ -1,4 +1,6 @@
 import 'package:clock/clock.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/app.dart';
@@ -294,9 +296,42 @@ void main() {
     await tapAndSettle(tester, find.text('Turn on'));
 
     expect(find.text('Lock now'), findsNWidgets(2));
+    expect(
+      find.bySemanticsLabel('Lock now, Keyboard shortcut: ⌘L'),
+      findsOneWidget,
+    );
     await tapAndSettle(tester, find.text('Lock now').first);
     expect(find.text('Lumen is locked'), findsOneWidget);
   }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+
+  testWidgets(
+    'Cmd+L or Ctrl+L locks Lumen once App lock is on',
+    (tester) async {
+      final modifier = defaultTargetPlatform == TargetPlatform.macOS
+          ? LogicalKeyboardKey.metaLeft
+          : LogicalKeyboardKey.controlLeft;
+      Future<void> pressLock() async {
+        await tester.sendKeyDownEvent(modifier);
+        await tester.sendKeyEvent(LogicalKeyboardKey.keyL);
+        await tester.sendKeyUpEvent(modifier);
+        await settle(tester);
+      }
+
+      final gate = await pumpGate(tester);
+      await pressLock();
+      expect(gate.lock.locked, isFalse);
+      expect(find.text('Home node'), findsOneWidget);
+
+      await turnOn(tester);
+      await pressLock();
+
+      expect(find.text('Lumen is locked'), findsOneWidget);
+    },
+    variant: TargetPlatformVariant({
+      TargetPlatform.macOS,
+      TargetPlatform.windows,
+    }),
+  );
 
   Future<void> expectGuidelines(WidgetTester tester) async {
     await expectLater(tester, meetsGuideline(androidTapTargetGuideline));

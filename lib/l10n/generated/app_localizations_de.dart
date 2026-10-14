@@ -511,6 +511,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lockNow => 'Jetzt sperren';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Tastenkürzel: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'App-Sperre einschalten';
 
   @override

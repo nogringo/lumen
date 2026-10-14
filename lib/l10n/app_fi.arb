@@ -134,6 +134,7 @@
   "appLockHint": "Kysyy tunnuslausetta, kun Lumen avataan, ja salaa lompakkosi sillä",
   "changePassphrase": "Vaihda tunnuslause",
   "lockNow": "Lukitse nyt",
+  "keyboardShortcut": "Pikanäppäin: {keys}",
   "turnOnAppLock": "Ota sovelluslukitus käyttöön",
   "passphraseLead": "Valitse vähintään 12 merkin tunnuslause. Muutama toisiinsa liittymätön sana on pitkä ja helppo muistaa.",
   "passphraseWarning": "Jos unohdat sen, ainoa tapa päästä takaisin on nollata Lumen, mikä poistaa lompakkosi tältä laitteelta. Varasi pysyvät lompakkopalveluissasi.",

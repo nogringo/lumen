@@ -134,6 +134,7 @@
   "appLockHint": "Fragt beim Öffnen von Lumen nach deiner Passphrase und verschlüsselt damit deine Wallets",
   "changePassphrase": "Passphrase ändern",
   "lockNow": "Jetzt sperren",
+  "keyboardShortcut": "Tastenkürzel: {keys}",
   "turnOnAppLock": "App-Sperre einschalten",
   "passphraseLead": "Wähle eine Passphrase mit mindestens 12 Zeichen. Ein paar Wörter, die nichts miteinander zu tun haben, sind lang und leicht zu merken.",
   "passphraseWarning": "Wenn du sie vergisst, kommst du nur wieder hinein, indem du Lumen zurücksetzt. Dabei werden deine Wallets von diesem Gerät entfernt. Dein Guthaben bleibt bei deinen Wallet-Diensten.",

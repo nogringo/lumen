@@ -59,6 +59,10 @@ class _Sidebar extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final wallets = LumenScope.walletsOf(context);
     final gate = GateScope.of(context);
+    final lockKeys = switch (Theme.of(context).platform) {
+      TargetPlatform.macOS || TargetPlatform.iOS => '⌘L',
+      _ => 'Ctrl+L',
+    };
     return SafeArea(
       right: false,
       child: FillScroll(
@@ -141,6 +145,16 @@ class _Sidebar extends StatelessWidget {
                   ? _NavItem(
                       leading: const Icon(Icons.lock_outline),
                       label: l.lockNow,
+                      description: l.keyboardShortcut(lockKeys),
+                      trailing: ExcludeSemantics(
+                        child: Text(
+                          lockKeys,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: LumenColors.of(context).text2,
+                          ),
+                        ),
+                      ),
                       selected: false,
                       onTap: gate.lockNow,
                     )

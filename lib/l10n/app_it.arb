@@ -134,6 +134,7 @@
   "appLockHint": "Chiede la tua passphrase all'apertura di Lumen e la usa per cifrare i tuoi portafogli",
   "changePassphrase": "Cambia passphrase",
   "lockNow": "Blocca ora",
+  "keyboardShortcut": "Scorciatoia da tastiera: {keys}",
   "turnOnAppLock": "Attiva il blocco app",
   "passphraseLead": "Scegli una passphrase di almeno 12 caratteri. Alcune parole scollegate tra loro sono lunghe e facili da ricordare.",
   "passphraseWarning": "Se la dimentichi, l'unico modo per rientrare è reimpostare Lumen, che rimuove i tuoi portafogli da questo dispositivo. I tuoi fondi restano presso i servizi dei tuoi portafogli.",

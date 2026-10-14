@@ -919,6 +919,12 @@ abstract class AppLocalizations {
   /// **'Lock now'**
   String get lockNow;
 
+  /// Read by screen readers after a command that has a keyboard shortcut. keys is the key combination, like Ctrl+L.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcut: {keys}'**
+  String keyboardShortcut(String keys);
+
   /// Title of the screen that sets the App lock passphrase.
   ///
   /// In en, this message translates to:

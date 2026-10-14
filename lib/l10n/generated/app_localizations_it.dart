@@ -512,6 +512,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get lockNow => 'Blocca ora';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Scorciatoia da tastiera: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'Attiva il blocco app';
 
   @override

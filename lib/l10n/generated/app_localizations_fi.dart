@@ -509,6 +509,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get lockNow => 'Lukitse nyt';
 
   @override
+  String keyboardShortcut(String keys) {
+    return 'Pikanäppäin: $keys';
+  }
+
+  @override
   String get turnOnAppLock => 'Ota sovelluslukitus käyttöön';
 
   @override
