@@ -267,6 +267,26 @@ class AppLocalizationsFi extends AppLocalizations {
   String get shareInvoice => 'Jaa lasku';
 
   @override
+  String get lightningAddress => 'Lightning-osoite';
+
+  @override
+  String get copyAddress => 'Kopioi osoite';
+
+  @override
+  String get addressCopied => 'Osoite kopioitu';
+
+  @override
+  String get showAddressQr => 'Näytä QR-koodi';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'Lightning-osoitteen $address QR-koodi';
+  }
+
+  @override
+  String get shareAddress => 'Jaa osoite';
+
+  @override
   String get waitingForPayment => 'Odotetaan maksua';
 
   @override

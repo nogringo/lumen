@@ -87,4 +87,20 @@ void main() {
       expect(sameNwcConnection(_valid, other), isFalse);
     });
   });
+
+  group('nwcLightningAddress', () {
+    test('reads the lud16 address, decoded and lowercased', () {
+      expect(
+        nwcLightningAddress('$_valid&lud16=Satoshi%40Getalby.com'),
+        'satoshi@getalby.com',
+      );
+    });
+
+    test('is null without one, or with a malformed one', () {
+      expect(nwcLightningAddress(_valid), isNull);
+      expect(nwcLightningAddress('$_valid&lud16='), isNull);
+      expect(nwcLightningAddress('$_valid&lud16=satoshi'), isNull);
+      expect(nwcLightningAddress('$_valid&lud16=lnbc1'), isNull);
+    });
+  });
 }

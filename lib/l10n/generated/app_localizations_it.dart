@@ -268,6 +268,26 @@ class AppLocalizationsIt extends AppLocalizations {
   String get shareInvoice => 'Condividi fattura';
 
   @override
+  String get lightningAddress => 'Indirizzo Lightning';
+
+  @override
+  String get copyAddress => 'Copia indirizzo';
+
+  @override
+  String get addressCopied => 'Indirizzo copiato';
+
+  @override
+  String get showAddressQr => 'Mostra codice QR';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'Codice QR dell\'indirizzo Lightning $address';
+  }
+
+  @override
+  String get shareAddress => 'Condividi indirizzo';
+
+  @override
   String get waitingForPayment => 'In attesa del pagamento';
 
   @override

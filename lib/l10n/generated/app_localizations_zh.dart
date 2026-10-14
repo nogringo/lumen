@@ -256,6 +256,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shareInvoice => '分享发票';
 
   @override
+  String get lightningAddress => 'Lightning 地址';
+
+  @override
+  String get copyAddress => '复制地址';
+
+  @override
+  String get addressCopied => '地址已复制';
+
+  @override
+  String get showAddressQr => '显示二维码';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'Lightning 地址 $address 的二维码';
+  }
+
+  @override
+  String get shareAddress => '分享地址';
+
+  @override
   String get waitingForPayment => '等待付款';
 
   @override

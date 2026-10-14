@@ -262,6 +262,26 @@ class AppLocalizationsJa extends AppLocalizations {
   String get shareInvoice => 'インボイスを共有';
 
   @override
+  String get lightningAddress => 'Lightning アドレス';
+
+  @override
+  String get copyAddress => 'アドレスをコピー';
+
+  @override
+  String get addressCopied => 'アドレスをコピーしました';
+
+  @override
+  String get showAddressQr => 'QR コードを表示';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'Lightning アドレス $address の QR コード';
+  }
+
+  @override
+  String get shareAddress => 'アドレスを共有';
+
+  @override
   String get waitingForPayment => '支払いを待っています';
 
   @override

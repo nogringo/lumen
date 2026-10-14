@@ -347,6 +347,35 @@
   "@shareInvoice": {
     "description": "Tooltip and accessible name of the share button."
   },
+  "lightningAddress": "Lightning address",
+  "@lightningAddress": {
+    "description": "Label above the wallet's Lightning address on the receive screen, and title of its QR code dialog."
+  },
+  "copyAddress": "Copy address",
+  "@copyAddress": {
+    "description": "Tooltip and accessible name of the button that copies the Lightning address."
+  },
+  "addressCopied": "Address copied",
+  "@addressCopied": {
+    "description": "Announced to screen readers after copying the Lightning address."
+  },
+  "showAddressQr": "Show QR code",
+  "@showAddressQr": {
+    "description": "Tooltip and accessible name of the button that opens the Lightning address QR code."
+  },
+  "addressQrLabel": "QR code of the Lightning address {address}",
+  "@addressQrLabel": {
+    "description": "Accessible description of the Lightning address QR code.",
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "shareAddress": "Share address",
+  "@shareAddress": {
+    "description": "Button that shares the Lightning address."
+  },
   "waitingForPayment": "Waiting for payment",
   "@waitingForPayment": {
     "description": "Status under the invoice until it is paid."

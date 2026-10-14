@@ -43,6 +43,31 @@ void main() {
     expect(wallets.single.id, 'w1');
     expect(wallets.single.name, 'Home node');
     expect(wallets.single.kind, WalletKind.lightning);
+    expect(wallets.single.lightningAddress, isNull);
+  });
+
+  test('a connection string keeps its Lightning address', () async {
+    final uri =
+        'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret&lud16=phone%40example.com';
+    final added = await sources.nwc.add(uri: uri, name: 'Phone');
+    expect(added.lightningAddress, 'phone@example.com');
+
+    final savedRepo = MemWalletsRepo();
+    await savedRepo.storeWallet(
+      ndk.NwcWallet(
+        id: 'w2',
+        name: 'Phone',
+        supportedUnits: const {'sat'},
+        nwcUrl: uri,
+      ),
+    );
+    final saved = WalletSources.create(
+      repo: savedRepo,
+      eventVerifier: Bip340EventVerifier(),
+    );
+    addTearDown(saved.dispose);
+    final loaded = (await saved.nwc.load()).single;
+    expect(loaded.lightningAddress, 'phone@example.com');
   });
 
   test('rename is saved', () async {

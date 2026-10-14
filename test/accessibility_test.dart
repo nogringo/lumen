@@ -13,7 +13,12 @@ void main() {
   tearDownAll(() => sources.dispose());
 
   List<FakeWallet> twoWallets() => [
-    FakeWallet('home', 'Home node', balance: 152300)
+    FakeWallet(
+        'home',
+        'Home node',
+        balance: 152300,
+        lightningAddress: 'satoshi@example.com',
+      )
       ..transactions = [
         tx(
           'zap',
@@ -73,14 +78,6 @@ void main() {
     }
   }
 
-  Future<void> openInvoice(WidgetTester tester) async {
-    await tester.tap(find.text('Receive'));
-    await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), '21000');
-    await tester.tap(find.text('Create invoice'));
-    await tester.pumpAndSettle();
-  }
-
   for (final brightness in Brightness.values) {
     for (final (name, size) in [
       ('phone', phoneSize),
@@ -102,6 +99,12 @@ void main() {
         await tester.tap(find.text('Receive'));
         await tester.pumpAndSettle();
         await expectGuidelines(tester);
+
+        await tester.tap(find.byTooltip('Show QR code'));
+        await tester.pumpAndSettle();
+        await expectGuidelines(tester);
+        await tester.tap(find.byTooltip('Close').last);
+        await tester.pumpAndSettle();
 
         await tester.tap(find.text('Into'));
         await tester.pumpAndSettle();
@@ -134,7 +137,17 @@ void main() {
         textScale: 2,
       );
 
-      await openInvoice(tester);
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Show QR code'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'address');
+      await tester.tap(find.byTooltip('Close').last);
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), '21000');
+      await tester.tap(find.text('Create invoice'));
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'invoice');
 
       wallets.first.pay();

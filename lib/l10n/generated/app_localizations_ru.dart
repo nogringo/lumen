@@ -269,6 +269,26 @@ class AppLocalizationsRu extends AppLocalizations {
   String get shareInvoice => 'Поделиться счётом';
 
   @override
+  String get lightningAddress => 'Lightning-адрес';
+
+  @override
+  String get copyAddress => 'Скопировать адрес';
+
+  @override
+  String get addressCopied => 'Адрес скопирован';
+
+  @override
+  String get showAddressQr => 'Показать QR-код';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'QR-код Lightning-адреса $address';
+  }
+
+  @override
+  String get shareAddress => 'Поделиться адресом';
+
+  @override
   String get waitingForPayment => 'Ожидание платежа';
 
   @override

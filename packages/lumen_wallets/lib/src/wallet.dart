@@ -139,6 +139,9 @@ abstract interface class Wallet {
   String get name;
   WalletKind get kind;
 
+  /// The `name@domain` address that pays into this wallet, when known.
+  String? get lightningAddress;
+
   /// Balance in sats. Throws a [BalanceException] when it cannot be read.
   Future<int> fetchBalance();
 

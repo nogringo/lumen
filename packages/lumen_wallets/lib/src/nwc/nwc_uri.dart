@@ -1,5 +1,7 @@
 import 'package:ndk/ndk.dart';
 
+import '../lightning/recipient.dart';
+
 enum NwcConnectError { empty, notNwc, incomplete, duplicate }
 
 class NwcConnectException implements Exception {
@@ -41,6 +43,21 @@ bool _isRelayUrl(String relay) {
   return uri != null &&
       (uri.scheme == 'wss' || uri.scheme == 'ws') &&
       uri.host.isNotEmpty;
+}
+
+/// The Lightning address that some wallets add to the connection string as
+/// `lud16`, or null when it has none or it is malformed.
+String? nwcLightningAddress(String uri) {
+  try {
+    final lud16 = NostrWalletConnectUri.parseConnectionUri(uri.trim()).lud16;
+    if (lud16 == null) return null;
+    return switch (parseRecipient(lud16)) {
+      LnurlRecipient(:final address?) => address,
+      _ => null,
+    };
+  } catch (_) {
+    return null;
+  }
 }
 
 /// Whether [a] and [b] grant the same connection to the same wallet.

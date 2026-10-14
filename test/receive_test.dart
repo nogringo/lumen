@@ -27,6 +27,7 @@ void main() {
     await tester.tap(find.text('Receive'));
     await tester.pumpAndSettle();
     expect(find.text('Into'), findsOneWidget);
+    expect(find.text('Lightning address'), findsNothing);
 
     await createInvoice(tester, '21000');
     expect(wallet.invoiceAmounts, [21000]);
@@ -185,6 +186,65 @@ void main() {
 
     expect(copied, startsWith('lnbc42n1p'));
     expect(copied, hasLength(greaterThan(200)));
+  });
+
+  testWidgets('a Lightning address can be copied and shown as a QR code', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    String? copied;
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (call) async {
+        if (call.method == 'Clipboard.setData') {
+          copied = (call.arguments as Map)['text'] as String;
+        }
+        return null;
+      },
+    );
+    addTearDown(
+      () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        null,
+      ),
+    );
+    final home = FakeWallet(
+      'home',
+      'Home node',
+      lightningAddress: 'satoshi@example.com',
+    );
+    final phone = FakeWallet('phone', 'Phone wallet');
+    await pumpLumen(tester, sources, wallets: [home, phone]);
+    await tester.tap(find.text('Receive'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.bySemanticsLabel('Lightning address\nsatoshi@example.com'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byTooltip('Copy address'));
+    await tester.pumpAndSettle();
+    expect(copied, 'satoshi@example.com');
+
+    await tester.tap(find.byTooltip('Show QR code'));
+    await tester.pumpAndSettle();
+    expect(
+      find.bySemanticsLabel(
+        'QR code of the Lightning address satoshi@example.com',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Share address'), findsOneWidget);
+    await tester.tap(find.byTooltip('Close'));
+    await tester.pumpAndSettle();
+    expect(find.text('Share address'), findsNothing);
+
+    await tester.tap(find.text('Home node').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Phone wallet').last);
+    await tester.pumpAndSettle();
+    expect(find.text('satoshi@example.com'), findsNothing);
+    handle.dispose();
   });
 
   testWidgets(

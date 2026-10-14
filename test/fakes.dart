@@ -22,7 +22,13 @@ import 'package:ndk/data_layer/repositories/wallets/mem_wallets_repo.dart';
 import 'package:ndk/ndk.dart' show Bip340EventVerifier;
 
 class FakeWallet implements Wallet {
-  FakeWallet(this.id, this.name, {this.balance = 0, this.error});
+  FakeWallet(
+    this.id,
+    this.name, {
+    this.balance = 0,
+    this.error,
+    this.lightningAddress,
+  });
 
   @override
   final String id;
@@ -32,6 +38,9 @@ class FakeWallet implements Wallet {
 
   @override
   WalletKind get kind => WalletKind.lightning;
+
+  @override
+  final String? lightningAddress;
 
   int balance;
   BalanceError? error;

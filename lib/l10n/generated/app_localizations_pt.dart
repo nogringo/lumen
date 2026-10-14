@@ -268,6 +268,26 @@ class AppLocalizationsPt extends AppLocalizations {
   String get shareInvoice => 'Partilhar fatura';
 
   @override
+  String get lightningAddress => 'Endereço Lightning';
+
+  @override
+  String get copyAddress => 'Copiar endereço';
+
+  @override
+  String get addressCopied => 'Endereço copiado';
+
+  @override
+  String get showAddressQr => 'Mostrar código QR';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'Código QR do endereço Lightning $address';
+  }
+
+  @override
+  String get shareAddress => 'Partilhar endereço';
+
+  @override
   String get waitingForPayment => 'A aguardar pagamento';
 
   @override
@@ -966,6 +986,26 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get shareInvoice => 'Compartilhar fatura';
+
+  @override
+  String get lightningAddress => 'Endereço Lightning';
+
+  @override
+  String get copyAddress => 'Copiar endereço';
+
+  @override
+  String get addressCopied => 'Endereço copiado';
+
+  @override
+  String get showAddressQr => 'Mostrar QR code';
+
+  @override
+  String addressQrLabel(String address) {
+    return 'QR code do endereço Lightning $address';
+  }
+
+  @override
+  String get shareAddress => 'Compartilhar endereço';
 
   @override
   String get waitingForPayment => 'Aguardando pagamento';

@@ -33,7 +33,12 @@ final class NwcWalletSource implements WalletSource {
   @override
   Future<List<Wallet>> load() async => [
     for (final wallet in await _ndkWallets())
-      _NwcWallet(this, wallet.id, wallet.name),
+      _NwcWallet(
+        this,
+        wallet.id,
+        wallet.name,
+        lightningAddress: nwcLightningAddress(wallet.nwcUrl),
+      ),
   ];
 
   /// Saves [uri] as [name] right away, after checking its format and that it
@@ -69,7 +74,12 @@ final class NwcWalletSource implements WalletSource {
           _adding.remove(id);
           _registering.remove(id);
         });
-    return _NwcWallet(this, id, name.trim());
+    return _NwcWallet(
+      this,
+      id,
+      name.trim(),
+      lightningAddress: nwcLightningAddress(value),
+    );
   }
 
   /// Asks the wallet behind [uri] what the connection allows, without saving
@@ -353,7 +363,7 @@ final class NwcWalletSource implements WalletSource {
 }
 
 final class _NwcWallet implements Wallet {
-  _NwcWallet(this._source, this.id, this._name);
+  _NwcWallet(this._source, this.id, this._name, {this.lightningAddress});
 
   final NwcWalletSource _source;
   String _name;
@@ -366,6 +376,9 @@ final class _NwcWallet implements Wallet {
 
   @override
   WalletKind get kind => WalletKind.lightning;
+
+  @override
+  final String? lightningAddress;
 
   @override
   Future<int> fetchBalance() => _source._fetchBalance(id);

@@ -553,6 +553,42 @@ abstract class AppLocalizations {
   /// **'Share invoice'**
   String get shareInvoice;
 
+  /// Label above the wallet's Lightning address on the receive screen, and title of its QR code dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning address'**
+  String get lightningAddress;
+
+  /// Tooltip and accessible name of the button that copies the Lightning address.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy address'**
+  String get copyAddress;
+
+  /// Announced to screen readers after copying the Lightning address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address copied'**
+  String get addressCopied;
+
+  /// Tooltip and accessible name of the button that opens the Lightning address QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get showAddressQr;
+
+  /// Accessible description of the Lightning address QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code of the Lightning address {address}'**
+  String addressQrLabel(String address);
+
+  /// Button that shares the Lightning address.
+  ///
+  /// In en, this message translates to:
+  /// **'Share address'**
+  String get shareAddress;
+
   /// Status under the invoice until it is paid.
   ///
   /// In en, this message translates to:
