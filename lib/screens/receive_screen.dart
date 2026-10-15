@@ -123,6 +123,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
     final wallet = _invoiceWallet;
     if (!mounted || invoice == null || wallet == null) return;
     setState(() => _paid = true);
+    HapticFeedback.successNotification();
     LumenScope.readWallets(context).refresh(wallet);
     _announce(
       AppLocalizations.of(context)

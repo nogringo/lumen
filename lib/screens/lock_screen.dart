@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -48,6 +49,7 @@ class _LockScreenState extends State<LockScreen> {
       _error = message;
     });
     if (message == null) return;
+    HapticFeedback.errorNotification();
     _passphrase.selection = TextSelection(
       baseOffset: 0,
       extentOffset: _passphrase.text.length,

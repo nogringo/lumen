@@ -21,6 +21,7 @@ void main() {
 
   testWidgets('receives a payment on a phone', (tester) async {
     final handle = tester.ensureSemantics();
+    final haptics = watchHaptics(tester);
     final wallet = FakeWallet('home', 'Home node', balance: 100);
     await pumpLumen(tester, sources, wallets: [wallet]);
 
@@ -39,6 +40,7 @@ void main() {
     expect(find.byTooltip('Share invoice'), findsOneWidget);
     expect(find.text('Waiting for payment'), findsOneWidget);
     expect(find.text('Expires in 60 minutes'), findsOneWidget);
+    expect(haptics, isEmpty);
 
     final fetchesBefore = wallet.fetchCount;
     wallet.balance = 21100;
@@ -46,6 +48,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Payment received'), findsOneWidget);
     expect(find.text('Into Home node'), findsOneWidget);
+    expect(haptics, ['HapticFeedbackType.successNotification']);
     expect(wallet.fetchCount, fetchesBefore + 1);
 
     await tester.tap(find.text('Done'));

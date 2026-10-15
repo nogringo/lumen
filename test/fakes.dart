@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:bech32/bech32.dart';
 import 'package:clock/clock.dart';
 import 'package:cryptography/cryptography.dart' show Sha256;
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:lumen/app.dart';
@@ -303,4 +303,26 @@ Future<WalletsController> pumpLumen(
   });
   await tester.pumpAndSettle();
   return controller;
+}
+
+/// The haptic feedback types played so far, such as
+/// `HapticFeedbackType.successNotification`.
+List<String> watchHaptics(WidgetTester tester) {
+  final played = <String>[];
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    SystemChannels.platform,
+    (call) async {
+      if (call.method == 'HapticFeedback.vibrate') {
+        played.add(call.arguments as String);
+      }
+      return null;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      null,
+    ),
+  );
+  return played;
 }

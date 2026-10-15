@@ -253,8 +253,12 @@ class _SendFlowState extends State<_SendFlow> {
       if (error == null) _step = _Step.sent;
     });
     if (error != null) {
+      _unconfirmed
+          ? HapticFeedback.warningNotification()
+          : HapticFeedback.errorNotification();
       _announce(error, assertive: true);
     } else {
+      HapticFeedback.successNotification();
       _announce(l.sentAnnouncement(formatSats(context, _sats), wallet.name));
       _focusStep();
     }

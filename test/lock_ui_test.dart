@@ -155,6 +155,7 @@ void main() {
   testWidgets('the right passphrase opens Lumen, a wrong one says so', (
     tester,
   ) async {
+    final haptics = watchHaptics(tester);
     await pumpGate(tester, locked: true);
     expect(find.text('Lumen is locked'), findsOneWidget);
 
@@ -167,6 +168,7 @@ void main() {
       find.text('This is not your passphrase. Check it and try again.'),
       findsOneWidget,
     );
+    expect(haptics, ['HapticFeedbackType.errorNotification']);
 
     await tester.enterText(find.bySemanticsLabel('Passphrase'), _passphrase);
     await tapAndSettle(tester, find.text('Unlock'));

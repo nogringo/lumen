@@ -65,6 +65,7 @@ void main() {
 
   testWidgets('pays a pasted invoice on a phone', (tester) async {
     final handle = tester.ensureSemantics();
+    final haptics = watchHaptics(tester);
     final wallet = FakeWallet('home', 'Home node', balance: 152300)
       ..feeSats = 3;
     await pumpLumen(tester, sources, wallets: [wallet]);
@@ -86,6 +87,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(wallet.paid.single.sats, 5400);
     expect(find.text('Payment sent'), findsOneWidget);
+    expect(haptics, ['HapticFeedbackType.successNotification']);
     expect(find.text('3 sats'), findsOneWidget);
     expect(find.text('Date'), findsOneWidget);
     final hash = _fakeHash(5400);
@@ -312,6 +314,7 @@ void main() {
   testWidgets('a failed payment can be retried from another wallet', (
     tester,
   ) async {
+    final haptics = watchHaptics(tester);
     final home = FakeWallet('home', 'Home node', balance: 10000)
       ..sendError = SendError.insufficientBalance;
     final phone = FakeWallet('phone', 'Phone wallet', balance: 5000);
@@ -328,6 +331,7 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(haptics, ['HapticFeedbackType.errorNotification']);
 
     await tester.tap(find.text('Edit payment'));
     await tester.pumpAndSettle();
@@ -344,6 +348,7 @@ void main() {
   });
 
   testWidgets('an unconfirmed payment offers no retry', (tester) async {
+    final haptics = watchHaptics(tester);
     final wallet = FakeWallet('home', 'Home node', balance: 10000)
       ..sendError = SendError.unconfirmed;
     await pumpLumen(tester, sources, wallets: [wallet]);
@@ -360,6 +365,7 @@ void main() {
       ),
       findsOneWidget,
     );
+    expect(haptics, ['HapticFeedbackType.warningNotification']);
     expect(find.text('Send 4,000 sats'), findsNothing);
     expect(find.text('Edit payment'), findsNothing);
     expect(find.text('Done'), findsOneWidget);
