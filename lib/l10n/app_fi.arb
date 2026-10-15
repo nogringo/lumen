@@ -206,5 +206,14 @@
   "resetTitle": "Nollataanko Lumen?",
   "resetBody": "Lumen poistaa lompakkosi ja sovelluslukituksen tältä laitteelta. Varasi pysyvät lompakkopalveluissasi: lisää kukin lompakko uudelleen sen yhteysmerkkijonolla.",
   "reset": "Nollaa",
-  "errorPassphraseEmpty": "Anna tunnuslauseesi."
+  "errorPassphraseEmpty": "Anna tunnuslauseesi.",
+  "scan": "Skannaa",
+  "scanQrCode": "Skannaa QR-koodi",
+  "scanHint": "Osoita kameralla QR-koodia.",
+  "turnOnLight": "Sytytä taskulamppu",
+  "turnOffLight": "Sammuta taskulamppu",
+  "cameraNeeded": "Salli Lumenin käyttää kameraa QR-koodien skannaamiseen. Voit myös sulkea tämän näkymän ja liittää tekstin.",
+  "allowCamera": "Salli kamera",
+  "openSettings": "Avaa asetukset",
+  "noCamera": "Kameraa ei ole käytettävissä. Sulje tämä näkymä ja liitä teksti."
 }

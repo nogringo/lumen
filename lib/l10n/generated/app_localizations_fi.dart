@@ -781,4 +781,33 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'Anna tunnuslauseesi.';
+
+  @override
+  String get scan => 'Skannaa';
+
+  @override
+  String get scanQrCode => 'Skannaa QR-koodi';
+
+  @override
+  String get scanHint => 'Osoita kameralla QR-koodia.';
+
+  @override
+  String get turnOnLight => 'Sytytä taskulamppu';
+
+  @override
+  String get turnOffLight => 'Sammuta taskulamppu';
+
+  @override
+  String get cameraNeeded =>
+      'Salli Lumenin käyttää kameraa QR-koodien skannaamiseen. Voit myös sulkea tämän näkymän ja liittää tekstin.';
+
+  @override
+  String get allowCamera => 'Salli kamera';
+
+  @override
+  String get openSettings => 'Avaa asetukset';
+
+  @override
+  String get noCamera =>
+      'Kameraa ei ole käytettävissä. Sulje tämä näkymä ja liitä teksti.';
 }

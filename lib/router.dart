@@ -71,15 +71,21 @@ GoRouter createRouter(WalletsController wallets) {
           ),
           GoRoute(
             path: '/connect',
-            pageBuilder: (context, state) =>
-                _page(context, state, const ConnectNwcScreen()),
+            pageBuilder: (context, state) => _page(
+              context,
+              state,
+              ConnectNwcScreen(initialUri: _text(state.extra)),
+            ),
           ),
           GoRoute(
             path: '/send',
             pageBuilder: (context, state) => _page(
               context,
               state,
-              SendScreen(walletId: state.uri.queryParameters['wallet']),
+              SendScreen(
+                walletId: state.uri.queryParameters['wallet'],
+                initialTo: _text(state.extra),
+              ),
             ),
           ),
           GoRoute(
@@ -122,6 +128,8 @@ GoRouter createRouter(WalletsController wallets) {
     ],
   );
 }
+
+String? _text(Object? extra) => extra is String ? extra : null;
 
 /// Desktop swaps pages in place, as the sidebar does not slide.
 Page<void> _page(BuildContext context, GoRouterState state, Widget child) {

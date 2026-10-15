@@ -206,5 +206,14 @@
   "resetTitle": "¿Restablecer Lumen?",
   "resetBody": "Lumen quita tus billeteras y el bloqueo de la app de este dispositivo. Tus fondos siguen en tus servicios de billetera: vuelve a añadir cada billetera con su cadena de conexión.",
   "reset": "Restablecer",
-  "errorPassphraseEmpty": "Introduce tu frase de contraseña."
+  "errorPassphraseEmpty": "Introduce tu frase de contraseña.",
+  "scan": "Escanear",
+  "scanQrCode": "Escanear un código QR",
+  "scanHint": "Apunta la cámara a un código QR.",
+  "turnOnLight": "Encender la linterna",
+  "turnOffLight": "Apagar la linterna",
+  "cameraNeeded": "Permite que Lumen use la cámara para escanear códigos QR. También puedes cerrar esta pantalla y pegar el texto.",
+  "allowCamera": "Permitir cámara",
+  "openSettings": "Abrir ajustes",
+  "noCamera": "No hay ninguna cámara disponible. Cierra esta pantalla y pega el texto."
 }

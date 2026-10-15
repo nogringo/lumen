@@ -785,6 +785,35 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'Introduza a sua frase-passe.';
+
+  @override
+  String get scan => 'Digitalizar';
+
+  @override
+  String get scanQrCode => 'Digitalizar um código QR';
+
+  @override
+  String get scanHint => 'Aponte a câmara para um código QR.';
+
+  @override
+  String get turnOnLight => 'Ligar a lanterna';
+
+  @override
+  String get turnOffLight => 'Desligar a lanterna';
+
+  @override
+  String get cameraNeeded =>
+      'Permita que o Lumen use a câmara para digitalizar códigos QR. Também pode fechar este ecrã e colar o texto.';
+
+  @override
+  String get allowCamera => 'Permitir câmara';
+
+  @override
+  String get openSettings => 'Abrir definições';
+
+  @override
+  String get noCamera =>
+      'Nenhuma câmara disponível. Feche este ecrã e cole o texto.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1564,4 +1593,33 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get errorPassphraseEmpty => 'Digite sua frase-senha.';
+
+  @override
+  String get scan => 'Escanear';
+
+  @override
+  String get scanQrCode => 'Escanear um QR code';
+
+  @override
+  String get scanHint => 'Aponte a câmera para um QR code.';
+
+  @override
+  String get turnOnLight => 'Ligar a lanterna';
+
+  @override
+  String get turnOffLight => 'Desligar a lanterna';
+
+  @override
+  String get cameraNeeded =>
+      'Permita que o Lumen use a câmera para escanear QR codes. Você também pode fechar esta tela e colar o texto.';
+
+  @override
+  String get allowCamera => 'Permitir câmera';
+
+  @override
+  String get openSettings => 'Abrir configurações';
+
+  @override
+  String get noCamera =>
+      'Nenhuma câmera disponível. Feche esta tela e cole o texto.';
 }

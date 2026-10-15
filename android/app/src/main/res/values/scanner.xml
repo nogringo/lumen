@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ScannerTheme" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:colorAccent">#FFB547</item>
+    </style>
+
+    <color name="scanner_scrim">#CC000000</color>
+    <dimen name="scanner_hint_margin">32dp</dimen>
+</resources>

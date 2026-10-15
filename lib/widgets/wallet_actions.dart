@@ -1,8 +1,10 @@
+import 'package:go_router/go_router.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
+import '../scan/qr_scanner.dart';
 import '../screens/receive_screen.dart';
 import '../screens/send_screen.dart';
 import '../theme/lumen_colors.dart';
@@ -14,8 +16,18 @@ class WalletActions extends StatelessWidget {
 
   final Wallet? wallet;
 
-  /// Scan will join Send and Receive.
+  /// Send and Receive keep their width where Scan is missing.
   static const _slots = 3;
+
+  Future<void> _scan(BuildContext context) async {
+    final text = await scanQrCode(context);
+    if (!context.mounted || text == null) return;
+    if (checkNwcUri(text) == null) {
+      await context.push('/connect', extra: text);
+    } else {
+      await openSend(context, wallet: wallet, to: text);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +44,13 @@ class WalletActions extends StatelessWidget {
         label: l.receive,
         onTap: () => openReceive(context, wallet: wallet),
       ),
+      if (canScanQrCodes)
+        _Action(
+          icon: Icons.qr_code_scanner,
+          label: l.scan,
+          semanticsLabel: l.scanQrCode,
+          onTap: () => _scan(context),
+        ),
     ];
 
     if (LayoutSize.of(context) == LayoutSize.desktop) {
@@ -58,10 +77,12 @@ class _Action extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.primary = false,
+    this.semanticsLabel,
   });
 
   final IconData icon;
   final String label;
+  final String? semanticsLabel;
   final VoidCallback onTap;
   final bool primary;
 
@@ -73,6 +94,7 @@ class _Action extends StatelessWidget {
     final iconWidget = Icon(icon, color: foreground);
     final text = Text(
       label,
+      semanticsLabel: semanticsLabel,
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: desktop ? 15 : 13,

@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
+import '../scan/qr_scanner.dart';
 import '../theme/lumen_colors.dart';
 import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
@@ -12,7 +13,10 @@ import '../widgets/nwc_grant_card.dart';
 import '../widgets/screen_parts.dart';
 
 class ConnectNwcScreen extends StatefulWidget {
-  const ConnectNwcScreen({super.key});
+  const ConnectNwcScreen({super.key, this.initialUri});
+
+  /// A connection string read from a QR code.
+  final String? initialUri;
 
   @override
   State<ConnectNwcScreen> createState() => _ConnectNwcScreenState();
@@ -32,6 +36,16 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
   String? _inspected;
   NwcGrant? _grant;
   var _checking = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialUri case final uri?) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _fill(uri);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -94,6 +108,24 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
       return;
     }
     _inspect(value);
+  }
+
+  Future<void> _scan() async {
+    final text = await scanQrCode(context);
+    if (!mounted || text == null) return;
+    _fill(text);
+  }
+
+  void _fill(String uri) {
+    _uri.text = uri;
+    _uriChanged(uri);
+    final error = checkNwcUri(uri);
+    if (error != null) {
+      setState(() => _uriError = error);
+      _reportError(error.message(AppLocalizations.of(context)), _uriFocus);
+    } else {
+      _nameFocus.requestFocus();
+    }
   }
 
   /// Flags a connection that is already saved, or else shows what it allows.
@@ -197,6 +229,15 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
                       ),
                     ),
                   ),
+                  if (canScanQrCodes)
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: TextButton.icon(
+                        onPressed: _scan,
+                        icon: const Icon(Icons.qr_code_scanner),
+                        label: Text(l.scan, semanticsLabel: l.scanQrCode),
+                      ),
+                    ),
                   const SizedBox(height: 20),
                   LabeledField(
                     label: l.nameLabel,

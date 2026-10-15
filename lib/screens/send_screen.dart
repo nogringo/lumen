@@ -4,6 +4,7 @@ import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../scan/qr_scanner.dart';
 import '../theme/lumen_colors.dart';
 import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
@@ -16,32 +17,39 @@ import '../widgets/screen_parts.dart';
 import '../widgets/share_text.dart';
 import '../widgets/wallet_picker.dart';
 
-Future<void> openSend(BuildContext context, {Wallet? wallet}) => openFlow(
-  context,
-  location: wallet == null ? '/send' : '/send?wallet=${wallet.id}',
-  title: AppLocalizations.of(context).send,
-  builder: (frame) => _SendFlow(frame: frame, walletId: wallet?.id),
-);
+/// [to] fills in the recipient, as read from a QR code.
+Future<void> openSend(BuildContext context, {Wallet? wallet, String? to}) =>
+    openFlow(
+      context,
+      location: wallet == null ? '/send' : '/send?wallet=${wallet.id}',
+      extra: to,
+      title: AppLocalizations.of(context).send,
+      builder: (frame) =>
+          _SendFlow(frame: frame, walletId: wallet?.id, initialTo: to),
+    );
 
 class SendScreen extends StatelessWidget {
-  const SendScreen({super.key, this.walletId});
+  const SendScreen({super.key, this.walletId, this.initialTo});
 
   final String? walletId;
+  final String? initialTo;
 
   @override
   Widget build(BuildContext context) => FlowScreen(
     title: AppLocalizations.of(context).send,
-    builder: (frame) => _SendFlow(frame: frame, walletId: walletId),
+    builder: (frame) =>
+        _SendFlow(frame: frame, walletId: walletId, initialTo: initialTo),
   );
 }
 
 enum _Step { form, review, sent }
 
 class _SendFlow extends StatefulWidget {
-  const _SendFlow({required this.frame, this.walletId});
+  const _SendFlow({required this.frame, this.walletId, this.initialTo});
 
   final FlowFrame frame;
   final String? walletId;
+  final String? initialTo;
 
   @override
   State<_SendFlow> createState() => _SendFlowState();
@@ -77,6 +85,16 @@ class _SendFlowState extends State<_SendFlow> {
   Payment? _payment;
   Invoice? _paid;
   DateTime? _sentAt;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialTo case final text?) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _fill(text, scanned: true);
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -124,13 +142,30 @@ class _SendFlowState extends State<_SendFlow> {
   Future<void> _paste() async {
     final text = (await Clipboard.getData(Clipboard.kTextPlain))?.text?.trim();
     if (!mounted || text == null || text.isEmpty) return;
+    _fill(text);
+  }
+
+  Future<void> _scan() async {
+    final text = await scanQrCode(context);
+    if (!mounted || text == null) return;
+    _fill(text, scanned: true);
+  }
+
+  /// A scanned text is flagged at once, as the user did not see it go in.
+  void _fill(String text, {bool scanned = false}) {
     _to.text = text;
     _onToChanged(text);
+    final l = AppLocalizations.of(context);
     if (_typedInvoice case final invoice?) {
-      final l = AppLocalizations.of(context);
       _announce(
         '${l.lightningInvoice}, ${l.amountSats(formatSats(context, invoice.sats))}',
       );
+    } else if (scanned && _typed == null) {
+      try {
+        parseRecipient(text);
+      } on RecipientException catch (e) {
+        _fieldError(to: _recipientMessage(l, e.error, ''));
+      }
     } else {
       _amountFocus.requestFocus();
     }
@@ -369,10 +404,21 @@ class _SendFlowState extends State<_SendFlow> {
       ),
       Align(
         alignment: AlignmentDirectional.centerStart,
-        child: TextButton.icon(
-          onPressed: _busy ? null : _paste,
-          icon: const Icon(Icons.content_paste),
-          label: Text(l.paste),
+        child: Wrap(
+          spacing: 8,
+          children: [
+            TextButton.icon(
+              onPressed: _busy ? null : _paste,
+              icon: const Icon(Icons.content_paste),
+              label: Text(l.paste),
+            ),
+            if (canScanQrCodes)
+              TextButton.icon(
+                onPressed: _busy ? null : _scan,
+                icon: const Icon(Icons.qr_code_scanner),
+                label: Text(l.scan, semanticsLabel: l.scanQrCode),
+              ),
+          ],
         ),
       ),
       const SizedBox(height: 12),

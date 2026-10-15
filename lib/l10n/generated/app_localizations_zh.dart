@@ -746,4 +746,31 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => '请输入您的密码短语。';
+
+  @override
+  String get scan => '扫描';
+
+  @override
+  String get scanQrCode => '扫描二维码';
+
+  @override
+  String get scanHint => '将相机对准二维码。';
+
+  @override
+  String get turnOnLight => '打开手电筒';
+
+  @override
+  String get turnOffLight => '关闭手电筒';
+
+  @override
+  String get cameraNeeded => '请允许 Lumen 使用相机扫描二维码。您也可以关闭此页面并粘贴文本。';
+
+  @override
+  String get allowCamera => '允许使用相机';
+
+  @override
+  String get openSettings => '打开设置';
+
+  @override
+  String get noCamera => '没有可用的相机。请关闭此页面并粘贴文本。';
 }

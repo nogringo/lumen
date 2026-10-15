@@ -206,5 +206,14 @@
   "resetTitle": "重置 Lumen？",
   "resetBody": "Lumen 将从本设备移除您的钱包和应用锁。您的资金仍保留在各钱包服务中：请用各自的连接字符串重新添加每个钱包。",
   "reset": "重置",
-  "errorPassphraseEmpty": "请输入您的密码短语。"
+  "errorPassphraseEmpty": "请输入您的密码短语。",
+  "scan": "扫描",
+  "scanQrCode": "扫描二维码",
+  "scanHint": "将相机对准二维码。",
+  "turnOnLight": "打开手电筒",
+  "turnOffLight": "关闭手电筒",
+  "cameraNeeded": "请允许 Lumen 使用相机扫描二维码。您也可以关闭此页面并粘贴文本。",
+  "allowCamera": "允许使用相机",
+  "openSettings": "打开设置",
+  "noCamera": "没有可用的相机。请关闭此页面并粘贴文本。"
 }

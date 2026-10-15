@@ -206,5 +206,14 @@
   "resetTitle": "Repor o Lumen?",
   "resetBody": "O Lumen remove as suas carteiras e o bloqueio da app deste dispositivo. Os seus fundos ficam nos seus serviços de carteira: adicione novamente cada carteira com a respetiva cadeia de ligação.",
   "reset": "Repor",
-  "errorPassphraseEmpty": "Introduza a sua frase-passe."
+  "errorPassphraseEmpty": "Introduza a sua frase-passe.",
+  "scan": "Digitalizar",
+  "scanQrCode": "Digitalizar um código QR",
+  "scanHint": "Aponte a câmara para um código QR.",
+  "turnOnLight": "Ligar a lanterna",
+  "turnOffLight": "Desligar a lanterna",
+  "cameraNeeded": "Permita que o Lumen use a câmara para digitalizar códigos QR. Também pode fechar este ecrã e colar o texto.",
+  "allowCamera": "Permitir câmara",
+  "openSettings": "Abrir definições",
+  "noCamera": "Nenhuma câmara disponível. Feche este ecrã e cole o texto."
 }

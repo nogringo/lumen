@@ -782,4 +782,33 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'Inserisci la tua passphrase.';
+
+  @override
+  String get scan => 'Scansiona';
+
+  @override
+  String get scanQrCode => 'Scansiona un codice QR';
+
+  @override
+  String get scanHint => 'Inquadra un codice QR con la fotocamera.';
+
+  @override
+  String get turnOnLight => 'Accendi la torcia';
+
+  @override
+  String get turnOffLight => 'Spegni la torcia';
+
+  @override
+  String get cameraNeeded =>
+      'Consenti a Lumen di usare la fotocamera per scansionare i codici QR. Puoi anche chiudere questa schermata e incollare il testo.';
+
+  @override
+  String get allowCamera => 'Consenti fotocamera';
+
+  @override
+  String get openSettings => 'Apri impostazioni';
+
+  @override
+  String get noCamera =>
+      'Nessuna fotocamera disponibile. Chiudi questa schermata e incolla il testo.';
 }

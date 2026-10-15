@@ -763,4 +763,32 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'パスフレーズを入力してください。';
+
+  @override
+  String get scan => 'スキャン';
+
+  @override
+  String get scanQrCode => 'QRコードをスキャン';
+
+  @override
+  String get scanHint => 'カメラをQRコードに向けてください。';
+
+  @override
+  String get turnOnLight => 'ライトをオン';
+
+  @override
+  String get turnOffLight => 'ライトをオフ';
+
+  @override
+  String get cameraNeeded =>
+      'QRコードをスキャンするには、Lumenにカメラの使用を許可してください。この画面を閉じてテキストを貼り付けることもできます。';
+
+  @override
+  String get allowCamera => 'カメラを許可';
+
+  @override
+  String get openSettings => '設定を開く';
+
+  @override
+  String get noCamera => '使用できるカメラがありません。この画面を閉じてテキストを貼り付けてください。';
 }

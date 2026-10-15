@@ -784,4 +784,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'Gib deine Passphrase ein.';
+
+  @override
+  String get scan => 'Scannen';
+
+  @override
+  String get scanQrCode => 'QR-Code scannen';
+
+  @override
+  String get scanHint => 'Richte die Kamera auf einen QR-Code.';
+
+  @override
+  String get turnOnLight => 'Taschenlampe einschalten';
+
+  @override
+  String get turnOffLight => 'Taschenlampe ausschalten';
+
+  @override
+  String get cameraNeeded =>
+      'Erlaube Lumen, die Kamera zum Scannen von QR-Codes zu nutzen. Du kannst diesen Bildschirm auch schließen und den Text stattdessen einfügen.';
+
+  @override
+  String get allowCamera => 'Kamera erlauben';
+
+  @override
+  String get openSettings => 'Einstellungen öffnen';
+
+  @override
+  String get noCamera =>
+      'Keine Kamera verfügbar. Schließe diesen Bildschirm und füge den Text stattdessen ein.';
 }

@@ -800,4 +800,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorPassphraseEmpty => 'Введите парольную фразу.';
+
+  @override
+  String get scan => 'Сканировать';
+
+  @override
+  String get scanQrCode => 'Сканировать QR-код';
+
+  @override
+  String get scanHint => 'Наведите камеру на QR-код.';
+
+  @override
+  String get turnOnLight => 'Включить фонарик';
+
+  @override
+  String get turnOffLight => 'Выключить фонарик';
+
+  @override
+  String get cameraNeeded =>
+      'Разрешите Lumen использовать камеру для сканирования QR-кодов. Также можно закрыть этот экран и вставить текст.';
+
+  @override
+  String get allowCamera => 'Разрешить доступ к камере';
+
+  @override
+  String get openSettings => 'Открыть настройки';
+
+  @override
+  String get noCamera =>
+      'Камера недоступна. Закройте этот экран и вставьте текст.';
 }

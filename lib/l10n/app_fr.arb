@@ -206,5 +206,14 @@
   "resetTitle": "Réinitialiser Lumen ?",
   "resetBody": "Lumen retire vos portefeuilles et le verrouillage de cet appareil. Vos fonds restent chez vos services de portefeuille : ajoutez à nouveau chaque portefeuille avec sa chaîne de connexion.",
   "reset": "Réinitialiser",
-  "errorPassphraseEmpty": "Saisissez votre phrase de passe."
+  "errorPassphraseEmpty": "Saisissez votre phrase de passe.",
+  "scan": "Scanner",
+  "scanQrCode": "Scanner un QR code",
+  "scanHint": "Pointez l'appareil photo vers un QR code.",
+  "turnOnLight": "Allumer la lampe torche",
+  "turnOffLight": "Éteindre la lampe torche",
+  "cameraNeeded": "Autorisez Lumen à utiliser l'appareil photo pour scanner les QR codes. Vous pouvez aussi fermer cet écran et coller le texte.",
+  "allowCamera": "Autoriser l'appareil photo",
+  "openSettings": "Ouvrir les paramètres",
+  "noCamera": "Aucun appareil photo n'est disponible. Fermez cet écran et collez le texte."
 }

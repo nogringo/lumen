@@ -206,5 +206,14 @@
   "resetTitle": "Lumen zurücksetzen?",
   "resetBody": "Lumen entfernt deine Wallets und die App-Sperre von diesem Gerät. Dein Guthaben bleibt bei deinen Wallet-Diensten: Füge jede Wallet mit ihrem Verbindungsstring erneut hinzu.",
   "reset": "Zurücksetzen",
-  "errorPassphraseEmpty": "Gib deine Passphrase ein."
+  "errorPassphraseEmpty": "Gib deine Passphrase ein.",
+  "scan": "Scannen",
+  "scanQrCode": "QR-Code scannen",
+  "scanHint": "Richte die Kamera auf einen QR-Code.",
+  "turnOnLight": "Taschenlampe einschalten",
+  "turnOffLight": "Taschenlampe ausschalten",
+  "cameraNeeded": "Erlaube Lumen, die Kamera zum Scannen von QR-Codes zu nutzen. Du kannst diesen Bildschirm auch schließen und den Text stattdessen einfügen.",
+  "allowCamera": "Kamera erlauben",
+  "openSettings": "Einstellungen öffnen",
+  "noCamera": "Keine Kamera verfügbar. Schließe diesen Bildschirm und füge den Text stattdessen ein."
 }

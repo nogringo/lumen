@@ -206,5 +206,14 @@
   "resetTitle": "Lumen をリセットしますか？",
   "resetBody": "Lumen はこの端末からウォレットとアプリロックを削除します。資金はウォレットサービスに残ります。各ウォレットを接続文字列でもう一度追加してください。",
   "reset": "リセット",
-  "errorPassphraseEmpty": "パスフレーズを入力してください。"
+  "errorPassphraseEmpty": "パスフレーズを入力してください。",
+  "scan": "スキャン",
+  "scanQrCode": "QRコードをスキャン",
+  "scanHint": "カメラをQRコードに向けてください。",
+  "turnOnLight": "ライトをオン",
+  "turnOffLight": "ライトをオフ",
+  "cameraNeeded": "QRコードをスキャンするには、Lumenにカメラの使用を許可してください。この画面を閉じてテキストを貼り付けることもできます。",
+  "allowCamera": "カメラを許可",
+  "openSettings": "設定を開く",
+  "noCamera": "使用できるカメラがありません。この画面を閉じてテキストを貼り付けてください。"
 }

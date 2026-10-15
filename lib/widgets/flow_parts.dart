@@ -34,9 +34,10 @@ Future<void> openFlow(
   required String location,
   required String title,
   required FlowBuilder builder,
+  Object? extra,
 }) async {
   if (LayoutSize.of(context) == LayoutSize.phone) {
-    await context.push(location);
+    await context.push(location, extra: extra);
     return;
   }
   await showDialog<void>(

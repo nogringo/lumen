@@ -206,5 +206,14 @@
   "resetTitle": "Redefinir o Lumen?",
   "resetBody": "O Lumen remove suas carteiras e o bloqueio do app deste dispositivo. Seus fundos continuam nos serviços das suas carteiras: adicione cada carteira de novo com a string de conexão dela.",
   "reset": "Redefinir",
-  "errorPassphraseEmpty": "Digite sua frase-senha."
+  "errorPassphraseEmpty": "Digite sua frase-senha.",
+  "scan": "Escanear",
+  "scanQrCode": "Escanear um QR code",
+  "scanHint": "Aponte a câmera para um QR code.",
+  "turnOnLight": "Ligar a lanterna",
+  "turnOffLight": "Desligar a lanterna",
+  "cameraNeeded": "Permita que o Lumen use a câmera para escanear QR codes. Você também pode fechar esta tela e colar o texto.",
+  "allowCamera": "Permitir câmera",
+  "openSettings": "Abrir configurações",
+  "noCamera": "Nenhuma câmera disponível. Feche esta tela e cole o texto."
 }

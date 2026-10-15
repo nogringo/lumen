@@ -206,5 +206,14 @@
   "resetTitle": "Reimpostare Lumen?",
   "resetBody": "Lumen rimuove i tuoi portafogli e il blocco app da questo dispositivo. I tuoi fondi restano presso i servizi dei tuoi portafogli: aggiungi di nuovo ogni portafoglio con la sua stringa di connessione.",
   "reset": "Reimposta",
-  "errorPassphraseEmpty": "Inserisci la tua passphrase."
+  "errorPassphraseEmpty": "Inserisci la tua passphrase.",
+  "scan": "Scansiona",
+  "scanQrCode": "Scansiona un codice QR",
+  "scanHint": "Inquadra un codice QR con la fotocamera.",
+  "turnOnLight": "Accendi la torcia",
+  "turnOffLight": "Spegni la torcia",
+  "cameraNeeded": "Consenti a Lumen di usare la fotocamera per scansionare i codici QR. Puoi anche chiudere questa schermata e incollare il testo.",
+  "allowCamera": "Consenti fotocamera",
+  "openSettings": "Apri impostazioni",
+  "noCamera": "Nessuna fotocamera disponibile. Chiudi questa schermata e incolla il testo."
 }

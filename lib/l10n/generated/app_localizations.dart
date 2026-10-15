@@ -1356,6 +1356,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your passphrase.'**
   String get errorPassphraseEmpty;
+
+  /// Action and button that open the camera to scan a QR code.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan'**
+  String get scan;
+
+  /// Accessible name of the Scan buttons, and title of the camera screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a QR code'**
+  String get scanQrCode;
+
+  /// Shown at the bottom of the camera screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Point the camera at a QR code.'**
+  String get scanHint;
+
+  /// Accessible name of the camera screen's flashlight button while it is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on the flashlight'**
+  String get turnOnLight;
+
+  /// Accessible name of the camera screen's flashlight button while it is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off the flashlight'**
+  String get turnOffLight;
+
+  /// Shown on the camera screen when Lumen may not use the camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Lumen to use the camera to scan QR codes. You can also close this screen and paste the text instead.'**
+  String get cameraNeeded;
+
+  /// Button under cameraNeeded that asks Android for the camera again.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera'**
+  String get allowCamera;
+
+  /// Button under cameraNeeded that opens Lumen's Android settings, once Android stops asking.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// Shown on the camera screen when the device has no usable camera.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera is available. Close this screen and paste the text instead.'**
+  String get noCamera;
 }
 
 class _AppLocalizationsDelegate
