@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 
 import 'lumen_colors.dart';
 
+const sansFamily = 'Geist';
 const monoFamily = 'GeistMono';
 
 ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
@@ -64,7 +65,7 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
     brightness: brightness,
     // Desktop defaults to compact, which shrinks 48 dp targets to 40.
     visualDensity: VisualDensity.standard,
-    fontFamily: 'Geist',
+    fontFamily: sansFamily,
     colorScheme: ColorScheme(
       brightness: brightness,
       primary: c.accent,
@@ -102,7 +103,11 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         ),
         textStyle: const WidgetStatePropertyAll(
-          TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          TextStyle(
+            fontFamily: sansFamily,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         side: focusSide(c.text),
       ),
@@ -118,7 +123,11 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         textStyle: const WidgetStatePropertyAll(
-          TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          TextStyle(
+            fontFamily: sansFamily,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         iconSize: const WidgetStatePropertyAll(16),
         side: focusSide(c.focus),
@@ -185,7 +194,11 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
         textStyle: const WidgetStatePropertyAll(
-          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          TextStyle(
+            fontFamily: sansFamily,
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         side: focusSide(c.focus),
         // Focus shows as the ring alone, as in Tappable.
@@ -204,7 +217,7 @@ ThemeData lumenTheme(Brightness brightness, {bool highContrast = false}) {
       color: c.surface2,
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      textStyle: TextStyle(fontSize: 15, color: c.text),
+      textStyle: TextStyle(fontFamily: sansFamily, fontSize: 15, color: c.text),
     ),
   );
 }
