@@ -29,7 +29,6 @@ Every way you hold bitcoin, in one place. Lumen connects Lightning wallets over 
 - **Payment details.** Each payment keeps its date, fee, payment hash, preimage and invoice, and can be shared as a receipt.
 - **History that stays.** Every transaction Lumen sees is saved on the device, encrypted with AES-256-GCM, so it remains readable offline.
 - **App lock.** An optional passphrase, stretched with Argon2id, seals the wallets and the history. Cmd+L or Ctrl+L locks the app at once.
-- **11 languages.** English, French, German, Spanish, Italian, Portuguese (Portugal and Brazil), Finnish, Russian, Japanese and Chinese, chosen in Settings.
 
 ## Layout
 

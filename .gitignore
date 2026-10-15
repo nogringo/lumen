@@ -6,6 +6,7 @@ spike_cdk_web
 *.pyc
 *.swp
 .DS_Store
+.env
 .atom/
 .build/
 .buildlog/

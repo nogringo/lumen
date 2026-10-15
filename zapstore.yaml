@@ -1,0 +1,23 @@
+repository: https://github.com/nogringo/lumen
+pubkey: npub1kg4sdvz3l4fr99n2jdz2vdxe2mpacva87hkdetv76ywacsfq5leqquw5te
+match: "-arm64\\.apk$"
+metadata_sources:
+  - github
+
+name: Lumen
+summary: Every way you hold bitcoin, in one place.
+description: |
+  Lumen connects your Lightning wallets over Nostr Wallet Connect (NIP-47), shows their balances and activity together, and sends and receives Lightning payments with them.
+
+  - Every wallet at once: connect several NWC wallets and see one total balance and one activity feed. Before saving a connection, Lumen shows what it can and cannot do.
+  - Send and receive: pay a Lightning invoice or address, scan a QR code with the camera, create an invoice with a QR code, and get told the moment it is paid.
+  - Payment details: each payment keeps its date, fee, payment hash, preimage and invoice, and can be shared as a receipt.
+  - History that stays: every transaction Lumen sees is saved on the device, encrypted with AES-256-GCM, so it remains readable offline.
+  - App lock: an optional passphrase, stretched with Argon2id, seals the wallets and the history.
+tags: [bitcoin, lightning, wallet, nostr, nwc]
+website: https://nogringo.github.io/lumen/
+supported_nips: ["47"]
+images:
+  - docs/screenshots/home-light.png
+  - docs/screenshots/receive-light.png
+  - docs/screenshots/payment-light.png
