@@ -12,6 +12,7 @@ import '../theme/lumen_theme.dart';
 import '../wallets/lumen_scope.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/phrase_word_field.dart';
+import '../widgets/private_screen.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/switch_row.dart';
 import '../widgets/tappable.dart';
@@ -135,20 +136,23 @@ class _PhraseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return NarrowPage(
-      title: l.phraseTitle,
-      backButton: true,
-      content: [
-        _Lead(l.phraseLead),
-        const SizedBox(height: 20),
-        _PhraseWords(phrase.split(' ')),
-      ],
-      bottom: [
-        FilledButton(
-          onPressed: () => pushStep<void>(context, (_) => _CheckScreen(phrase)),
-          child: Text(l.phraseWrittenDown),
-        ),
-      ],
+    return PrivateScreen(
+      child: NarrowPage(
+        title: l.phraseTitle,
+        backButton: true,
+        content: [
+          _Lead(l.phraseLead),
+          const SizedBox(height: 20),
+          _PhraseWords(phrase.split(' ')),
+        ],
+        bottom: [
+          FilledButton(
+            onPressed: () =>
+                pushStep<void>(context, (_) => _CheckScreen(phrase)),
+            child: Text(l.phraseWrittenDown),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -334,71 +338,73 @@ class _CheckScreenState extends State<_CheckScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return NarrowPage(
-      title: l.checkPhraseTitle,
-      backButton: true,
-      content: [
-        _Lead(l.checkPhraseLead),
-        for (var i = 0; i < _asked; i++) ...[
+    return PrivateScreen(
+      child: NarrowPage(
+        title: l.checkPhraseTitle,
+        backButton: true,
+        content: [
+          _Lead(l.checkPhraseLead),
+          for (var i = 0; i < _asked; i++) ...[
+            const SizedBox(height: 20),
+            PhraseWordField(
+              number: _positions[i] + 1,
+              controller: _controllers[i],
+              focusNode: _focusNodes[i],
+              errorText: _errors[i],
+              onChanged: (_) {
+                if (_errors[i] != null) setState(() => _errors[i] = null);
+              },
+              onDone: () => i + 1 < _asked
+                  ? _focusNodes[i + 1].requestFocus()
+                  : _nameFocus.requestFocus(),
+            ),
+          ],
           const SizedBox(height: 20),
-          PhraseWordField(
-            number: _positions[i] + 1,
-            controller: _controllers[i],
-            focusNode: _focusNodes[i],
-            errorText: _errors[i],
-            onChanged: (_) {
-              if (_errors[i] != null) setState(() => _errors[i] = null);
-            },
-            onDone: () => i + 1 < _asked
-                ? _focusNodes[i + 1].requestFocus()
-                : _nameFocus.requestFocus(),
-          ),
-        ],
-        const SizedBox(height: 20),
-        LabeledField(
-          label: l.nameLabel,
-          child: TextField(
-            controller: _name,
-            focusNode: _nameFocus,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _create(),
-            onChanged: (_) {
-              if (_nameMissing) setState(() => _nameMissing = false);
-            },
-            decoration: InputDecoration(
-              errorText: _nameMissing ? l.errorNameEmpty : null,
+          LabeledField(
+            label: l.nameLabel,
+            child: TextField(
+              controller: _name,
+              focusNode: _nameFocus,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _create(),
+              onChanged: (_) {
+                if (_nameMissing) setState(() => _nameMissing = false);
+              },
+              decoration: InputDecoration(
+                errorText: _nameMissing ? l.errorNameEmpty : null,
+              ),
             ),
           ),
-        ),
-        if (_testnetAvailable(context)) ...[
-          const SizedBox(height: 12),
-          SwitchRow(
-            title: l.testnet,
-            hint: l.testnetHint,
-            value: _testnet,
-            onChanged: () => setState(() => _testnet = !_testnet),
+          if (_testnetAvailable(context)) ...[
+            const SizedBox(height: 12),
+            SwitchRow(
+              title: l.testnet,
+              hint: l.testnetHint,
+              value: _testnet,
+              onChanged: () => setState(() => _testnet = !_testnet),
+            ),
+          ],
+          const SizedBox(height: 8),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(l.showWordsAgain),
+            ),
+          ),
+          if (_failed) ...[
+            const SizedBox(height: 12),
+            ErrorNote(l.errorSaveWallet),
+          ],
+        ],
+        bottom: [
+          FilledButton(
+            onPressed: _saving ? null : _create,
+            child: Text(l.createWallet),
           ),
         ],
-        const SizedBox(height: 8),
-        Align(
-          alignment: AlignmentDirectional.centerStart,
-          child: TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l.showWordsAgain),
-          ),
-        ),
-        if (_failed) ...[
-          const SizedBox(height: 12),
-          ErrorNote(l.errorSaveWallet),
-        ],
-      ],
-      bottom: [
-        FilledButton(
-          onPressed: _saving ? null : _create,
-          child: Text(l.createWallet),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -583,74 +589,80 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return NarrowPage(
-      title: l.restoreLiquidTitle,
-      content: [
-        _Lead(l.restoreLead),
-        const SizedBox(height: 20),
-        _LengthChoice(lengths: _lengths, picked: _count, onPicked: _pickLength),
-        for (var i = 0; i < _count; i++) ...[
+    return PrivateScreen(
+      child: NarrowPage(
+        title: l.restoreLiquidTitle,
+        content: [
+          _Lead(l.restoreLead),
           const SizedBox(height: 20),
-          PhraseWordField(
-            number: i + 1,
-            total: _count,
-            controller: _controllers[i],
-            focusNode: _focusNodes[i],
-            errorText: _errors[i],
-            onChanged: (text) => _changed(i, text),
-            onDone: () => _focusAfter(i),
+          _LengthChoice(
+            lengths: _lengths,
+            picked: _count,
+            onPicked: _pickLength,
           ),
-        ],
-        const SizedBox(height: 20),
-        LabeledField(
-          label: l.nameLabel,
-          child: TextField(
-            controller: _name,
-            focusNode: _nameFocus,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => _restore(),
-            onChanged: (_) {
-              if (_nameMissing) setState(() => _nameMissing = false);
-            },
-            decoration: InputDecoration(
-              errorText: _nameMissing ? l.errorNameEmpty : null,
+          for (var i = 0; i < _count; i++) ...[
+            const SizedBox(height: 20),
+            PhraseWordField(
+              number: i + 1,
+              total: _count,
+              controller: _controllers[i],
+              focusNode: _focusNodes[i],
+              errorText: _errors[i],
+              onChanged: (text) => _changed(i, text),
+              onDone: () => _focusAfter(i),
+            ),
+          ],
+          const SizedBox(height: 20),
+          LabeledField(
+            label: l.nameLabel,
+            child: TextField(
+              controller: _name,
+              focusNode: _nameFocus,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => _restore(),
+              onChanged: (_) {
+                if (_nameMissing) setState(() => _nameMissing = false);
+              },
+              decoration: InputDecoration(
+                errorText: _nameMissing ? l.errorNameEmpty : null,
+              ),
             ),
           ),
-        ),
-        if (_testnetAvailable(context)) ...[
-          const SizedBox(height: 12),
-          SwitchRow(
-            title: l.testnet,
-            hint: l.testnetHint,
-            value: _testnet,
-            onChanged: () => setState(() => _testnet = !_testnet),
+          if (_testnetAvailable(context)) ...[
+            const SizedBox(height: 12),
+            SwitchRow(
+              title: l.testnet,
+              hint: l.testnetHint,
+              value: _testnet,
+              onChanged: () => setState(() => _testnet = !_testnet),
+            ),
+          ],
+          if (_error case final error?) ...[
+            const SizedBox(height: 20),
+            ErrorNote(_message(l, error)),
+          ],
+          if (_scanning) ...[
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                const SizedBox.square(
+                  dimension: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: _Lead(l.restoreScanning)),
+              ],
+            ),
+          ],
+        ],
+        bottom: [
+          FilledButton(
+            onPressed: _scanning ? null : _restore,
+            child: Text(l.restoreWallet),
           ),
         ],
-        if (_error case final error?) ...[
-          const SizedBox(height: 20),
-          ErrorNote(_message(l, error)),
-        ],
-        if (_scanning) ...[
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              const SizedBox.square(
-                dimension: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: _Lead(l.restoreScanning)),
-            ],
-          ),
-        ],
-      ],
-      bottom: [
-        FilledButton(
-          onPressed: _scanning ? null : _restore,
-          child: Text(l.restoreWallet),
-        ),
-      ],
+      ),
     );
   }
 }

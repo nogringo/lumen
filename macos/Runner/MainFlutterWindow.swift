@@ -10,6 +10,16 @@ class MainFlutterWindow: NSWindow {
 
     RegisterGeneratedPlugins(registry: flutterViewController)
 
+    FlutterMethodChannel(
+      name: "lumen/screen", binaryMessenger: flutterViewController.engine.binaryMessenger
+    ).setMethodCallHandler { [weak self] call, result in
+      guard call.method == "setPrivate", let on = call.arguments as? Bool else {
+        return result(FlutterMethodNotImplemented)
+      }
+      self?.sharingType = on ? .none : .readOnly
+      result(nil)
+    }
+
     super.awakeFromNib()
   }
 }

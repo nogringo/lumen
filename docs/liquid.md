@@ -137,7 +137,7 @@ How it came out:
 - Still to adapt before anyone can add a Liquid wallet in the UI: Receive asks every wallet for an invoice, which Liquid wallets refuse (step 5); activity rows do not mark pending payments yet (step 5); the remove dialog says the funds stay where they are (step 8).
 - `test/fakes.dart` has a `FakeLiquidEngine`, through `package:lumen_wallets/liquid_engine.dart`, and `memorySources` uses it.
 
-### 4. Create and restore
+### 4. Create and restore (done)
 
 - Create: explain what the phrase is, show the 12 words, ask for a few of them back, then name the wallet. Nothing is saved before the check passes.
 - Restore: 12 or 24 fields with BIP39 word suggestions, paste of a whole phrase, and a clear error on a wrong word or checksum. Restoring scans the chain before showing a balance.
@@ -147,7 +147,7 @@ How it came out:
 
 Done when: widget and accessibility tests cover both flows, and a wallet created on one device restores on another.
 
-Done in three commits: create (done), restore (done), then the screen privacy.
+Done in three commits: create, restore, then the screen privacy.
 
 How create came out:
 
@@ -167,6 +167,16 @@ How restore came out:
 - Checks run in order, each written as a fix: an empty field or a word outside the BIP39 list is flagged under its own field, which takes focus; then the checksum, under the list.
 - A phrase already saved on the same network is refused before any scan (`isSaved`, and `discover` checks it too), since the scan can take a minute. There is one wallet per phrase and network, whatever derivation it was found with.
 - Restoring then runs `discover` (BIP84 then BIP49) before saving, with a message shown and announced while it scans. A server that does not answer (after the retries) gets its own message, and nothing is saved.
+
+How the screen privacy came out:
+
+- `PrivateScreen` wraps the words, the check and the restore screen, and talks to the native side over the `lumen/screen` channel. It counts the screens mounted, so going from the words to the check keeps the protection on.
+- Android sets `FLAG_SECURE`: no screenshots or recordings, and a blank card in the app switcher.
+- iOS covers the window when the app stops being active, so the app switcher snapshot is blank. iOS offers no way to block screenshots or recordings. Covering the screen while it is recorded or mirrored was left out, since it would also hide the words from someone mirroring to a larger screen to read them.
+- macOS sets the window's `sharingType` to `.none`, which leaves it out of screen capture.
+- Windows, Linux and web have nothing yet. Windows could use `SetWindowDisplayAffinity` in step 9.
+- The phrase never reaches the clipboard: there is no copy button, and pasting into the restore fields only reads it.
+- Not tried in the running app yet, like the rest of step 4.
 
 ### 5. Receive
 

@@ -94,6 +94,27 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('the screen stays private from the words to the saved wallet', (
+    tester,
+  ) async {
+    final calls = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('lumen/screen'),
+      (call) async => calls.add(call.arguments),
+    );
+    await openPhrase(tester);
+    expect(calls, [true]);
+
+    await tester.tap(find.text('I wrote them down'));
+    await tester.pumpAndSettle();
+    expect(calls, [true]);
+
+    await fillCheck(tester);
+    await tester.tap(find.text('Create wallet'));
+    await settle(tester);
+    expect(calls, [true, false]);
+  });
+
   testWidgets('a wrong word is shown inline and nothing is saved', (
     tester,
   ) async {

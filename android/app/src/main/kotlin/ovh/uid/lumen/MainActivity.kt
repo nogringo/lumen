@@ -1,6 +1,7 @@
 package ovh.uid.lumen
 
 import android.content.Intent
+import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -18,6 +19,13 @@ class MainActivity : FlutterActivity() {
                 @Suppress("UNCHECKED_CAST")
                 val strings = call.arguments as? Map<String, String> ?: emptyMap()
                 startActivityForResult(ScannerActivity.intent(this, strings), SCAN_REQUEST)
+            }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "lumen/screen")
+            .setMethodCallHandler { call, result ->
+                if (call.method != "setPrivate") return@setMethodCallHandler result.notImplemented()
+                val flag = WindowManager.LayoutParams.FLAG_SECURE
+                if (call.arguments == true) window.addFlags(flag) else window.clearFlags(flag)
+                result.success(null)
             }
     }
 

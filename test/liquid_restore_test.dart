@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_wallets/liquid_engine.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -102,6 +103,21 @@ void main() {
     expect(find.text('Total balance'), findsOneWidget);
     expect(find.bySemanticsLabel(RegExp('received 25,000 sats')), findsWidgets);
     handle.dispose();
+  });
+
+  testWidgets('the screen stays private while restoring', (tester) async {
+    final calls = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('lumen/screen'),
+      (call) async => calls.add(call.arguments),
+    );
+    await openRestore(tester);
+    expect(calls, [true]);
+
+    await tester.enterText(fields.first, liquidPhrase);
+    await tester.pump();
+    await tapRestore(tester);
+    expect(calls, [true, false]);
   });
 
   testWidgets('a pasted 24-word phrase picks 24 words, then restores', (
