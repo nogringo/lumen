@@ -528,13 +528,21 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
     final phrase = _phrase;
     final network = _testnet ? ChainNetwork.liquidTestnet : ChainNetwork.liquid;
     setState(() => _scanning = true);
-    _announce(context, l.restoreScanning, assertiveness: Assertiveness.polite);
     _RestoreError? error;
     Wallet? wallet;
     try {
       if (await liquid.checkPhrase(phrase) != null) {
         error = _RestoreError.invalid;
+      } else if (await liquid.isSaved(phrase, network: network)) {
+        error = _RestoreError.duplicate;
       } else {
+        if (mounted) {
+          _announce(
+            context,
+            l.restoreScanning,
+            assertiveness: Assertiveness.polite,
+          );
+        }
         final discovery = await liquid.discover(phrase, network: network);
         wallet = await liquid.add(
           phrase: phrase,

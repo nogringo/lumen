@@ -540,6 +540,62 @@ void main() {
       );
     });
 
+    test('a phrase already saved is refused before any scan', () async {
+      final both = {ChainNetwork.liquid, ChainNetwork.liquidTestnet};
+      await source(networks: both).add(phrase: _phrase, name: 'Saved');
+      final scans = chain.syncs;
+
+      await expectLater(
+        source(networks: both).discover(_phrase.toUpperCase()),
+        throwsA(
+          isA<LiquidAddException>().having(
+            (e) => e.error,
+            'error',
+            LiquidAddError.duplicate,
+          ),
+        ),
+      );
+      expect(chain.syncs, scans);
+      expect(await source().isSaved(' ${_phrase.toUpperCase()} '), isTrue);
+      expect(
+        await source().isSaved(_phrase, network: ChainNetwork.liquidTestnet),
+        isFalse,
+      );
+
+      await source(networks: both)
+          .discover(_phrase, network: ChainNetwork.liquidTestnet);
+      expect(chain.syncs, greaterThan(scans));
+    });
+
+    test(
+      'a phrase saved with one derivation is not added with another',
+      () async {
+        final wallets = source();
+        await wallets.add(phrase: _phrase, name: 'Native');
+        engine.chains[LiquidScript.nestedSegwit]!.txs = [
+          const ChainTx(txid: 'old', balance: 1000, fee: 26, height: 5),
+        ];
+        final elsewhere = LiquidWalletSource(
+          engine: engine,
+          secrets: MemoryKeyValueStore(),
+          chainState: MemoryKeyValueStore(),
+        );
+        final nested = await elsewhere.discover(_phrase);
+        expect(nested.script, LiquidScript.nestedSegwit);
+
+        await expectLater(
+          wallets.add(phrase: _phrase, name: 'Nested', discovery: nested),
+          throwsA(
+            isA<LiquidAddException>().having(
+              (e) => e.error,
+              'error',
+              LiquidAddError.duplicate,
+            ),
+          ),
+        );
+      },
+    );
+
     test('a discovery on another network is refused', () async {
       final both = {ChainNetwork.liquid, ChainNetwork.liquidTestnet};
       final discovery = await source(networks: both).discover(_phrase);

@@ -88,17 +88,28 @@ final class LiquidWalletSource implements WalletSource {
     }
   }
 
+  /// Whether [phrase] is already saved on [network], so restoring it would
+  /// only give the same wallet again.
+  Future<bool> isSaved(
+    String phrase, {
+    ChainNetwork network = ChainNetwork.liquid,
+  }) async => _isSaved(_normalized(phrase), network, await _records());
+
   /// Scans the chain for the history of a [phrase] to restore, and finds
   /// the derivation it was used with: nested segwit when only that one has
   /// a history, as some apps create, and native segwit otherwise.
   ///
-  /// Throws a [LiquidAddException] when the phrase is invalid or the chain
+  /// Throws a [LiquidAddException] when the phrase is invalid or already
+  /// saved on [network], both found before any scan, or when the chain
   /// cannot be read.
   Future<LiquidDiscovery> discover(
     String phrase, {
     ChainNetwork network = ChainNetwork.liquid,
   }) async {
     final normalized = _checked(phrase);
+    if (await isSaved(normalized, network: network)) {
+      throw const LiquidAddException(LiquidAddError.duplicate);
+    }
     Future<LiquidDiscovery?> scan(LiquidScript script) async {
       final chain = await _engine.open(
         phrase: normalized,
@@ -140,12 +151,8 @@ final class LiquidWalletSource implements WalletSource {
     final normalized = _checked(phrase);
     return _write(() async {
       final records = await _records();
-      for (final record in records) {
-        if (record.network == network &&
-            record.script == script &&
-            await _secrets.read(_phraseKey(record.id)) == normalized) {
-          throw const LiquidAddException(LiquidAddError.duplicate);
-        }
+      if (await _isSaved(normalized, network, records)) {
+        throw const LiquidAddException(LiquidAddError.duplicate);
       }
       final record = _Record(
         id: randomId(),
@@ -168,6 +175,22 @@ final class LiquidWalletSource implements WalletSource {
     for (final record in await _records())
       if (networks.contains(record.network)) LiquidWallet._(this, record),
   ];
+
+  /// One wallet per phrase and network, whatever derivation it was found
+  /// with.
+  Future<bool> _isSaved(
+    String normalized,
+    ChainNetwork network,
+    List<_Record> records,
+  ) async {
+    for (final record in records) {
+      if (record.network == network &&
+          await _secrets.read(_phraseKey(record.id)) == normalized) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   String _checked(String phrase) {
     final normalized = _normalized(phrase);

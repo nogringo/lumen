@@ -165,7 +165,8 @@ How restore came out:
 - 24 words are accepted because the Blockstream app and the Jade also create 24-word phrases. The crate's `phrase_problem` takes 12 or 24 words and leaves the rest to BIP39, and a known 24-word phrase is checked against its master fingerprint in `cargo test`. New wallets keep 12 words.
 - Words typed or pasted together are spread over the fields: a whole phrase from the first field, fewer words from the field they were typed in. Pasting 24 words picks 24 by itself. A word followed by a space moves on to the next field. Pasting several words is announced ("12 words filled in").
 - Checks run in order, each written as a fix: an empty field or a word outside the BIP39 list is flagged under its own field, which takes focus; then the checksum, under the list.
-- Restoring runs `discover` (BIP84 then BIP49) before saving, with a message shown and announced while it scans. A server that does not answer (after the retries) and a phrase already saved each get their own message, and nothing is saved.
+- A phrase already saved on the same network is refused before any scan (`isSaved`, and `discover` checks it too), since the scan can take a minute. There is one wallet per phrase and network, whatever derivation it was found with.
+- Restoring then runs `discover` (BIP84 then BIP49) before saving, with a message shown and announced while it scans. A server that does not answer (after the retries) gets its own message, and nothing is saved.
 
 ### 5. Receive
 

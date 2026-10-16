@@ -266,10 +266,18 @@ void main() {
     await tester.enterText(fields.first, liquidPhrase);
     await tester.pump();
 
+    final handle = tester.ensureSemantics();
+    tester.takeAnnouncements();
     await tapRestore(tester);
 
     expect(find.text('This wallet is already in Lumen.'), findsOneWidget);
+    expect(engine.chain.syncs, 0);
+    expect(
+      [for (final a in tester.takeAnnouncements()) a.message],
+      ['This wallet is already in Lumen.'],
+    );
     expect(await tester.runAsync(sources.liquid.load), hasLength(1));
+    handle.dispose();
   });
 
   for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
