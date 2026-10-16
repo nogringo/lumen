@@ -939,14 +939,14 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'リカバリーフレーズの 12 個の単語を順番に入力してください。フレーズ全体を最初の欄に貼り付けることもできます。';
+      'リカバリーフレーズの単語を順番に入力してください。フレーズ全体を最初の欄に貼り付けることもできます。';
 
   @override
   String get errorWordUnknown => 'この単語はリカバリーフレーズの単語リストにありません。綴りを確認してください。';
 
   @override
   String get errorPhraseChecksum =>
-      'この 12 個の単語はリカバリーフレーズになっていません。どれかが間違っているか、順番が違う可能性があります。紙と 1 つずつ照らし合わせてください。';
+      'これらの単語はリカバリーフレーズになっていません。どれかが間違っているか、順番が違う可能性があります。紙と 1 つずつ照らし合わせてください。';
 
   @override
   String get restoreScanning => 'このウォレットの支払いを探しています。1 分ほどかかることがあります。';
@@ -967,6 +967,19 @@ class AppLocalizationsJa extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count 個の単語を入力しました',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'フレーズの長さ';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 語',
     );
     return '$_temp0';
   }

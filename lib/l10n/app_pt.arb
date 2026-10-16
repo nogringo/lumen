@@ -257,12 +257,14 @@
   "errorSaveWallet": "O Lumen não conseguiu guardar a carteira. Tente de novo.",
   "restoreLiquidWallet": "Restaurar uma carteira",
   "restoreLiquidTitle": "Restaurar uma carteira Liquid",
-  "restoreLead": "Escreva as 12 palavras da sua frase de recuperação, por ordem. Também pode colar a frase inteira no primeiro campo.",
+  "restoreLead": "Escreva as palavras da sua frase de recuperação, por ordem. Também pode colar a frase inteira no primeiro campo.",
   "errorWordUnknown": "Esta palavra não faz parte da lista das frases de recuperação. Verifique a ortografia.",
-  "errorPhraseChecksum": "Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: compare cada uma com o seu papel.",
+  "errorPhraseChecksum": "Estas palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: compare cada uma com o seu papel.",
   "restoreScanning": "A procurar os pagamentos desta carteira. Pode demorar um minuto.",
   "restoreWallet": "Restaurar carteira",
   "errorRestoreUnreachable": "O Lumen não conseguiu contactar o servidor Liquid para procurar os pagamentos desta carteira. Verifique a ligação e tente de novo.",
   "errorRestoreDuplicate": "Esta carteira já está no Lumen.",
-  "wordsPasted": "{count, plural, =1{1 palavra preenchida} other{{count} palavras preenchidas}}"
+  "wordsPasted": "{count, plural, =1{1 palavra preenchida} other{{count} palavras preenchidas}}",
+  "phraseLength": "Tamanho da frase",
+  "wordCount": "{count, plural, =1{1 palavra} other{{count} palavras}}"
 }

@@ -88,10 +88,11 @@ pub fn generate_phrase() -> Result<String, LiquidError> {
     Ok(mnemonic.to_string())
 }
 
-/// What is wrong with [phrase], or None when it is a valid 12-word phrase.
+/// What is wrong with [phrase], or None when it is a valid phrase of 12 or
+/// 24 words, the lengths Liquid wallets create.
 #[frb(sync)]
 pub fn phrase_problem(phrase: String) -> Option<PhraseProblem> {
-    if phrase.split_whitespace().count() != 12 {
+    if !matches!(phrase.split_whitespace().count(), 12 | 24) {
         return Some(PhraseProblem::WordCount);
     }
     match Mnemonic::parse_in_normalized(Language::English, &phrase) {
@@ -364,6 +365,7 @@ mod tests {
 
     const ABANDON: &str =
         "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
+    const ABANDON_24: &str = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon art";
 
     fn same_descriptor(ours: String, expected: &str) {
         let expected: WolletDescriptor = expected.parse().unwrap();
@@ -425,6 +427,22 @@ mod tests {
         let fresh = generate_phrase().unwrap();
         assert_eq!(fresh.split(' ').count(), 12);
         assert!(phrase_problem(fresh).is_none());
+    }
+
+    #[test]
+    fn a_24_word_phrase_is_checked_and_derives() {
+        assert!(phrase_problem(ABANDON_24.into()).is_none());
+        assert!(matches!(
+            phrase_problem(ABANDON_24.replace("art", "abandon")),
+            Some(PhraseProblem::Checksum)
+        ));
+        assert!(matches!(
+            phrase_problem(format!("{ABANDON} {ABANDON} abandon")),
+            Some(PhraseProblem::WordCount)
+        ));
+        let native =
+            descriptor(ABANDON_24.into(), LiquidNetwork::Mainnet, ScriptKind::NativeSegwit).unwrap();
+        assert!(native.contains(",elwpkh([5436d724/84'/1776'/0']"), "{native}");
     }
 
     #[tokio::test]

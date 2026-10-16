@@ -257,12 +257,14 @@
   "errorSaveWallet": "Lumen n'a pas pu enregistrer le portefeuille. Réessayez.",
   "restoreLiquidWallet": "Restaurer un portefeuille",
   "restoreLiquidTitle": "Restaurer un portefeuille Liquid",
-  "restoreLead": "Tapez les 12 mots de votre phrase de récupération, dans l'ordre. Vous pouvez aussi coller la phrase entière dans le premier champ.",
+  "restoreLead": "Tapez les mots de votre phrase de récupération, dans l'ordre. Vous pouvez aussi coller la phrase entière dans le premier champ.",
   "errorWordUnknown": "Ce mot ne fait pas partie de la liste des phrases de récupération. Vérifiez son orthographe.",
-  "errorPhraseChecksum": "Ces 12 mots ne forment pas une phrase de récupération. L'un d'eux est peut-être faux ou mal placé : vérifiez-les un par un sur votre papier.",
+  "errorPhraseChecksum": "Ces mots ne forment pas une phrase de récupération. L'un d'eux est peut-être faux ou mal placé : vérifiez-les un par un sur votre papier.",
   "restoreScanning": "Recherche des paiements de ce portefeuille. Cela peut prendre une minute.",
   "restoreWallet": "Restaurer le portefeuille",
   "errorRestoreUnreachable": "Lumen n'a pas pu joindre le serveur Liquid pour chercher les paiements de ce portefeuille. Vérifiez votre connexion et réessayez.",
   "errorRestoreDuplicate": "Ce portefeuille est déjà dans Lumen.",
-  "wordsPasted": "{count, plural, =1{1 mot rempli} other{{count} mots remplis}}"
+  "wordsPasted": "{count, plural, =1{1 mot rempli} other{{count} mots remplis}}",
+  "phraseLength": "Longueur de la phrase",
+  "wordCount": "{count, plural, =1{1 mot} other{{count} mots}}"
 }

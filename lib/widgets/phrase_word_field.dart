@@ -14,6 +14,7 @@ class PhraseWordField extends StatefulWidget {
   const PhraseWordField({
     super.key,
     required this.number,
+    this.total = 12,
     required this.controller,
     required this.focusNode,
     this.errorText,
@@ -22,8 +23,11 @@ class PhraseWordField extends StatefulWidget {
     this.last = false,
   });
 
-  /// From 1 to 12.
+  /// From 1 to [total].
   final int number;
+
+  /// How many words the phrase has.
+  final int total;
   final TextEditingController controller;
   final FocusNode focusNode;
   final String? errorText;
@@ -34,8 +38,6 @@ class PhraseWordField extends StatefulWidget {
 
   /// Whether the keyboard's action ends the form instead of moving on.
   final bool last;
-
-  static const total = 12;
 
   @override
   State<PhraseWordField> createState() => _PhraseWordFieldState();
@@ -91,7 +93,7 @@ class _PhraseWordFieldState extends State<PhraseWordField> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           LabeledField(
-            label: l.wordLabel(widget.number, PhraseWordField.total),
+            label: l.wordLabel(widget.number, widget.total),
             child: TextField(
               controller: widget.controller,
               focusNode: widget.focusNode,

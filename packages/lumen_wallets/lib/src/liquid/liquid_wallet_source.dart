@@ -7,7 +7,7 @@ import '../wallet.dart';
 import 'liquid_engine.dart';
 
 enum LiquidAddError {
-  /// Not a valid 12-word recovery phrase.
+  /// Not a valid recovery phrase of 12 or 24 words.
   invalidPhrase,
 
   /// The same phrase is already saved on this network.

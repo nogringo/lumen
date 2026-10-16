@@ -1278,7 +1278,7 @@
   "@restoreLiquidTitle": {
     "description": "Title of the screen where the 12 words of a recovery phrase are typed."
   },
-  "restoreLead": "Type the 12 words of your recovery phrase, in order. You can also paste the whole phrase into the first field.",
+  "restoreLead": "Type the words of your recovery phrase, in order. You can also paste the whole phrase into the first field.",
   "@restoreLead": {
     "description": "Lead text of the restore screen."
   },
@@ -1286,7 +1286,7 @@
   "@errorWordUnknown": {
     "description": "Error under a restore field whose word is not a BIP39 word."
   },
-  "errorPhraseChecksum": "These 12 words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.",
+  "errorPhraseChecksum": "These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.",
   "@errorPhraseChecksum": {
     "description": "Error when every word is valid but the phrase checksum fails."
   },
@@ -1309,6 +1309,19 @@
   "wordsPasted": "{count, plural, =1{1 word filled in} other{{count} words filled in}}",
   "@wordsPasted": {
     "description": "Announced to screen readers after pasting several words into the restore fields.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "phraseLength": "Phrase length",
+  "@phraseLength": {
+    "description": "Label of the choice between a 12-word and a 24-word recovery phrase, on the restore screen."
+  },
+  "wordCount": "{count, plural, =1{1 word} other{{count} words}}",
+  "@wordCount": {
+    "description": "One choice of recovery phrase length, such as 24 words.",
     "placeholders": {
       "count": {
         "type": "int"

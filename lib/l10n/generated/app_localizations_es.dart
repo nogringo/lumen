@@ -972,7 +972,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Escribe las 12 palabras de tu frase de recuperación, en orden. También puedes pegar la frase entera en el primer campo.';
+      'Escribe las palabras de tu frase de recuperación, en orden. También puedes pegar la frase entera en el primer campo.';
 
   @override
   String get errorWordUnknown =>
@@ -980,7 +980,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Estas 12 palabras no forman una frase de recuperación. Puede que una sea incorrecta o esté fuera de lugar: compara cada una con tu papel.';
+      'Estas palabras no forman una frase de recuperación. Puede que una sea incorrecta o esté fuera de lugar: compara cada una con tu papel.';
 
   @override
   String get restoreScanning =>
@@ -1003,6 +1003,20 @@ class AppLocalizationsEs extends AppLocalizations {
       locale: localeName,
       other: '$count palabras rellenadas',
       one: '1 palabra rellenada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Longitud de la frase';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palabras',
+      one: '1 palabra',
     );
     return '$_temp0';
   }

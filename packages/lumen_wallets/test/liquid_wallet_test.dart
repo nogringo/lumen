@@ -101,7 +101,9 @@ final class _FakeEngine implements LiquidEngine {
 
   @override
   PhraseProblem? phraseProblem(String phrase) {
-    if (phrase.split(' ').length != 12) return PhraseProblem.wordCount;
+    if (![12, 24].contains(phrase.split(' ').length)) {
+      return PhraseProblem.wordCount;
+    }
     if (phrase.contains('zzz')) return PhraseProblem.unknownWord;
     return null;
   }

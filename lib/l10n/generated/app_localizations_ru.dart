@@ -990,7 +990,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Введите 12 слов фразы восстановления по порядку. Можно также вставить всю фразу в первое поле.';
+      'Введите слова фразы восстановления по порядку. Можно также вставить всю фразу в первое поле.';
 
   @override
   String get errorWordUnknown =>
@@ -998,7 +998,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Эти 12 слов не образуют фразу восстановления. Возможно, одно из них неверно или стоит не на своём месте: сверьте каждое с записью.';
+      'Эти слова не образуют фразу восстановления. Возможно, одно из них неверно или стоит не на своём месте: сверьте каждое с записью.';
 
   @override
   String get restoreScanning =>
@@ -1023,6 +1023,22 @@ class AppLocalizationsRu extends AppLocalizations {
       many: 'Заполнено $count слов',
       few: 'Заполнено $count слова',
       one: 'Заполнено 1 слово',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Длина фразы';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count слова',
+      many: '$count слов',
+      few: '$count слова',
+      one: '1 слово',
     );
     return '$_temp0';
   }

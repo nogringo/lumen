@@ -263,7 +263,9 @@ final class FakeLiquidEngine implements LiquidEngine {
 
   @override
   PhraseProblem? phraseProblem(String phrase) =>
-      phrase.split(' ').length == 12 ? problem : PhraseProblem.wordCount;
+      [12, 24].contains(phrase.split(' ').length)
+      ? problem
+      : PhraseProblem.wordCount;
 
   @override
   Future<LiquidChain> open({

@@ -917,13 +917,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restoreLiquidTitle => '恢复 Liquid 钱包';
 
   @override
-  String get restoreLead => '请按顺序输入恢复短语的 12 个单词。您也可以将整个短语粘贴到第一个输入框。';
+  String get restoreLead => '请按顺序输入恢复短语的单词。您也可以将整个短语粘贴到第一个输入框。';
 
   @override
   String get errorWordUnknown => '此单词不在恢复短语的词表中。请检查拼写。';
 
   @override
-  String get errorPhraseChecksum => '这 12 个单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。';
+  String get errorPhraseChecksum => '这些单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。';
 
   @override
   String get restoreScanning => '正在查找此钱包的付款记录。这可能需要一分钟。';
@@ -944,6 +944,19 @@ class AppLocalizationsZh extends AppLocalizations {
       count,
       locale: localeName,
       other: '已填入 $count 个单词',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => '短语长度';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个单词',
     );
     return '$_temp0';
   }

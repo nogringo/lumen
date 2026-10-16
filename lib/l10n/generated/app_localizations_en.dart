@@ -965,7 +965,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Type the 12 words of your recovery phrase, in order. You can also paste the whole phrase into the first field.';
+      'Type the words of your recovery phrase, in order. You can also paste the whole phrase into the first field.';
 
   @override
   String get errorWordUnknown =>
@@ -973,7 +973,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'These 12 words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.';
+      'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.';
 
   @override
   String get restoreScanning =>
@@ -996,6 +996,20 @@ class AppLocalizationsEn extends AppLocalizations {
       locale: localeName,
       other: '$count words filled in',
       one: '1 word filled in',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Phrase length';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count words',
+      one: '1 word',
     );
     return '$_temp0';
   }

@@ -11,7 +11,7 @@ enum LiquidScript {
 }
 
 enum PhraseProblem {
-  /// Not 12 words.
+  /// Neither 12 nor 24 words.
   wordCount,
 
   /// A word outside the BIP39 English list.

@@ -1660,7 +1660,7 @@ abstract class AppLocalizations {
   /// Lead text of the restore screen.
   ///
   /// In en, this message translates to:
-  /// **'Type the 12 words of your recovery phrase, in order. You can also paste the whole phrase into the first field.'**
+  /// **'Type the words of your recovery phrase, in order. You can also paste the whole phrase into the first field.'**
   String get restoreLead;
 
   /// Error under a restore field whose word is not a BIP39 word.
@@ -1672,7 +1672,7 @@ abstract class AppLocalizations {
   /// Error when every word is valid but the phrase checksum fails.
   ///
   /// In en, this message translates to:
-  /// **'These 12 words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.'**
+  /// **'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.'**
   String get errorPhraseChecksum;
 
   /// Shown and announced while Lumen scans the chain for a restored wallet.
@@ -1704,6 +1704,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 word filled in} other{{count} words filled in}}'**
   String wordsPasted(int count);
+
+  /// Label of the choice between a 12-word and a 24-word recovery phrase, on the restore screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Phrase length'**
+  String get phraseLength;
+
+  /// One choice of recovery phrase length, such as 24 words.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 word} other{{count} words}}'**
+  String wordCount(int count);
 }
 
 class _AppLocalizationsDelegate

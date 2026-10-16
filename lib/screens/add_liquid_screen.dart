@@ -14,6 +14,7 @@ import '../widgets/flow_parts.dart';
 import '../widgets/phrase_word_field.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/switch_row.dart';
+import '../widgets/tappable.dart';
 import '../widgets/wallet_kind_style.dart';
 
 class LiquidStartScreen extends StatelessWidget {
@@ -414,13 +415,17 @@ class RestoreLiquidScreen extends StatefulWidget {
 enum _RestoreError { invalid, unreachable, duplicate, failed }
 
 class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
-  static const _count = PhraseWordField.total;
+  static const _lengths = [12, 24];
+
+  /// Words of the phrase, from [_lengths]. Fields past it keep what was
+  /// typed, in case the other length is picked again.
+  var _count = _lengths.first;
 
   final _controllers = [
-    for (var i = 0; i < _count; i++) TextEditingController(),
+    for (var i = 0; i < _lengths.last; i++) TextEditingController(),
   ];
-  final _focusNodes = [for (var i = 0; i < _count; i++) FocusNode()];
-  final _errors = List<String?>.filled(_count, null);
+  final _focusNodes = [for (var i = 0; i < _lengths.last; i++) FocusNode()];
+  final _errors = List<String?>.filled(_lengths.last, null);
   late final _name = TextEditingController(
     text: AppLocalizations.of(context).kindLiquid,
   );
@@ -444,8 +449,15 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
   }
 
   String get _phrase => [
-    for (final controller in _controllers) controller.text.trim().toLowerCase(),
+    for (final controller in _controllers.take(_count))
+      controller.text.trim().toLowerCase(),
   ].join(' ');
+
+  void _pickLength(int count) => setState(() {
+    _count = count;
+    _errors.fillRange(0, _errors.length, null);
+    _error = null;
+  });
 
   void _focusAfter(int field) => field + 1 < _count
       ? _focusNodes[field + 1].requestFocus()
@@ -465,6 +477,7 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
       _controllers[field].clear();
       return;
     }
+    if (_lengths.contains(words.length)) _pickLength(words.length);
     final start = words.length == _count ? 0 : field;
     final filled = min(words.length, _count - start);
     for (var i = 0; i < filled; i++) {
@@ -566,10 +579,13 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
       title: l.restoreLiquidTitle,
       content: [
         _Lead(l.restoreLead),
+        const SizedBox(height: 20),
+        _LengthChoice(lengths: _lengths, picked: _count, onPicked: _pickLength),
         for (var i = 0; i < _count; i++) ...[
           const SizedBox(height: 20),
           PhraseWordField(
             number: i + 1,
+            total: _count,
             controller: _controllers[i],
             focusNode: _focusNodes[i],
             errorText: _errors[i],
@@ -627,6 +643,85 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
           child: Text(l.restoreWallet),
         ),
       ],
+    );
+  }
+}
+
+/// How many words the phrase to restore has, one choice of a few.
+class _LengthChoice extends StatelessWidget {
+  const _LengthChoice({
+    required this.lengths,
+    required this.picked,
+    required this.onPicked,
+  });
+
+  final List<int> lengths;
+  final int picked;
+  final ValueChanged<int> onPicked;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = LumenColors.of(context);
+    return Semantics(
+      container: true,
+      label: l.phraseLength,
+      explicitChildNodes: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ExcludeSemantics(
+            child: Text(
+              l.phraseLength,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final count in lengths)
+                MergeSemantics(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: count == picked ? c.text : c.fieldBorder,
+                        width: count == picked ? 2 : 1,
+                      ),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Tappable(
+                      onTap: () => onPicked(count),
+                      checked: count == picked,
+                      selected: count == picked,
+                      borderRadius: 24,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 48),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (count == picked) ...[
+                                Icon(Icons.check, size: 18, color: c.text),
+                                const SizedBox(width: 8),
+                              ],
+                              Text(
+                                l.wordCount(count),
+                                style: TextStyle(fontSize: 15, color: c.text),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

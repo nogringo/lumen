@@ -104,6 +104,54 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('a pasted 24-word phrase picks 24 words, then restores', (
+    tester,
+  ) async {
+    final long = [...List.filled(23, 'abandon'), 'art'];
+    await openRestore(tester);
+
+    await tester.enterText(fields.at(3), long.join(' '));
+    await tester.pump();
+
+    expect(find.text('Word 24 of 24'), findsOneWidget);
+    expect([for (var i = 0; i < 24; i++) wordIn(tester, i)], long);
+
+    await tapRestore(tester);
+
+    final [wallet] = await tester.runAsync(sources.liquid.load) ?? [];
+    expect(wallet.name, 'Liquid');
+  });
+
+  testWidgets('the phrase length is one choice of two', (tester) async {
+    final handle = tester.ensureSemantics();
+    await openRestore(tester);
+    expect(find.text('Word 1 of 12'), findsOneWidget);
+    expect(find.text('Word 13 of 24'), findsNothing);
+
+    await tester.tap(find.text('24 words'));
+    await tester.pump();
+
+    expect(find.text('Word 1 of 24'), findsOneWidget);
+    expect(
+      tester.getSemantics(find.text('24 words')),
+      matchesSemantics(
+        label: '24 words',
+        isChecked: true,
+        hasCheckedState: true,
+        isInMutuallyExclusiveGroup: true,
+        isFocusable: true,
+        hasTapAction: true,
+        hasFocusAction: true,
+      ),
+    );
+
+    await tester.tap(find.text('12 words'));
+    await tester.pump();
+    expect(find.text('Word 1 of 12'), findsOneWidget);
+    expect(find.text('Word 13 of 24'), findsNothing);
+    handle.dispose();
+  });
+
   testWidgets('a word and a space move on to the next field', (tester) async {
     await openRestore(tester);
 
@@ -172,7 +220,7 @@ void main() {
 
     expect(
       find.text(
-        'These 12 words do not form a recovery phrase. One of them may be '
+        'These words do not form a recovery phrase. One of them may be '
         'wrong or out of place: check each one against your paper.',
       ),
       findsOneWidget,
@@ -232,6 +280,9 @@ void main() {
         final handle = tester.ensureSemantics();
         await openRestore(tester, size: size, brightness: brightness);
         await expectGuidelines(tester);
+        await tester.tap(find.text('24 words'));
+        await tester.pump();
+        await expectGuidelines(tester);
 
         await tester.enterText(fields.first, 'zzz');
         await tapRestore(tester);
@@ -244,6 +295,10 @@ void main() {
 
     testWidgets('restoring lays out at 200% text, $name', (tester) async {
       await openRestore(tester, size: size, textScale: 2);
+      expect(tester.takeException(), isNull);
+      await tester.ensureVisible(find.text('24 words'));
+      await tester.tap(find.text('24 words'));
+      await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       await tester.enterText(fields.first, 'zzz');
       await tapRestore(tester);

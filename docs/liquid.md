@@ -140,7 +140,7 @@ How it came out:
 ### 4. Create and restore
 
 - Create: explain what the phrase is, show the 12 words, ask for a few of them back, then name the wallet. Nothing is saved before the check passes.
-- Restore: 12 fields with BIP39 word suggestions, paste of a whole phrase, and a clear error on a wrong word or checksum. Restoring scans the chain before showing a balance.
+- Restore: 12 or 24 fields with BIP39 word suggestions, paste of a whole phrase, and a clear error on a wrong word or checksum. Restoring scans the chain before showing a balance.
 - Accessibility: each word read with its number ("word 3 of 12, apple"), fields labeled the same way, focus order down the list, suggestions announced, nothing that relies on color or timing.
 - Privacy: block screenshots and the app switcher preview while the phrase is on screen (`FLAG_SECURE` on Android, a cover view on iOS and macOS). Never copy the phrase to the clipboard.
 - Every string in all locales.
@@ -161,8 +161,9 @@ How create came out:
 
 How restore came out:
 
-- The Liquid screen offers "Restore a wallet" next to "Create a new wallet". The restore screen has 12 word fields, the name and, in debug builds, the Testnet switch.
-- Words typed or pasted together are spread over the fields: a whole phrase from the first field, fewer words from the field they were typed in. A word followed by a space moves on to the next field. Pasting several words is announced ("12 words filled in").
+- The Liquid screen offers "Restore a wallet" next to "Create a new wallet". The restore screen has a choice of 12 or 24 words, the word fields, the name and, in debug builds, the Testnet switch.
+- 24 words are accepted because the Blockstream app and the Jade also create 24-word phrases. The crate's `phrase_problem` takes 12 or 24 words and leaves the rest to BIP39, and a known 24-word phrase is checked against its master fingerprint in `cargo test`. New wallets keep 12 words.
+- Words typed or pasted together are spread over the fields: a whole phrase from the first field, fewer words from the field they were typed in. Pasting 24 words picks 24 by itself. A word followed by a space moves on to the next field. Pasting several words is announced ("12 words filled in").
 - Checks run in order, each written as a fix: an empty field or a word outside the BIP39 list is flagged under its own field, which takes focus; then the checksum, under the list.
 - Restoring runs `discover` (BIP84 then BIP49) before saving, with a message shown and announced while it scans. A server that does not answer (after the retries) and a phrase already saved each get their own message, and nothing is saved.
 

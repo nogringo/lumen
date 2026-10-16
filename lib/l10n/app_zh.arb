@@ -257,12 +257,14 @@
   "errorSaveWallet": "Lumen 无法保存钱包。请重试。",
   "restoreLiquidWallet": "恢复钱包",
   "restoreLiquidTitle": "恢复 Liquid 钱包",
-  "restoreLead": "请按顺序输入恢复短语的 12 个单词。您也可以将整个短语粘贴到第一个输入框。",
+  "restoreLead": "请按顺序输入恢复短语的单词。您也可以将整个短语粘贴到第一个输入框。",
   "errorWordUnknown": "此单词不在恢复短语的词表中。请检查拼写。",
-  "errorPhraseChecksum": "这 12 个单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。",
+  "errorPhraseChecksum": "这些单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。",
   "restoreScanning": "正在查找此钱包的付款记录。这可能需要一分钟。",
   "restoreWallet": "恢复钱包",
   "errorRestoreUnreachable": "Lumen 无法连接 Liquid 服务器来查找此钱包的付款记录。请检查网络连接后重试。",
   "errorRestoreDuplicate": "此钱包已在 Lumen 中。",
-  "wordsPasted": "{count, plural, other{已填入 {count} 个单词}}"
+  "wordsPasted": "{count, plural, other{已填入 {count} 个单词}}",
+  "phraseLength": "短语长度",
+  "wordCount": "{count, plural, other{{count} 个单词}}"
 }

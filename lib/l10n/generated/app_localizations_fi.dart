@@ -969,7 +969,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Kirjoita palautuslauseesi 12 sanaa järjestyksessä. Voit myös liittää koko lauseen ensimmäiseen kenttään.';
+      'Kirjoita palautuslauseesi sanat järjestyksessä. Voit myös liittää koko lauseen ensimmäiseen kenttään.';
 
   @override
   String get errorWordUnknown =>
@@ -977,7 +977,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Nämä 12 sanaa eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista paperiisi.';
+      'Nämä sanat eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista paperiisi.';
 
   @override
   String get restoreScanning =>
@@ -1000,6 +1000,20 @@ class AppLocalizationsFi extends AppLocalizations {
       locale: localeName,
       other: '$count sanaa täytetty',
       one: '1 sana täytetty',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Lauseen pituus';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sanaa',
+      one: '1 sana',
     );
     return '$_temp0';
   }

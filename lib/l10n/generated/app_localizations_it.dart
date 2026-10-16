@@ -970,7 +970,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Digita le 12 parole della tua frase di recupero, in ordine. Puoi anche incollare l\'intera frase nel primo campo.';
+      'Digita le parole della tua frase di recupero, in ordine. Puoi anche incollare l\'intera frase nel primo campo.';
 
   @override
   String get errorWordUnknown =>
@@ -978,7 +978,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Queste 12 parole non formano una frase di recupero. Una potrebbe essere sbagliata o fuori posto: confrontale una per una con il tuo foglio.';
+      'Queste parole non formano una frase di recupero. Una potrebbe essere sbagliata o fuori posto: confrontale una per una con il tuo foglio.';
 
   @override
   String get restoreScanning =>
@@ -1001,6 +1001,20 @@ class AppLocalizationsIt extends AppLocalizations {
       locale: localeName,
       other: '$count parole inserite',
       one: '1 parola inserita',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Lunghezza della frase';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parole',
+      one: '1 parola',
     );
     return '$_temp0';
   }

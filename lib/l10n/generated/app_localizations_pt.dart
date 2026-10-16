@@ -973,7 +973,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get restoreLead =>
-      'Escreva as 12 palavras da sua frase de recuperação, por ordem. Também pode colar a frase inteira no primeiro campo.';
+      'Escreva as palavras da sua frase de recuperação, por ordem. Também pode colar a frase inteira no primeiro campo.';
 
   @override
   String get errorWordUnknown =>
@@ -981,7 +981,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: compare cada uma com o seu papel.';
+      'Estas palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: compare cada uma com o seu papel.';
 
   @override
   String get restoreScanning =>
@@ -1004,6 +1004,20 @@ class AppLocalizationsPt extends AppLocalizations {
       locale: localeName,
       other: '$count palavras preenchidas',
       one: '1 palavra preenchida',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Tamanho da frase';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palavras',
+      one: '1 palavra',
     );
     return '$_temp0';
   }
@@ -1974,7 +1988,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get restoreLead =>
-      'Digite as 12 palavras da sua frase de recuperação, em ordem. Você também pode colar a frase inteira no primeiro campo.';
+      'Digite as palavras da sua frase de recuperação, em ordem. Você também pode colar a frase inteira no primeiro campo.';
 
   @override
   String get errorWordUnknown =>
@@ -1982,7 +1996,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get errorPhraseChecksum =>
-      'Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: confira cada uma com o seu papel.';
+      'Estas palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: confira cada uma com o seu papel.';
 
   @override
   String get restoreScanning =>
@@ -2005,6 +2019,20 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       locale: localeName,
       other: '$count palavras preenchidas',
       one: '1 palavra preenchida',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get phraseLength => 'Tamanho da frase';
+
+  @override
+  String wordCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palavras',
+      one: '1 palavra',
     );
     return '$_temp0';
   }
