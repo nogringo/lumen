@@ -61,6 +61,9 @@ enum SendError {
   /// The wallet got the request but did not say how it ended in time. The
   /// payment may still go through.
   unconfirmed,
+
+  /// An address on another network than the wallet's, such as testnet.
+  wrongNetwork,
 }
 
 class SendException implements Exception {
@@ -278,6 +281,13 @@ abstract interface class Wallet {
   /// connection, stay there. A wallet whose keys live in Lumen takes its
   /// funds with it, unless its recovery phrase is backed up.
   Future<void> remove();
+}
+
+/// Strings saved by key, such as the platform's secure storage.
+abstract interface class KeyValueStore {
+  Future<String?> read(String key);
+  Future<void> write(String key, String value);
+  Future<void> delete(String key);
 }
 
 /// Loads the saved wallets of one kind. Adding a wallet is specific to each

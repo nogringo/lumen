@@ -1,13 +1,13 @@
 // ignore_for_file: experimental_member_use
 
 import 'dart:async';
-import 'dart:math';
 
 import 'package:ndk/domain_layer/repositories/wallets_repo.dart';
 import 'package:ndk/entities.dart' as ndk show NwcWallet, WalletType;
 import 'package:ndk/ndk.dart'
     show GetBudgetResponse, Ndk, NwcConnection, NwcMethod;
 
+import '../random_id.dart';
 import '../wallet.dart';
 import 'nwc_grant.dart';
 import 'nwc_transaction.dart';
@@ -55,7 +55,7 @@ final class NwcWalletSource implements WalletSource {
       throw const NwcConnectException(NwcConnectError.duplicate);
     }
 
-    final id = _randomId();
+    final id = randomId();
     final wallet = _ndk.wallets.createWallet(
       id: id,
       name: name.trim(),
@@ -466,12 +466,4 @@ SendError nwcSendError(Object error) {
     'RESTRICTED' || 'UNAUTHORIZED' => SendError.noPermission,
     _ => SendError.failed,
   };
-}
-
-String _randomId() {
-  final random = Random.secure();
-  return [
-    for (var i = 0; i < 16; i++)
-      random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-  ].join();
 }

@@ -1,0 +1,34 @@
+[package]
+name = "lumen_core"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+flutter_rust_bridge = "=2.13.0"
+lwk_common = "=0.19.0"
+lwk_signer = { version = "=0.19.0", default-features = false }
+lwk_wollet = { version = "=0.19.0", default-features = false, features = ["esplora"] }
+tokio = { version = "1", default-features = false, features = ["sync"] }
+# 0.2.190 limits the _dyld_* functions to macOS, which breaks backtrace (pulled
+# in by flutter_rust_bridge) on iOS.
+libc = "=0.2.189"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+
+# Fetches address histories 4 at a time instead of one by one, which takes a
+# sync from about 17 s to 1 to 2 s. To propose upstream, then drop.
+[patch.crates-io]
+lwk_wollet = { path = "vendor/lwk_wollet" }

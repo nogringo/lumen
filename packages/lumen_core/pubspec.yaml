@@ -1,0 +1,30 @@
+name: lumen_core
+description: Lumen's Rust core, with LWK for Liquid, bridged to Dart. Only lumen_wallets imports it.
+publish_to: 'none'
+
+version: 0.1.0
+
+environment:
+  sdk: ^3.13.5
+  flutter: '>=3.3.0'
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_rust_bridge: 2.13.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        ffiPlugin: true
+      ios:
+        ffiPlugin: true
+      linux:
+        ffiPlugin: true
+      macos:
+        ffiPlugin: true
+      windows:
+        ffiPlugin: true

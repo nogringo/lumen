@@ -1,0 +1,1493 @@
+use crate::cache::{Height, Timestamp};
+use crate::clients::try_unblind;
+use crate::clients::LastUnused;
+use crate::descriptor::Chain;
+use crate::elements::{OutPoint, Script, Transaction, TxOutSecrets, Txid};
+use crate::error::Error;
+use crate::wollet::WolletState;
+use crate::EC;
+use crate::{BlindingPublicKey, Wollet, WolletDescriptor};
+use base64::prelude::*;
+use elements::bitcoin::bip32::ChildNumber;
+use elements::bitcoin::hashes::Hash;
+use elements::confidential::{AssetBlindingFactor, ValueBlindingFactor};
+use elements::encode::{Decodable, Encodable};
+use elements::hash_types::TxMerkleNode;
+use elements::{BlockExtData, BlockHash, BlockHeader, TxInWitness, TxOutWitness};
+use lwk_common::SignedBalance;
+use lwk_common::{decrypt_with_nonce_prefix, encrypt_with_random_nonce, DynStore};
+use std::collections::HashMap;
+use std::sync::{atomic, Arc, Mutex};
+
+/// Transactions downloaded and unblinded
+#[derive(Default, Clone, PartialEq, Eq, Debug)]
+pub struct DownloadTxResult {
+    /// Transactions downloaded
+    pub txs: Vec<(Txid, Transaction)>,
+
+    /// Unblinded outputs of the downloaded transactions
+    pub unblinds: Vec<(OutPoint, TxOutSecrets)>,
+}
+
+impl DownloadTxResult {
+    fn is_empty(&self) -> bool {
+        self.txs.is_empty() && self.unblinds.is_empty()
+    }
+
+    fn prune(&mut self, scripts: &HashMap<Script, (Chain, ChildNumber)>) {
+        for (_, tx) in self.txs.iter_mut() {
+            for input in tx.input.iter_mut() {
+                input.witness = TxInWitness::empty();
+            }
+
+            for output in tx.output.iter_mut() {
+                if scripts.contains_key(&output.script_pubkey) {
+                    // we are keeping the rangeproof because it's needed for pset details
+                    output.witness.surjection_proof = None;
+                } else {
+                    output.witness = TxOutWitness::empty();
+                }
+            }
+        }
+    }
+}
+
+// Internal struct to handle operations regarding `Update`s persistence
+pub(crate) struct UpdatesPersister {
+    updates_store: Arc<dyn DynStore>,
+    merge_threshold: Option<usize>,
+    next_update_index: Mutex<usize>,
+}
+
+impl UpdatesPersister {
+    pub(crate) fn new(updates_store: Arc<dyn DynStore>, merge_threshold: Option<usize>) -> Self {
+        Self {
+            updates_store,
+            merge_threshold,
+            next_update_index: Mutex::new(0),
+        }
+    }
+
+    fn get_update(&self, index: usize) -> Result<Option<Update>, Error> {
+        Ok(self
+            .updates_store
+            .get(&update_key(index))
+            .map_err(|e| Error::Generic(format!("store error: {e}")))?
+            .map(|u| Update::deserialize(&u))
+            .transpose()?)
+    }
+
+    fn set_update(&self, index: usize, update: &Update) -> Result<(), Error> {
+        self.updates_store
+            .put(&update_key(index), &update.serialize()?)
+            .map_err(|e| Error::Generic(format!("store error: {e}")))
+    }
+
+    fn remove_update(&self, index: usize) -> Result<(), Error> {
+        self.updates_store
+            .remove(&update_key(index))
+            .map_err(|e| Error::Generic(format!("store error: {e}")))
+    }
+
+    fn merge_updates(&self, next_index: usize) -> Result<usize, Error> {
+        match self.merge_threshold {
+            Some(threshold) if threshold < next_index => (),
+            _ => return Ok(next_index), // Not merging
+        };
+
+        // Read and merge all persisted updates
+        let mut merged = self
+            .get_update(0)?
+            .ok_or_else(|| Error::Generic("expected update 0 to exist".into()))?;
+
+        for i in 1..next_index {
+            let update = self
+                .get_update(i)?
+                .ok_or_else(|| Error::Generic(format!("expected update {i} to exist")))?;
+            merged.merge(update);
+        }
+
+        // Delete all old updates from last to first to avoid holes on crash
+        for j in (0..next_index).rev() {
+            self.remove_update(j)?;
+        }
+        // A crash here or during the removal loop will leave the cache empty or at an old state,
+        // which is not the end of the world, the following scan will bring it back.
+
+        // Store the merged update as update 0
+        self.set_update(0, &merged)?;
+
+        let next_index = 1;
+        Ok(next_index)
+    }
+
+    fn read(&self) -> Result<Vec<Update>, Error> {
+        let mut updates = vec![];
+        for i in 0.. {
+            if let Some(update) = self.get_update(i)? {
+                updates.push(update);
+            } else {
+                break;
+            }
+        }
+        Ok(updates)
+    }
+
+    fn next_update_index(&self) -> Result<std::sync::MutexGuard<'_, usize>, Error> {
+        self.next_update_index
+            .lock()
+            .map_err(|_| Error::Generic("next_update_index lock poisoned".into()))
+    }
+
+    fn persist(&self, mut update: Update, txs_store_is_persisted: bool) -> Result<(), Error> {
+        let mut next_index = self.next_update_index()?;
+
+        // Check if we can coalesce with the previous update (both are "only tip" updates)
+        if update.only_tip() && *next_index > 0 {
+            let prev_index = *next_index - 1;
+            if let Ok(Some(prev_update)) = self.get_update(prev_index) {
+                if prev_update.only_tip() {
+                    // Coalesce: overwrite the previous update
+                    // Keep the previous wollet status so reapplying works correctly
+                    update.wollet_status = prev_update.wollet_status;
+                    // Merge timestamps
+                    update.timestamps = [prev_update.timestamps, update.timestamps].concat();
+
+                    self.set_update(prev_index, &update)?;
+                    return Ok(());
+                }
+            }
+        }
+        if txs_store_is_persisted {
+            // Txs are perstisted in the txs store,
+            // remove them from the Update so we don't store them twice
+            update.new_txs.txs.clear();
+        }
+
+        // Store as a new update
+        self.set_update(*next_index, &update)?;
+        *next_index += 1;
+
+        *next_index = self.merge_updates(*next_index)?;
+
+        Ok(())
+    }
+}
+
+/// Passing a wallet to [`crate::clients::blocking::BlockchainBackend::full_scan()`] returns this structure which
+/// contains the delta of information to be applied to the wallet to reach the latest status.
+#[derive(Clone, PartialEq, Eq, Debug)]
+pub struct Update {
+    /// The version of the update
+    pub version: u8,
+
+    /// The status of the wallet this update is generated from
+    ///
+    /// If 0 means it has been deserialized from a V0 version
+    pub wollet_status: u64,
+
+    /// The new transactions
+    pub new_txs: DownloadTxResult,
+
+    /// The new transaction with confirmation heights (or None if not confirmed)
+    pub txid_height_new: Vec<(Txid, Option<Height>)>,
+
+    /// The transaction ids to delete, for example after a reorg or a replace by fee.
+    pub txid_height_delete: Vec<Txid>,
+
+    /// The timestamps of the transactions, more precisely the timestamp of the block containing the transaction
+    pub timestamps: Vec<(Height, Timestamp)>,
+
+    /// The script pub key with the chain, the child number and the blinding pubkey
+    /// The blinding pubkey is optional for backward compatibility reasons
+    pub scripts_with_blinding_pubkey: Vec<(Chain, ChildNumber, Script, Option<BlindingPublicKey>)>,
+
+    /// The tip of the blockchain at the time the update was generated
+    pub tip: BlockHeader,
+
+    /// The unspent outputs with their script pubkeys.
+    ///
+    /// In general utxos are not returned by the server, and they are computed
+    /// by the [`Wollet`] from its transactions. However if the server is
+    /// "utxo only" they are returned so we store them here. When using a
+    /// persisted txs store, persisted updates also keep this snapshot so the
+    /// wallet state can be restored without reading transactions from the txs
+    /// store.
+    pub unspent: Vec<(OutPoint, Script)>,
+
+    /// The next unused derivation index for each chain, as known when the update was created.
+    ///
+    /// This lets wallet restore advance address indexes without reloading transactions from the
+    /// tx store just to recompute them.
+    pub last_unused: LastUnused,
+}
+
+impl Update {
+    /// Whether this update only changes the tip
+    pub fn only_tip(&self) -> bool {
+        self.new_txs.is_empty()
+            && self.txid_height_new.is_empty()
+            && self.txid_height_delete.is_empty()
+            && self.scripts_with_blinding_pubkey.is_empty()
+            && self.unspent.is_empty()
+    }
+
+    /// Prune the update, removing unneeded data from transactions.
+    ///
+    /// Note: this function removes less data than
+    /// [`Update::prune_witnesses()`] since it keeps the rangeproofs
+    /// of the outputs the [`Wollet`] owns.
+    pub fn prune(&mut self, wallet: &Wollet) {
+        self.new_txs.prune(&wallet.cache.paths);
+    }
+
+    /// Prune witnesses from transactions
+    ///
+    /// Remove all input and output witnesses from transcations downloaded in
+    /// this update. This reduces memory and storage usage significantly.
+    ///
+    /// However pruning witnesses has effects on functions that use those
+    /// rangeproofs (which are part of output witness):
+    /// * When building transactions, it's possible to ask for the addition of
+    ///   input rangeproofs, using [`crate::TxBuilder::add_input_rangeproofs()`]
+    ///   or [`crate::WolletTxBuilder::add_input_rangeproofs()`]; however if the
+    ///   rangeproofs have been removed, they cannot be added to the created
+    ///   PSET.
+    /// * [`Wollet::unblind_utxos_with()`] cannot unblind utxos without
+    ///   witnesses.
+    /// * [`Wollet::reunblind()`] cannot unblind transactions without
+    ///   witnesses.
+    pub fn prune_witnesses(&mut self) {
+        for (_, tx) in self.new_txs.txs.iter_mut() {
+            for input in tx.input.iter_mut() {
+                input.witness = TxInWitness::empty();
+            }
+            for output in tx.output.iter_mut() {
+                output.witness = TxOutWitness::empty();
+            }
+        }
+    }
+
+    /// Serialize an [`Update`] to a byte array
+    pub fn serialize(&self) -> Result<Vec<u8>, elements::encode::Error> {
+        let mut vec = vec![];
+        self.consensus_encode(&mut vec)?;
+        Ok(vec)
+    }
+
+    /// Deserialize an [`Update`] from a byte array
+    pub fn deserialize(bytes: &[u8]) -> Result<Update, elements::encode::Error> {
+        Update::consensus_decode(bytes)
+    }
+
+    /// Serialize an update to a byte array, encrypted with a key derived from the descriptor. Decrypt using [`Self::deserialize_decrypted()`]
+    #[allow(deprecated)]
+    pub fn serialize_encrypted(&self, desc: &WolletDescriptor) -> Result<Vec<u8>, Error> {
+        let plaintext = self.serialize()?;
+        let mut cipher = desc.cipher();
+        let ciphertext = encrypt_with_random_nonce(&mut cipher, &plaintext)?;
+        Ok(ciphertext)
+    }
+
+    /// Serialize an update to a base64 encoded string, encrypted with a key derived from the descriptor. Decrypt using [`Self::deserialize_decrypted_base64()`]
+    pub fn serialize_encrypted_base64(&self, desc: &WolletDescriptor) -> Result<String, Error> {
+        let vec = self.serialize_encrypted(desc)?;
+        Ok(BASE64_STANDARD.encode(vec))
+    }
+
+    /// Deserialize an update from a byte array, decrypted with a key derived from the descriptor. Create the byte array using [`Self::serialize_encrypted()`]
+    #[allow(deprecated)]
+    pub fn deserialize_decrypted(bytes: &[u8], desc: &WolletDescriptor) -> Result<Update, Error> {
+        let mut cipher = desc.cipher();
+        let plaintext = decrypt_with_nonce_prefix(&mut cipher, bytes)?;
+        Ok(Update::deserialize(&plaintext)?)
+    }
+
+    /// Deserialize an update from a base64 encoded string, decrypted with a key derived from the descriptor. Create the base64 using [`Self::serialize_encrypted_base64()`]
+    pub fn deserialize_decrypted_base64(
+        base64: &str,
+        desc: &WolletDescriptor,
+    ) -> Result<Update, Error> {
+        let vec = BASE64_STANDARD
+            .decode(base64)
+            .map_err(|e| Error::Generic(e.to_string()))?;
+        Self::deserialize_decrypted(&vec, desc)
+    }
+
+    /// Merge another update into this one.
+    ///
+    /// This is used to squash multiple sequential updates into a single update.
+    ///
+    /// NOTE: it's caller responsibility to ensure that the following update is the next in sequence
+    /// and updates are not mixed up.
+    fn merge(&mut self, following: Update) {
+        // By construction there should not be duplicate txs,
+        // even if so when merged in the hashmap they will be overridden.
+        self.new_txs.txs.extend(following.new_txs.txs);
+
+        self.new_txs.unblinds.extend(following.new_txs.unblinds);
+
+        // When we apply an update we first delete then insert the new txs.
+        // Suppose to have Um = U1.merge(U2)
+        // The order would be:
+        // U1.delete, U1.insert, U2.delete, U2.insert
+
+        // Um.insert = (U1.insert \ U2.delete) ∪ U2.insert
+        self.txid_height_new
+            .retain(|(t, _)| !following.txid_height_delete.contains(t));
+        for (txid, height) in following.txid_height_new {
+            // In this case we can't extend, we want to keep the height of the newest update in case of duplicates
+            self.txid_height_new.retain(|(t, _)| *t != txid);
+            self.txid_height_new.push((txid, height));
+        }
+
+        // Um.delete = U1.delete ∪ U2.delete
+        self.txid_height_delete.extend(following.txid_height_delete);
+
+        // Merge timestamps and scripts
+        self.timestamps.extend(following.timestamps);
+        self.scripts_with_blinding_pubkey
+            .extend(following.scripts_with_blinding_pubkey);
+
+        // Update tip (if it's not default, which means "don't change the tip")
+        if following.tip != default_blockheader() {
+            self.tip = following.tip;
+        }
+
+        // Update version to latest
+        self.version = following.version;
+
+        // Update unspent to latest
+        self.unspent = following.unspent;
+
+        self.last_unused.external = self
+            .last_unused
+            .external
+            .max(following.last_unused.external);
+        self.last_unused.internal = self
+            .last_unused
+            .internal
+            .max(following.last_unused.internal);
+
+        // We don't need to update the wollet status, it's right to keep the status of the first update
+    }
+}
+
+pub(crate) fn default_blockheader() -> BlockHeader {
+    BlockHeader {
+        version: 0,
+        prev_blockhash: BlockHash::all_zeros(),
+        merkle_root: TxMerkleNode::all_zeros(),
+        time: 0,
+        height: 0,
+        ext: BlockExtData::default(),
+    }
+}
+
+/// Length of the zero-padded update key format (e.g., "000000000000")
+const UPDATE_KEY_LEN: usize = 12;
+
+fn update_key(index: usize) -> String {
+    format!("{index:0>width$}", width = UPDATE_KEY_LEN)
+}
+
+impl Wollet {
+    /// Restore updates from the store using indexed keys
+    pub(crate) fn restore_updates(&mut self) -> Result<(), Error> {
+        for i in 0.. {
+            if let Some(update) = self.updates_persister.get_update(i)? {
+                self.apply_update_inner(update)?;
+            } else {
+                let mut next_update_index = self.updates_persister.next_update_index()?;
+                *next_update_index = self.updates_persister.merge_updates(i)?;
+                break;
+            }
+        }
+        if self.cache.all_txids().is_empty() {
+            self.cache.add_txids_from_txs_store();
+        }
+        self.cache.add_cannot_unblind_from_store();
+        Ok(())
+    }
+}
+
+/// Update the wallet state from blockchain data
+impl Wollet {
+    /// Get all the persisted updates of this wallet
+    pub fn updates(&self) -> Result<Vec<Update>, Error> {
+        self.updates_persister.read()
+    }
+
+    fn apply_transaction_inner(
+        &mut self,
+        tx: Transaction,
+        skip_persist: bool,
+    ) -> Result<SignedBalance, Error> {
+        let initial_balance = self.balance()?;
+        let mut unblinds = vec![];
+        let txid = tx.txid();
+        for (vout, output) in tx.output.iter().enumerate() {
+            if self.cache.paths.contains_key(&output.script_pubkey) {
+                let outpoint = OutPoint::new(txid, vout as u32);
+                match try_unblind(output, &self.descriptor) {
+                    Ok(unblinded) => {
+                        unblinds.push((outpoint, unblinded));
+                    }
+                    Err(_) => {
+                        log::info!("{outpoint} cannot unblind, ignoring (could be sender messed up with the blinding process)");
+                    }
+                }
+            }
+        }
+
+        let unspent = if self.utxo_only() {
+            let mut unspent = self.cache.unspent().clone();
+            for input in tx.input.iter() {
+                unspent.remove(&input.previous_output);
+            }
+            for (vout, output) in tx.output.iter().enumerate() {
+                let outpoint = OutPoint::new(txid, vout as u32);
+                if unblinds.iter().any(|(op, _)| op == &outpoint) {
+                    unspent.insert(outpoint, output.script_pubkey.clone());
+                }
+            }
+            unspent.into_iter().collect()
+        } else {
+            vec![]
+        };
+
+        let update = Update {
+            version: 4,
+            wollet_status: self.status(),
+            new_txs: DownloadTxResult {
+                txs: vec![(txid, tx)],
+                unblinds,
+            },
+            txid_height_new: vec![(txid, None)],
+            txid_height_delete: vec![],
+            timestamps: vec![],
+            scripts_with_blinding_pubkey: vec![],
+            tip: default_blockheader(),
+            unspent,
+            last_unused: self.last_unused(),
+        };
+
+        self.apply_update_inner(update.clone())?;
+        if !skip_persist {
+            self.persist_update(update)?;
+        }
+        let final_balance = self.balance()?;
+        Ok(final_balance - initial_balance)
+    }
+
+    /// Apply an update containing blockchain data
+    ///
+    /// To update the wallet you need to first obtain the blockchain data relevant for the wallet.
+    /// This can be done using [`crate::clients::blocking::BlockchainBackend::full_scan()`], which
+    /// returns an [`crate::Update`] that contains new transaction and other data relevant for the
+    /// wallet.
+    /// The update must then be applied to the [`crate::Wollet`] so that wollet methods such as
+    /// [`crate::Wollet::balance()`] or [`crate::Wollet::transactions()`] include the new data.
+    ///
+    /// However getting blockchain data involves network calls, so between the full scan start and
+    /// when the update is applied it might elapse a significant amount of time.
+    /// In that interval, applying any update, or any transaction using [`Wollet::apply_transaction()`],
+    /// will cause this function to return a [`Error::UpdateOnDifferentStatus`].
+    /// Callers should either avoid applying updates and transactions, or they can catch the error and wait for a new full scan to be completed and applied.
+    pub fn apply_update(&mut self, update: Update) -> Result<(), Error> {
+        self.apply_update_inner(update.clone())?;
+        self.persist_update(update)
+    }
+
+    /// Same as [`Wollet::apply_update()`] but only apply the update in memory, without persisting it.
+    #[deprecated(since = "0.17.0", note = "please use `apply_update`")]
+    pub fn apply_update_no_persist(&mut self, update: Update) -> Result<(), Error> {
+        self.apply_update_inner(update)
+    }
+
+    fn apply_update_inner(&mut self, update: Update) -> Result<(), Error> {
+        // TODO should accept &Update
+
+        if update.wollet_status != 0 {
+            // wollet status 0 means the update has been created before saving the status (v0) and we can't check
+            if self.wollet_status() != update.wollet_status {
+                return Err(Error::UpdateOnDifferentStatus {
+                    wollet_status: self.wollet_status(),
+                    update_status: update.wollet_status,
+                });
+            }
+        }
+        let descriptor = self.wollet_descriptor();
+        let utxo_only = self.utxo_only();
+        let cache = &mut self.cache;
+        let Update {
+            version,
+            wollet_status: _,
+            new_txs,
+            txid_height_new,
+            txid_height_delete,
+            timestamps,
+            scripts_with_blinding_pubkey,
+            tip,
+            unspent,
+            last_unused,
+        } = update;
+
+        let scripts_with_blinding_pubkey =
+            compute_blinding_pubkey_if_missing(scripts_with_blinding_pubkey, descriptor)?;
+
+        if tip != default_blockheader() {
+            if tip.height + 1 < cache.tip.0 {
+                // Checking we are not applying an old update while giving enough space for a single block reorg
+                return Err(Error::UpdateHeightTooOld {
+                    update_tip_height: tip.height,
+                    cache_tip_height: cache.tip.0,
+                });
+            }
+
+            cache.tip = (tip.height, tip.block_hash());
+        }
+
+        cache.extend_unblinded(new_txs.unblinds);
+        cache.scripts.extend(
+            scripts_with_blinding_pubkey
+                .clone()
+                .into_iter()
+                .map(|(a, b, c, d)| ((a, b), (c, d))),
+        );
+        cache.paths.extend(
+            scripts_with_blinding_pubkey
+                .clone()
+                .into_iter()
+                .map(|(a, b, c, _d)| (c, (a, b))),
+        );
+        // TODO: migrate all cache mutation to this function
+        cache.update(
+            &txid_height_new,
+            &txid_height_delete,
+            &new_txs.txs,
+            utxo_only,
+            unspent,
+            version >= 5,
+        )?;
+        cache.timestamps.extend(timestamps);
+        if version >= 4 {
+            cache
+                .last_unused_external
+                .fetch_max(last_unused.external, atomic::Ordering::Relaxed);
+            cache
+                .last_unused_internal
+                .fetch_max(last_unused.internal, atomic::Ordering::Relaxed);
+        } else {
+            let mut last_used_internal = None;
+            let mut last_used_external = None;
+            // Also include deleted txids: a tx that was seen and then deleted (e.g. a phantom tx
+            // applied locally but not confirmed on-chain) should still count as having used its
+            // addresses so those addresses are not reused. This matters for merged updates where
+            // phantom txids are removed from txid_height_new but still appear in txid_height_delete.
+            let txids_for_last_used: Vec<Txid> = txid_height_new
+                .into_iter()
+                .map(|(t, _)| t)
+                .chain(txid_height_delete.iter().copied())
+                .collect();
+            for txid in txids_for_last_used {
+                if let Some(tx) = cache.tx_as_fallback(&txid, &new_txs.txs) {
+                    for output in tx.output.iter() {
+                        if let Some((ext_int, ChildNumber::Normal { index })) =
+                            cache.paths.get(&output.script_pubkey)
+                        {
+                            match ext_int {
+                                Chain::External => match last_used_external {
+                                    None => last_used_external = Some(index),
+                                    Some(last) if index > last => last_used_external = Some(index),
+                                    _ => {}
+                                },
+                                Chain::Internal => match last_used_internal {
+                                    None => last_used_internal = Some(index),
+                                    Some(last) if index > last => last_used_internal = Some(index),
+                                    _ => {}
+                                },
+                            }
+                        }
+                    }
+                }
+            }
+            if let Some(last_used_external) = last_used_external {
+                cache
+                    .last_unused_external
+                    .fetch_max(last_used_external + 1, atomic::Ordering::Relaxed);
+            }
+            if let Some(last_used_internal) = last_used_internal {
+                cache
+                    .last_unused_internal
+                    .fetch_max(last_used_internal + 1, atomic::Ordering::Relaxed);
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Persist an update to the store using an indexed key
+    fn persist_update(&self, mut update: Update) -> Result<(), Error> {
+        if self.cache.txs_store_is_persisted() {
+            // Clients produce v4 updates because WolletState does not expose the
+            // unspent set. Before persisting, upgrade the update to v5 and add the
+            // latest unspent snapshot from the cache, allowing restores to provide
+            // UTXOs without reading every transaction from the txs store.
+            update.version = update.version.max(5);
+            update.unspent = self
+                .cache
+                .unspent()
+                .iter()
+                .map(|(outpoint, script)| (*outpoint, script.clone()))
+                .collect();
+        }
+        self.updates_persister
+            .persist(update, self.cache.txs_store_is_persisted())
+    }
+
+    /// Apply a transaction to the wallet state
+    ///
+    /// Wallet transactions are normally obtained using [`crate::clients::blocking::BlockchainBackend::full_scan()`]
+    /// and applying the resulting [`crate::Update`] with [`Wollet::apply_update()`]. However a
+    /// full scan involves network calls and it can take a significant amount of time.
+    ///
+    /// If the caller does not want to wait for a full scan containing the transaction, it can
+    /// apply the transaction to the wallet state using this function.
+    ///
+    /// Note: if this transaction is *not* returned by a next full scan, after [`Wollet::apply_update()`] it will disappear from the
+    /// transactions list, will not be included in balance computations, and by the remaining
+    /// wollet methods.
+    ///
+    /// Calling this method, might cause [`Wollet::apply_update()`] to fail with a
+    /// [`Error::UpdateOnDifferentStatus`], make sure to either avoid it or handle the error properly.
+    pub fn apply_transaction(&mut self, tx: Transaction) -> Result<SignedBalance, Error> {
+        self.apply_transaction_inner(tx, false)
+    }
+
+    /// Same as [`Wollet::apply_transaction()`] but only apply the update in memory, without persisting it.
+    #[deprecated(since = "0.17.0", note = "please use `apply_transaction`")]
+    pub fn apply_transaction_no_persist(
+        &mut self,
+        tx: Transaction,
+    ) -> Result<SignedBalance, Error> {
+        self.apply_transaction_inner(tx, true)
+    }
+}
+
+#[allow(clippy::type_complexity)]
+fn compute_blinding_pubkey_if_missing(
+    scripts_with_blinding_pubkey: Vec<(
+        Chain,
+        ChildNumber,
+        Script,
+        Option<elements::secp256k1_zkp::PublicKey>,
+    )>,
+    wollet_descriptor: WolletDescriptor,
+) -> Result<Vec<(Chain, ChildNumber, Script, Option<BlindingPublicKey>)>, Error> {
+    let mut result = Vec::with_capacity(scripts_with_blinding_pubkey.len());
+
+    for (chain, child_number, script_pubkey, maybe_blinding_pubkey) in scripts_with_blinding_pubkey
+    {
+        let blinding_pubkey = match maybe_blinding_pubkey {
+            Some(pubkey) => Some(pubkey),
+            None => {
+                match wollet_descriptor.ct_definite_descriptor(chain, child_number.into()) {
+                    Ok(desc) => {
+                        // TODO: derive the blinding pubkey from the descriptor blinding key and scriptpubkey
+                        //       (needs function in elements-miniscript)
+
+                        let address = desc.address(&EC, &elements::AddressParams::ELEMENTS)?; // we don't need the address, we need only the blinding pubkey, thus we can use any params
+                        Some(
+                            address
+                                .blinding_pubkey
+                                .expect("blinding pubkey is present when using ct descriptors"),
+                        )
+                    }
+                    Err(Error::UnsupportedWithoutDescriptor) => None,
+                    Err(e) => return Err(e),
+                }
+            }
+        };
+        result.push((chain, child_number, script_pubkey, blinding_pubkey));
+    }
+
+    Ok(result)
+}
+
+impl Encodable for DownloadTxResult {
+    fn consensus_encode<W: std::io::Write>(
+        &self,
+        mut w: W,
+    ) -> Result<usize, elements::encode::Error> {
+        let mut bytes_written = 0;
+
+        let txs_len = self.txs.len();
+        bytes_written += elements::encode::VarInt(txs_len as u64).consensus_encode(&mut w)?;
+        for (_txid, tx) in self.txs.iter() {
+            // Avoid serializing Txid since are re-computable from the tx
+            bytes_written += tx.consensus_encode(&mut w)?;
+        }
+
+        let unblinds_len = self.unblinds.len();
+        bytes_written += elements::encode::VarInt(unblinds_len as u64).consensus_encode(&mut w)?;
+        for (out_point, tx_out_secrets) in self.unblinds.iter() {
+            bytes_written += out_point.consensus_encode(&mut w)?;
+
+            // TODO make TxOutSecrets encodable upstream
+            let encodable_tx_out_secrets = EncodableTxOutSecrets {
+                inner: *tx_out_secrets,
+            };
+            bytes_written += encodable_tx_out_secrets.consensus_encode(&mut w)?;
+        }
+
+        Ok(bytes_written)
+    }
+}
+
+impl Decodable for DownloadTxResult {
+    fn consensus_decode<D: std::io::Read>(mut d: D) -> Result<Self, elements::encode::Error> {
+        let mut txs = vec![];
+        let txs_len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+        for _ in 0..txs_len {
+            let tx = Transaction::consensus_decode(&mut d)?;
+            txs.push((tx.txid(), tx));
+        }
+
+        let mut unblinds = vec![];
+        let unblinds_len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+        for _ in 0..unblinds_len {
+            let out_point = OutPoint::consensus_decode(&mut d)?;
+            let encodable_tx_out_secrets = EncodableTxOutSecrets::consensus_decode(&mut d)?;
+            unblinds.push((out_point, encodable_tx_out_secrets.inner))
+        }
+
+        Ok(DownloadTxResult { txs, unblinds })
+    }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+struct EncodableTxOutSecrets {
+    inner: TxOutSecrets,
+}
+impl Encodable for EncodableTxOutSecrets {
+    fn consensus_encode<W: std::io::Write>(
+        &self,
+        mut w: W,
+    ) -> Result<usize, elements::encode::Error> {
+        let mut bytes_written = 0;
+        bytes_written += self.inner.asset.consensus_encode(&mut w)?;
+
+        bytes_written += self
+            .inner
+            .asset_bf
+            .into_inner()
+            .as_ref()
+            .consensus_encode(&mut w)?;
+
+        bytes_written += self.inner.value.consensus_encode(&mut w)?;
+
+        bytes_written += self
+            .inner
+            .value_bf
+            .into_inner()
+            .as_ref()
+            .consensus_encode(&mut w)?;
+
+        Ok(bytes_written)
+    }
+}
+
+impl Decodable for EncodableTxOutSecrets {
+    fn consensus_decode<D: std::io::Read>(mut d: D) -> Result<Self, elements::encode::Error> {
+        Ok(Self {
+            inner: TxOutSecrets {
+                asset: Decodable::consensus_decode(&mut d)?,
+                asset_bf: {
+                    let bytes: [u8; 32] = Decodable::consensus_decode(&mut d)?;
+                    AssetBlindingFactor::from_slice(&bytes[..]).expect("bytes length is 32")
+                },
+                value: Decodable::consensus_decode(&mut d)?,
+                value_bf: {
+                    let bytes: [u8; 32] = Decodable::consensus_decode(&mut d)?;
+                    ValueBlindingFactor::from_slice(&bytes[..]).expect("bytes length is 32")
+                },
+            },
+        })
+    }
+}
+
+const UPDATE_MAGIC_BYTES: [u8; 4] = [0x89, 0x61, 0xb8, 0xc8];
+impl Encodable for Update {
+    fn consensus_encode<W: std::io::Write>(
+        &self,
+        mut w: W,
+    ) -> Result<usize, elements::encode::Error> {
+        let mut bytes_written = 0;
+
+        bytes_written += UPDATE_MAGIC_BYTES.consensus_encode(&mut w)?; // Magic bytes
+
+        bytes_written += self.version.consensus_encode(&mut w)?; // Version
+
+        if self.version >= 1 {
+            bytes_written += self.wollet_status.consensus_encode(&mut w)?;
+        }
+
+        bytes_written += self.new_txs.consensus_encode(&mut w)?;
+
+        bytes_written +=
+            elements::encode::VarInt(self.txid_height_new.len() as u64).consensus_encode(&mut w)?;
+        for (txid, height) in self.txid_height_new.iter() {
+            bytes_written += txid.consensus_encode(&mut w)?;
+            bytes_written += height.unwrap_or(u32::MAX).consensus_encode(&mut w)?;
+        }
+
+        bytes_written += elements::encode::VarInt(self.txid_height_delete.len() as u64)
+            .consensus_encode(&mut w)?;
+        for txid in self.txid_height_delete.iter() {
+            bytes_written += txid.consensus_encode(&mut w)?;
+        }
+
+        bytes_written +=
+            elements::encode::VarInt(self.timestamps.len() as u64).consensus_encode(&mut w)?;
+        for (height, timestamp) in self.timestamps.iter() {
+            bytes_written += height.consensus_encode(&mut w)?;
+            bytes_written += timestamp.consensus_encode(&mut w)?;
+        }
+
+        bytes_written += elements::encode::VarInt(self.scripts_with_blinding_pubkey.len() as u64)
+            .consensus_encode(&mut w)?;
+        for (chain, child_number, script, blinding_pubkey) in
+            self.scripts_with_blinding_pubkey.iter()
+        {
+            bytes_written += script.consensus_encode(&mut w)?;
+            bytes_written += match chain {
+                Chain::External => 0u8,
+                Chain::Internal => 1u8,
+            }
+            .consensus_encode(&mut w)?;
+            bytes_written += u32::from(*child_number).consensus_encode(&mut w)?;
+            if self.version >= 2 {
+                match blinding_pubkey {
+                    Some(blinding_pubkey) => {
+                        bytes_written += blinding_pubkey.serialize().consensus_encode(&mut w)?
+                    }
+                    None => {
+                        bytes_written += [0u8; 33].consensus_encode(&mut w)?;
+                    }
+                }
+            }
+        }
+        bytes_written += self.tip.consensus_encode(&mut w)?;
+        if self.version >= 3 {
+            bytes_written +=
+                elements::encode::VarInt(self.unspent.len() as u64).consensus_encode(&mut w)?;
+            for (op, script) in &self.unspent {
+                bytes_written += op.consensus_encode(&mut w)?;
+                if self.version >= 5 {
+                    bytes_written += script.consensus_encode(&mut w)?;
+                }
+            }
+        }
+        if self.version >= 4 {
+            bytes_written += self.last_unused.external.consensus_encode(&mut w)?;
+            bytes_written += self.last_unused.internal.consensus_encode(&mut w)?;
+        }
+
+        Ok(bytes_written)
+    }
+}
+
+impl Decodable for Update {
+    fn consensus_decode<D: std::io::Read>(mut d: D) -> Result<Self, elements::encode::Error> {
+        let magic_bytes: [u8; 4] = Decodable::consensus_decode(&mut d)?;
+        if magic_bytes != UPDATE_MAGIC_BYTES {
+            return Err(elements::encode::Error::ParseFailed("Invalid magic bytes"));
+        }
+
+        let version = u8::consensus_decode(&mut d)?;
+        if version > 5 {
+            return Err(elements::encode::Error::ParseFailed("Unsupported version"));
+        }
+        let wollet_status = if version >= 1 {
+            u64::consensus_decode(&mut d)?
+        } else {
+            0
+        };
+
+        let new_txs = DownloadTxResult::consensus_decode(&mut d)?;
+
+        let txid_height_new = {
+            let len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+            let mut vec = Vec::with_capacity(len as usize);
+            for _ in 0..len {
+                let txid = Txid::consensus_decode(&mut d)?;
+                let height = match u32::consensus_decode(&mut d)? {
+                    u32::MAX => None,
+                    x => Some(x),
+                };
+                vec.push((txid, height))
+            }
+            vec
+        };
+
+        let txid_height_delete = {
+            let len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+            let mut vec = Vec::with_capacity(len as usize);
+            for _ in 0..len {
+                vec.push(Txid::consensus_decode(&mut d)?);
+            }
+            vec
+        };
+
+        let timestamps = {
+            let len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+            let mut vec = Vec::with_capacity(len as usize);
+            for _ in 0..len {
+                let h = u32::consensus_decode(&mut d)?;
+                let t = u32::consensus_decode(&mut d)?;
+                vec.push((h, t));
+            }
+            vec
+        };
+
+        let scripts_with_blinding_pubkey = {
+            let len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+            let mut vec = Vec::with_capacity(len as usize);
+            for _ in 0..len {
+                let script = Script::consensus_decode(&mut d)?;
+                let chain = match u8::consensus_decode(&mut d)? {
+                    0 => Chain::External,
+                    1 => Chain::Internal,
+                    _ => return Err(elements::encode::Error::ParseFailed("Invalid chain")),
+                };
+                let child_number: ChildNumber = u32::consensus_decode(&mut d)?.into();
+                let blinding_pubkey = if version >= 2 {
+                    let bytes: [u8; 33] = Decodable::consensus_decode(&mut d)?;
+                    if bytes == [0u8; 33] {
+                        None
+                    } else {
+                        Some(BlindingPublicKey::from_slice(&bytes)?)
+                    }
+                } else {
+                    None
+                };
+                vec.push((chain, child_number, script, blinding_pubkey));
+            }
+            vec
+        };
+
+        let tip = BlockHeader::consensus_decode(&mut d)?;
+
+        let unspent = if version >= 3 {
+            let len = elements::encode::VarInt::consensus_decode(&mut d)?.0;
+            let mut vec = Vec::with_capacity(len as usize);
+            for _ in 0..len {
+                let outpoint = OutPoint::consensus_decode(&mut d)?;
+                let script = if version >= 5 {
+                    Script::consensus_decode(&mut d)?
+                } else {
+                    Script::new()
+                };
+                vec.push((outpoint, script));
+            }
+            vec
+        } else {
+            vec![]
+        };
+
+        let last_unused = if version >= 4 {
+            LastUnused {
+                external: u32::consensus_decode(&mut d)?,
+                internal: u32::consensus_decode(&mut d)?,
+            }
+        } else {
+            LastUnused::default()
+        };
+
+        Ok(Self {
+            version,
+            wollet_status,
+            new_txs,
+            txid_height_new,
+            txid_height_delete,
+            timestamps,
+            scripts_with_blinding_pubkey,
+            tip,
+            unspent,
+            last_unused,
+        })
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use lwk_common::DynStore;
+    use std::sync::Arc;
+
+    use elements::{
+        encode::{Decodable, Encodable},
+        Script,
+    };
+
+    use crate::{
+        clients::LastUnused, update::DownloadTxResult, Chain, Network, Update, WolletBuilder,
+        WolletDescriptor,
+    };
+
+    use super::{update_key, EncodableTxOutSecrets};
+
+    pub fn download_tx_result_test_vector() -> DownloadTxResult {
+        // there are issue in moving this in test_util
+        let tx_out_secret = lwk_test_util::tx_out_secrets_test_vector();
+        let mut txs = vec![];
+        let mut unblinds = vec![];
+        let tx = lwk_test_util::liquid_block_1().txdata.pop().unwrap();
+        unblinds.push((tx.input[0].previous_output, tx_out_secret));
+
+        txs.push((tx.txid(), tx));
+
+        DownloadTxResult { txs, unblinds }
+    }
+
+    #[test]
+    fn test_empty_update() {
+        let tip = lwk_test_util::liquid_block_1().header;
+        let mut update = Update {
+            version: 1,
+            new_txs: super::DownloadTxResult::default(),
+            txid_height_new: Default::default(),
+            txid_height_delete: Default::default(),
+            timestamps: Default::default(),
+            scripts_with_blinding_pubkey: Default::default(),
+            tip,
+            wollet_status: 1,
+            unspent: Default::default(),
+            last_unused: Default::default(),
+        };
+        assert!(update.only_tip());
+        update
+            .txid_height_delete
+            .push(<elements::Txid as elements::hashes::Hash>::all_zeros());
+        assert!(!update.only_tip());
+    }
+
+    #[test]
+    fn test_tx_out_secrets_roundtrip() {
+        let secret = EncodableTxOutSecrets {
+            inner: lwk_test_util::tx_out_secrets_test_vector(),
+        };
+
+        let mut vec = vec![];
+        let len = secret.consensus_encode(&mut vec).unwrap();
+        assert_eq!(lwk_test_util::tx_out_secrets_test_vector_bytes(), vec);
+        assert_eq!(len, 104);
+        assert_eq!(vec.len(), len);
+
+        let back = EncodableTxOutSecrets::consensus_decode(&vec[..]).unwrap();
+        assert_eq!(secret, back)
+    }
+
+    #[test]
+    fn test_download_tx_result_roundtrip() {
+        let result = download_tx_result_test_vector();
+        let mut vec = vec![];
+        let len = result.consensus_encode(&mut vec).unwrap();
+        assert_eq!(len, 1325);
+        assert_eq!(vec.len(), len);
+
+        let back = DownloadTxResult::consensus_decode(&vec[..]).unwrap();
+        assert_eq!(result, back)
+    }
+
+    #[test]
+    fn test_update_roundtrip() {
+        let txid = lwk_test_util::txid_test_vector();
+        let new_txs = download_tx_result_test_vector();
+        let scripts_with_blinding_pubkey =
+            vec![(Chain::Internal, 3u32.into(), Script::default(), None)];
+        // previous version of this test was misleading by inserting two elements in a map, you have only one element.
+
+        let tip = lwk_test_util::liquid_block_1().header;
+        let update = Update {
+            version: 1,
+            new_txs,
+            txid_height_new: vec![(txid, None), (txid, Some(12))],
+            txid_height_delete: vec![txid],
+            timestamps: vec![(12, 44), (12, 44)],
+            scripts_with_blinding_pubkey,
+            tip,
+            wollet_status: 1,
+            unspent: vec![],
+            last_unused: Default::default(),
+        };
+
+        let mut vec = vec![];
+        let len = update.consensus_encode(&mut vec).unwrap();
+        // std::fs::write("/tmp/xx.hex", vec.to_hex()).unwrap();
+        let exp_vec = lwk_test_util::update_test_vector_v1_bytes();
+
+        assert_eq!(vec.len(), exp_vec.len());
+        assert_eq!(vec, exp_vec);
+        assert_eq!(len, 2850);
+        assert_eq!(vec.len(), len);
+
+        let back = Update::consensus_decode(&vec[..]).unwrap();
+        assert_eq!(update, back)
+    }
+
+    #[test]
+    fn test_update_roundtrip_v4() {
+        let txid = lwk_test_util::txid_test_vector();
+        let new_txs = download_tx_result_test_vector();
+        let scripts_with_blinding_pubkey =
+            vec![(Chain::Internal, 3u32.into(), Script::default(), None)];
+
+        let tip = lwk_test_util::liquid_block_1().header;
+        let update = Update {
+            version: 4,
+            new_txs,
+            txid_height_new: vec![(txid, None), (txid, Some(12))],
+            txid_height_delete: vec![txid],
+            timestamps: vec![(12, 44), (12, 44)],
+            scripts_with_blinding_pubkey,
+            tip,
+            wollet_status: 1,
+            unspent: vec![],
+            last_unused: LastUnused {
+                external: 7,
+                internal: 11,
+            },
+        };
+
+        let mut vec = vec![];
+        let len = update.consensus_encode(&mut vec).unwrap();
+        let exp_vec = lwk_test_util::update_test_vector_v4_bytes();
+
+        assert_eq!(vec.len(), exp_vec.len());
+        assert_eq!(vec, exp_vec);
+        assert_eq!(len, 2892);
+        assert_eq!(vec.len(), len);
+
+        let back = Update::consensus_decode(&vec[..]).unwrap();
+        assert_eq!(update, back);
+    }
+
+    #[test]
+    fn test_update_backward_comp() {
+        // Update can be deserialize from v0 or v1 blob, but in the first case the wallet_status will be 0.
+        let v0 = lwk_test_util::update_test_vector_bytes();
+        let v1 = lwk_test_util::update_test_vector_v1_bytes();
+
+        let upd_from_v0 = Update::deserialize(&v0).unwrap();
+
+        let mut upd_from_v1 = Update::deserialize(&v1).unwrap();
+        assert_ne!(upd_from_v0, upd_from_v1);
+        upd_from_v1.wollet_status = 0;
+        upd_from_v1.version = 0; // now we save the version in the struct, thus to compare for equality we need this hack
+        assert_eq!(upd_from_v0, upd_from_v1);
+    }
+
+    #[test]
+    fn test_merge_keeps_max_last_unused() {
+        let tip = lwk_test_util::liquid_block_1().header;
+        let mut update = Update {
+            version: 4,
+            new_txs: DownloadTxResult::default(),
+            txid_height_new: vec![],
+            txid_height_delete: vec![],
+            timestamps: vec![(tip.height, tip.time)],
+            scripts_with_blinding_pubkey: vec![],
+            tip,
+            wollet_status: 11,
+            unspent: vec![],
+            last_unused: LastUnused {
+                external: 2,
+                internal: 8,
+            },
+        };
+
+        let following_tip = lwk_test_util::liquid_block_header_2_963_520();
+        let following = Update {
+            version: 4,
+            new_txs: DownloadTxResult::default(),
+            txid_height_new: vec![],
+            txid_height_delete: vec![],
+            timestamps: vec![(following_tip.height, following_tip.time)],
+            scripts_with_blinding_pubkey: vec![],
+            tip: following_tip,
+            wollet_status: 99,
+            unspent: vec![],
+            last_unused: LastUnused {
+                external: 7,
+                internal: 3,
+            },
+        };
+
+        update.merge(following);
+
+        assert_eq!(update.last_unused.external, 7);
+        assert_eq!(update.last_unused.internal, 8);
+    }
+
+    #[test]
+    fn test_merge_v3_then_v4_preserves_following_last_unused_on_restore() {
+        let desc: WolletDescriptor = lwk_test_util::wollet_descriptor_string().parse().unwrap();
+        let network = Network::default_regtest();
+        let wollet_status = WolletBuilder::new(network, desc.clone())
+            .build()
+            .unwrap()
+            .status();
+        let mut update = Update {
+            version: 3,
+            wollet_status,
+            new_txs: DownloadTxResult::default(),
+            txid_height_new: vec![],
+            txid_height_delete: vec![],
+            timestamps: vec![],
+            scripts_with_blinding_pubkey: vec![],
+            tip: super::default_blockheader(),
+            unspent: vec![],
+            last_unused: LastUnused::default(),
+        };
+
+        let following = Update {
+            version: 4,
+            wollet_status: wollet_status + 1,
+            new_txs: DownloadTxResult::default(),
+            txid_height_new: vec![],
+            txid_height_delete: vec![],
+            timestamps: vec![],
+            scripts_with_blinding_pubkey: vec![],
+            tip: super::default_blockheader(),
+            unspent: vec![],
+            last_unused: LastUnused {
+                external: 7,
+                internal: 11,
+            },
+        };
+
+        update.merge(following);
+        assert_eq!(update.version, 4);
+
+        let merged = Update::deserialize(&update.serialize().unwrap()).unwrap();
+        let mut wollet = WolletBuilder::new(network, desc).build().unwrap();
+        wollet.apply_update(merged).unwrap();
+
+        assert_eq!(wollet.address(None).unwrap().index(), 7);
+    }
+
+    #[test]
+    fn test_apply_v4_update_fetch_max_semantics() {
+        let desc: WolletDescriptor = lwk_test_util::wollet_descriptor_string().parse().unwrap();
+        let network = Network::default_regtest();
+        let mut wollet = WolletBuilder::new(network, desc).build().unwrap();
+
+        wollet
+            .apply_update(Update {
+                version: 4,
+                wollet_status: wollet.status(),
+                new_txs: DownloadTxResult::default(),
+                txid_height_new: vec![],
+                txid_height_delete: vec![],
+                timestamps: vec![],
+                scripts_with_blinding_pubkey: vec![],
+                tip: super::default_blockheader(),
+                unspent: vec![],
+                last_unused: LastUnused {
+                    external: 7,
+                    internal: 11,
+                },
+            })
+            .unwrap();
+
+        assert_eq!(wollet.address(None).unwrap().index(), 7);
+
+        wollet
+            .apply_update(Update {
+                version: 4,
+                wollet_status: wollet.status(),
+                new_txs: DownloadTxResult::default(),
+                txid_height_new: vec![],
+                txid_height_delete: vec![],
+                timestamps: vec![],
+                scripts_with_blinding_pubkey: vec![],
+                tip: super::default_blockheader(),
+                unspent: vec![],
+                last_unused: LastUnused {
+                    external: 3,
+                    internal: 5,
+                },
+            })
+            .unwrap();
+
+        assert_eq!(wollet.address(None).unwrap().index(), 7);
+        assert_eq!(wollet.change(None).unwrap().index(), 11);
+    }
+
+    #[test]
+    fn test_update_decription() {
+        let update = Update::deserialize(&lwk_test_util::update_test_vector_bytes()).unwrap();
+        let desc: WolletDescriptor = lwk_test_util::wollet_descriptor_string().parse().unwrap();
+        let enc_bytes = lwk_test_util::update_test_vector_encrypted_bytes();
+        let update_from_enc = Update::deserialize_decrypted(&enc_bytes, &desc).unwrap();
+        assert_eq!(update, update_from_enc);
+
+        let enc_bytes2 = lwk_test_util::update_test_vector_encrypted_bytes2();
+        let desc2: WolletDescriptor = lwk_test_util::wollet_descriptor_string2().parse().unwrap();
+        Update::deserialize_decrypted(&enc_bytes2, &desc2).unwrap();
+    }
+
+    #[test]
+    fn test_update_v4_requires_last_unused_bytes() {
+        let mut bytes = lwk_test_util::update_test_vector_v1_bytes();
+        bytes[4] = 4; // the fifth byte (after the 4 bytes magic) is the version
+        assert!(Update::deserialize(&bytes).is_err());
+    }
+
+    #[test]
+    fn test_update_base64() {
+        let base64 = lwk_test_util::update_test_vector_encrypted_base64();
+        let desc: WolletDescriptor = lwk_test_util::wollet_descriptor_string().parse().unwrap();
+
+        let update = Update::deserialize_decrypted_base64(&base64, &desc).unwrap();
+        let update_ser = update.serialize_encrypted_base64(&desc).unwrap();
+        assert_ne!(base64, update_ser); // decrypted content is the same, but encryption is not deterministic
+
+        let back = Update::deserialize_decrypted_base64(&update_ser, &desc).unwrap();
+        assert_eq!(update, back)
+    }
+
+    #[test]
+    fn test_update_prune() {
+        let update_bytes = lwk_test_util::update_test_vector_2_bytes();
+        let update = Update::deserialize(&update_bytes).unwrap();
+        let desc: WolletDescriptor = lwk_test_util::wollet_descriptor_string().parse().unwrap();
+        let wollet = WolletBuilder::new(crate::Network::TestnetLiquid, desc)
+            .build()
+            .unwrap();
+        assert_eq!(update_bytes.len(), 18436);
+        assert_eq!(update.serialize().unwrap().len(), 18436);
+        let update_pruned = {
+            let mut u = update.clone();
+            u.prune(&wollet);
+            u
+        };
+        assert_eq!(update_pruned.serialize().unwrap().len(), 1106);
+        assert_eq!(update.new_txs.txs.len(), update_pruned.new_txs.txs.len());
+        assert_eq!(update.new_txs.unblinds, update_pruned.new_txs.unblinds);
+    }
+
+    /// Test that verifies the merge functionality works correctly.
+    /// Creates 3 updates, stores them, builds with merge_threshold=Some(2),
+    /// and verifies they are merged into a single update.
+    ///
+    /// Expected final state (from lwk_test_util/test_data/merge_updates/README.md):
+    /// - Balance: 899,974 sats
+    /// - Transactions: 2
+    /// - UTXOs: 1 (change output)
+    #[test]
+    fn test_merge_updates() {
+        use lwk_common::MemoryStore;
+        use lwk_test_util::{
+            update_merge_test_1, update_merge_test_2, update_merge_test_3,
+            update_merge_test_descriptor,
+        };
+
+        // Load the descriptor
+        let desc_str = update_merge_test_descriptor();
+        let desc: WolletDescriptor = desc_str.parse().unwrap();
+
+        // Load the three updates
+        let update1_bytes = update_merge_test_1();
+        let update2_bytes = update_merge_test_2();
+        let update3_bytes = update_merge_test_3();
+
+        // Create a memory store and manually insert the updates
+        let store = Arc::new(MemoryStore::default());
+        store
+            .put(&update_key(0), &update1_bytes)
+            .expect("Failed to store update 0");
+        store
+            .put(&update_key(1), &update2_bytes)
+            .expect("Failed to store update 1");
+        store
+            .put(&update_key(2), &update3_bytes)
+            .expect("Failed to store update 2");
+
+        // Build with merge_threshold=Some(2) (should trigger merge since we have 3 updates)
+        let wollet = WolletBuilder::new(Network::default_regtest(), desc.clone())
+            .with_updates_store(store.clone())
+            .with_merge_threshold(Some(2))
+            .build()
+            .expect("Failed to build wollet");
+
+        // Verify state is correct (hardcoded values from README.md)
+        let balance = wollet.balance().expect("Failed to get balance");
+        let txs = wollet.transactions().expect("Failed to get transactions");
+        let utxos = wollet.utxos().expect("Failed to get utxos");
+        let policy_asset = wollet.policy_asset();
+        let btc_balance = balance.get(&policy_asset).copied().unwrap_or(0);
+
+        // Expected final state: Balance 899,974, Transactions: 2, UTXOs: 1
+        assert_eq!(
+            btc_balance, 899_974,
+            "Balance should be exactly 899,974 sats after merging all updates"
+        );
+        assert_eq!(
+            txs.len(),
+            2,
+            "Should have exactly 2 transactions after merge"
+        );
+        assert_eq!(utxos.len(), 1, "Should have exactly 1 UTXO after merge");
+
+        // Verify that updates were merged - only update 0 should exist
+        assert!(
+            store.get(&update_key(0)).unwrap().is_some(),
+            "Update 0 should exist"
+        );
+        assert!(
+            store.get(&update_key(1)).unwrap().is_none(),
+            "Update 1 should have been deleted"
+        );
+        assert!(
+            store.get(&update_key(2)).unwrap().is_none(),
+            "Update 2 should have been deleted"
+        );
+        assert!(
+            store.get(&update_key(3)).unwrap().is_none(),
+            "Update 3 should have been deleted"
+        );
+
+        // Verify the merged update can be deserialized and applied to a fresh wallet
+        let merged_bytes = store.get(&update_key(0)).unwrap().unwrap();
+        let merged_update =
+            Update::deserialize(&merged_bytes).expect("Failed to deserialize merged update");
+
+        // Apply merged update to a fresh wallet
+        let mut fresh_wollet = WolletBuilder::new(Network::default_regtest(), desc.clone())
+            .build()
+            .unwrap();
+        fresh_wollet
+            .apply_update(merged_update)
+            .expect("Failed to apply merged update");
+
+        // Verify fresh wallet has same state
+        let fresh_balance = fresh_wollet.balance().unwrap();
+        let fresh_btc_balance = fresh_balance.get(&policy_asset).copied().unwrap_or(0);
+        assert_eq!(
+            btc_balance, fresh_btc_balance,
+            "Merged update should produce same balance"
+        );
+        assert_eq!(
+            wollet.transactions().unwrap().len(),
+            fresh_wollet.transactions().unwrap().len(),
+            "Merged update should produce same transaction count"
+        );
+        assert_eq!(
+            wollet.utxos().unwrap().len(),
+            fresh_wollet.utxos().unwrap().len(),
+            "Merged update should produce same UTXO count"
+        );
+    }
+}

@@ -733,6 +733,7 @@ String _sendMessage(AppLocalizations l, SendError error, String name) =>
       SendError.budgetExceeded => l.sendBudgetExceeded,
       SendError.failed => l.sendFailed,
       SendError.unconfirmed => l.sendUnconfirmed(name),
+      SendError.wrongNetwork => l.errorWrongNetwork,
     };
 
 /// The amount set by a pasted invoice or link, in place of the amount field.

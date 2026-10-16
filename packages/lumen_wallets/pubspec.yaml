@@ -13,6 +13,8 @@ dependencies:
   bech32: ^0.2.2
   crypto: ^3.0.7
   http: ^1.6.0
+  lumen_core:
+    path: ../lumen_core
   ndk: ^0.10.1
 
 dev_dependencies:

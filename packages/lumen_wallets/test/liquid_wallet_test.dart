@@ -1,0 +1,558 @@
+import 'package:lumen_wallets/lumen_wallets.dart';
+import 'package:lumen_wallets/src/liquid/liquid_engine.dart';
+import 'package:test/test.dart';
+
+const _phrase =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+const _address =
+    'lq1qqvxk052kf3qtkxmrakx50a9gc3smqad2ync54hzntjt980kfej9kkfe0247rp5h4yzmdftsahhw64uy8pzfe7cpg4fgykm7cv';
+const _elsewhere = ChainAddress(
+  'lq1qqvp9g33gw9y05xava3dvcpq8pnkv82yj3tdnzp547eyp9yrztz2lkyxrhscd55ev4p7lj2n72jtkn5u4xnj4v577c42jhf3ww',
+  network: ChainNetwork.liquid,
+);
+
+final class _MemoryStore implements KeyValueStore {
+  final Map<String, String> values = {};
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async => values[key] = value;
+
+  @override
+  Future<void> delete(String key) async => values.remove(key);
+}
+
+LiquidChainException _fails(LiquidChainError error) =>
+    LiquidChainException(error);
+
+final class _FakeChain implements LiquidChain {
+  int balanceSats = 0;
+  int tip = 100;
+  List<ChainTx> txs = [];
+  List<String> updates = [];
+  int syncs = 0;
+  bool changes = true;
+
+  /// Thrown by the next calls, one each.
+  final List<LiquidChainException> syncErrors = [];
+  final List<LiquidChainException> broadcastErrors = [];
+  LiquidChainException? prepareError;
+  int broadcasts = 0;
+  int fee = 30;
+
+  @override
+  Future<bool> sync() async {
+    syncs++;
+    if (syncErrors.isNotEmpty) throw syncErrors.removeAt(0);
+    updates = [...updates, 'update$syncs'];
+    return changes;
+  }
+
+  @override
+  Future<List<String>> state() async => updates;
+
+  @override
+  Future<int> balance() async => balanceSats;
+
+  @override
+  Future<int> tipHeight() async => tip;
+
+  @override
+  Future<String> nextAddress() async => _address;
+
+  @override
+  Future<List<ChainTx>> transactions() async => txs;
+
+  @override
+  Future<LiquidDraft> prepareSend(String address, int sats) async {
+    if (prepareError case final error?) throw error;
+    return _Draft(fee, address, sats);
+  }
+
+  @override
+  Future<LiquidSigned> sign(LiquidDraft draft) async => const _Signed('tx9');
+
+  @override
+  Future<void> broadcast(LiquidSigned signed) async {
+    broadcasts++;
+    if (broadcastErrors.isNotEmpty) throw broadcastErrors.removeAt(0);
+  }
+}
+
+final class _Draft implements LiquidDraft {
+  const _Draft(this.fee, this.address, this.sats);
+
+  @override
+  final int fee;
+  final String address;
+  final int sats;
+}
+
+final class _Signed implements LiquidSigned {
+  const _Signed(this.txid);
+
+  @override
+  final String txid;
+}
+
+final class _FakeEngine implements LiquidEngine {
+  /// The chain each derivation of [_phrase] gives.
+  final Map<LiquidScript, _FakeChain> chains = {
+    for (final script in LiquidScript.values) script: _FakeChain(),
+  };
+  final List<List<String>> openedWith = [];
+
+  @override
+  String generatePhrase() => _phrase;
+
+  @override
+  PhraseProblem? phraseProblem(String phrase) {
+    if (phrase.split(' ').length != 12) return PhraseProblem.wordCount;
+    if (phrase.contains('zzz')) return PhraseProblem.unknownWord;
+    return null;
+  }
+
+  @override
+  Future<LiquidChain> open({
+    required String phrase,
+    required ChainNetwork network,
+    required LiquidScript script,
+    required String esploraUrl,
+    required List<String> state,
+  }) async {
+    openedWith.add(state);
+    return chains[script]!..updates = state;
+  }
+}
+
+void main() {
+  late _FakeEngine engine;
+  late _MemoryStore secrets;
+  late _MemoryStore chainState;
+  late DateTime now;
+
+  LiquidWalletSource source({Set<ChainNetwork>? networks}) =>
+      LiquidWalletSource(
+        engine: engine,
+        secrets: secrets,
+        chainState: chainState,
+        networks: networks ?? const {ChainNetwork.liquid},
+        retryDelays: const [Duration.zero, Duration.zero],
+        now: () => now,
+        watchInterval: const Duration(milliseconds: 10),
+      );
+
+  late _FakeChain chain;
+
+  setUp(() {
+    engine = _FakeEngine();
+    chain = engine.chains[LiquidScript.nativeSegwit]!;
+    secrets = _MemoryStore();
+    chainState = _MemoryStore();
+    now = DateTime(2026, 10, 16, 12);
+  });
+
+  group('saving', () {
+    test('a wallet keeps its phrase under its own key', () async {
+      final wallet = await source().add(
+        phrase: '  Abandon ${_phrase.substring(8).replaceAll(' ', '  ')} ',
+        name: ' Savings ',
+      );
+
+      expect(secrets.values['lumen.liquid.${wallet.id}.phrase'], _phrase);
+      expect(secrets.values['lumen.liquid.wallets'], isNot(contains('about')));
+
+      final loaded = (await source().load()).single;
+      expect(loaded.id, wallet.id);
+      expect(loaded.name, 'Savings');
+      expect(loaded.kind, WalletKind.liquid);
+      expect(loaded.capabilities, {
+        WalletCapability.receiveAddress,
+        WalletCapability.payAddress,
+      });
+      expect(await loaded.connectionString(), isNull);
+    });
+
+    test('rename is saved, remove forgets the phrase and state', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      await wallet.fetchBalance();
+      expect(chainState.values, isNotEmpty);
+
+      await wallet.rename('Cold');
+      expect((await source().load()).single.name, 'Cold');
+
+      await wallet.remove();
+      expect(await source().load(), isEmpty);
+      expect(secrets.values.keys, ['lumen.liquid.wallets']);
+      expect(chainState.values, isEmpty);
+    });
+
+    test('a phrase that is invalid or saved already is refused', () async {
+      final wallets = source();
+      await wallets.add(phrase: _phrase, name: 'Savings');
+
+      for (final (phrase, error) in [
+        ('abandon about', LiquidAddError.invalidPhrase),
+        (_phrase.replaceFirst('abandon', 'zzz'), LiquidAddError.invalidPhrase),
+        (_phrase.toUpperCase(), LiquidAddError.duplicate),
+      ]) {
+        await expectLater(
+          wallets.add(phrase: phrase, name: 'Again'),
+          throwsA(
+            isA<LiquidAddException>().having((e) => e.error, 'error', error),
+          ),
+          reason: phrase,
+        );
+      }
+    });
+
+    test('testnet is only added and loaded where enabled', () async {
+      await expectLater(
+        source().add(
+          phrase: _phrase,
+          name: 'Test',
+          network: ChainNetwork.liquidTestnet,
+        ),
+        throwsArgumentError,
+      );
+
+      final both = {ChainNetwork.liquid, ChainNetwork.liquidTestnet};
+      await source(
+        networks: both,
+      ).add(phrase: _phrase, name: 'Test', network: ChainNetwork.liquidTestnet);
+      expect(await source(networks: both).load(), hasLength(1));
+      expect(await source().load(), isEmpty);
+    });
+  });
+
+  group('syncing', () {
+    test('the chain state is saved and opened again', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.balanceSats = 25000;
+      expect(await wallet.fetchBalance(), 25000);
+
+      final reloaded = (await source().load()).single;
+      await reloaded.fetchBalance();
+      expect(engine.openedWith.last, ['update1']);
+    });
+
+    test('balance and activity read together sync once', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+
+      await wallet.fetchBalance();
+      await wallet.fetchTransactions();
+      expect(chain.syncs, 1);
+
+      now = now.add(const Duration(minutes: 1));
+      await wallet.fetchBalance();
+      expect(chain.syncs, 2);
+    });
+
+    test('a dropped connection is retried', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.syncErrors.addAll([
+        _fails(LiquidChainError.unreachable),
+        _fails(LiquidChainError.unreachable),
+      ]);
+      chain.balanceSats = 700;
+
+      expect(await wallet.fetchBalance(), 700);
+      expect(chain.syncs, 3);
+    });
+
+    test('a server that stays silent leaves the balance unread', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.syncErrors.addAll(
+        List.filled(3, _fails(LiquidChainError.unreachable)),
+      );
+
+      await expectLater(
+        wallet.fetchBalance(),
+        throwsA(
+          isA<BalanceException>().having(
+            (e) => e.error,
+            'error',
+            BalanceError.unreachable,
+          ),
+        ),
+      );
+    });
+
+    test('a saved state that no longer opens is dropped', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chainState.values['lumen.liquid.${wallet.id}.state'] = 'not json';
+
+      await (await source().load()).single.fetchBalance();
+      expect(engine.openedWith.last, isEmpty);
+    });
+  });
+
+  group('activity', () {
+    test('chain transactions read like payments', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain
+        ..tip = 120
+        ..txs = [
+          ChainTx(
+            txid: 'in',
+            balance: 25000,
+            fee: 40,
+            height: 101,
+            timestamp: DateTime(2026, 10, 1),
+          ),
+          ChainTx(
+            txid: 'out',
+            balance: -5030,
+            fee: 30,
+            height: 120,
+            timestamp: DateTime(2026, 10, 2),
+          ),
+          const ChainTx(txid: 'asset', balance: 0, fee: 26, height: 110),
+          const ChainTx(txid: 'pending', balance: 1000, fee: 26),
+        ];
+
+      final page = await wallet.fetchTransactions(limit: 10);
+      final [pending, out, incoming] = page.transactions;
+
+      expect(
+        (pending.id, pending.isPending, pending.at),
+        ('pending', true, now),
+      );
+      expect((pending.confirmations, pending.txid), (0, 'pending'));
+
+      expect(
+        (out.direction, out.sats, out.feeSats),
+        (TransactionDirection.outgoing, 5000, 30),
+      );
+      expect(out.confirmations, 1);
+
+      expect(
+        (incoming.direction, incoming.sats, incoming.feeSats),
+        (TransactionDirection.incoming, 25000, null),
+      );
+      expect(incoming.confirmations, 20);
+      expect(incoming.at, DateTime(2026, 10, 1));
+    });
+
+    test('a pending payment keeps the time it was first seen', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.txs = [const ChainTx(txid: 'pending', balance: 1000, fee: 26)];
+      final seenAt = now;
+      await wallet.fetchBalance();
+
+      now = now.add(const Duration(hours: 1));
+      final reloaded = (await source().load()).single;
+      final page = await reloaded.fetchTransactions();
+      expect(page.transactions.single.at, seenAt);
+    });
+
+    test('pages are cut from the newest', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.txs = [
+        for (var i = 0; i < 5; i++)
+          ChainTx(
+            txid: 'tx$i',
+            balance: 100,
+            fee: 26,
+            height: 10 + i,
+            timestamp: DateTime(2026, 10, 1 + i),
+          ),
+      ];
+
+      final second = await wallet.fetchTransactions(limit: 2, offset: 2);
+      expect([for (final t in second.transactions) t.id], ['tx2', 'tx1']);
+      expect(second.listed, 2);
+      expect((await wallet.fetchTransactions(offset: 5)).listed, 0);
+    });
+  });
+
+  group('sending', () {
+    test('quotes the fee, then sends and returns the txid', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+
+      final quote = await wallet.prepareSend(_elsewhere, sats: 5000);
+      expect((quote.sats, quote.feeSats), (5000, 30));
+      expect(chain.broadcasts, 0);
+
+      final payment = await wallet.confirmSend(quote);
+      expect((payment.txid, payment.feeSats), ('tx9', 30));
+      expect(chain.broadcasts, 1);
+    });
+
+    test('a link amount wins over the typed one', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final quote = await wallet.prepareSend(
+        ChainAddress(
+          _elsewhere.address,
+          network: ChainNetwork.liquid,
+          sats: 21,
+        ),
+        sats: 5000,
+      );
+      expect(quote.sats, 21);
+    });
+
+    test('what cannot be paid fails before anything is sent', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      Matcher fails(SendError error) =>
+          throwsA(isA<SendException>().having((e) => e.error, 'error', error));
+
+      await expectLater(
+        wallet.prepareSend(
+          ChainAddress(_address, network: ChainNetwork.liquidTestnet),
+          sats: 1,
+        ),
+        fails(SendError.wrongNetwork),
+      );
+
+      chain.prepareError = _fails(LiquidChainError.insufficientFunds);
+      await expectLater(
+        wallet.prepareSend(_elsewhere, sats: 1),
+        fails(SendError.insufficientBalance),
+      );
+      expect(
+        () => wallet.prepareSend(
+          const Invoice(request: 'lnbc1', sats: 1),
+          sats: 1,
+        ),
+        throwsUnsupportedError,
+      );
+      expect(chain.broadcasts, 0);
+    });
+
+    test('a broadcast is retried, then reported as unconfirmed', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.broadcastErrors.add(_fails(LiquidChainError.unreachable));
+      final payment = await wallet.confirmSend(
+        await wallet.prepareSend(_elsewhere, sats: 100),
+      );
+      expect(payment.txid, 'tx9');
+      expect(chain.broadcasts, 2);
+
+      chain.broadcastErrors.addAll(
+        List.filled(3, _fails(LiquidChainError.unreachable)),
+      );
+      await expectLater(
+        wallet.confirmSend(await wallet.prepareSend(_elsewhere, sats: 100)),
+        throwsA(
+          isA<SendException>().having(
+            (e) => e.error,
+            'error',
+            SendError.unconfirmed,
+          ),
+        ),
+      );
+    });
+
+    test('the send after an unconfirmed one syncs first', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final quote = await wallet.prepareSend(_elsewhere, sats: 100);
+      expect(chain.syncs, 1);
+      chain.broadcastErrors.addAll(
+        List.filled(3, _fails(LiquidChainError.unreachable)),
+      );
+      await expectLater(
+        wallet.confirmSend(quote),
+        throwsA(isA<SendException>()),
+      );
+
+      await wallet.prepareSend(_elsewhere, sats: 100);
+      expect(chain.syncs, 2);
+    });
+
+    test('a refused transaction failed', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.broadcastErrors.add(_fails(LiquidChainError.rejected));
+
+      await expectLater(
+        wallet.confirmSend(await wallet.prepareSend(_elsewhere, sats: 100)),
+        throwsA(
+          isA<SendException>().having(
+            (e) => e.error,
+            'error',
+            SendError.failed,
+          ),
+        ),
+      );
+      expect(chain.broadcasts, 1);
+    });
+  });
+
+  group('receiving', () {
+    test('gives the next address and sees it paid', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final address = await wallet.nextAddress();
+      expect(
+        (address.address, address.network),
+        (_address, ChainNetwork.liquid),
+      );
+
+      final paid = wallet.watchPayment(address).toList();
+      await Future<void>.delayed(Duration.zero);
+      chain.txs = [
+        const ChainTx(txid: 'in', balance: 1000, fee: 26, received: [_address]),
+      ];
+      expect(await paid.timeout(const Duration(seconds: 5)), hasLength(1));
+    });
+
+    test('an address is still given while the server is silent', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.syncErrors.addAll(
+        List.filled(3, _fails(LiquidChainError.unreachable)),
+      );
+
+      expect((await wallet.nextAddress()).address, _address);
+    });
+  });
+
+  group('restoring', () {
+    test('a phrase used with nested segwit only is restored as such', () async {
+      final wallets = source();
+      final nested = engine.chains[LiquidScript.nestedSegwit]!
+        ..txs = [const ChainTx(txid: 'old', balance: 1000, fee: 26, height: 5)];
+
+      final discovery = await wallets.discover(_phrase);
+      expect(discovery.script, LiquidScript.nestedSegwit);
+
+      final wallet = await wallets.add(
+        phrase: _phrase,
+        name: 'Restored',
+        discovery: discovery,
+      );
+      await wallet.fetchBalance();
+      expect(engine.openedWith.last, ['update1']);
+      expect(nested.syncs, 2);
+    });
+
+    test('a fresh phrase or a native one stays native', () async {
+      expect(
+        (await source().discover(_phrase)).script,
+        LiquidScript.nativeSegwit,
+      );
+
+      chain.txs = [const ChainTx(txid: 'a', balance: 1, fee: 26, height: 5)];
+      engine.chains[LiquidScript.nestedSegwit]!.txs = chain.txs;
+      expect(
+        (await source().discover(_phrase)).script,
+        LiquidScript.nativeSegwit,
+      );
+    });
+
+    test('a discovery on another network is refused', () async {
+      final both = {ChainNetwork.liquid, ChainNetwork.liquidTestnet};
+      final discovery = await source(networks: both).discover(_phrase);
+
+      await expectLater(
+        source(networks: both).add(
+          phrase: _phrase,
+          name: 'Test',
+          network: ChainNetwork.liquidTestnet,
+          discovery: discovery,
+        ),
+        throwsArgumentError,
+      );
+    });
+  });
+}

@@ -51,7 +51,7 @@ Decided: before the wallet exists. A new wallet cannot receive until its owner h
 
 ### Which descriptor
 
-Use LWK's single-signature default, `ct(slip77(...),elwpkh(...))`. Before settling on it, check which descriptor the Blockstream app and Aqua derive from a 12-word phrase, so a phrase moves between apps and shows the same funds.
+Decided: new wallets use LWK's single-signature default, `ct(slip77(...),elwpkh(...))` on `m/84'/1776'/0'`, with the SLIP-77 master blinding key. The Blockstream app and Aqua are built on GDK, which discovers both native (BIP84) and nested (BIP49) segwit accounts when restoring. So restoring looks for a history on BIP84, then on BIP49, and keeps the one that has it (`LiquidWalletSource.discover`). Only the first account of each is checked.
 
 ## Steps
 
@@ -77,7 +77,7 @@ What it taught us:
 - **Web size.** The wasm is 5.1 MB, 1.8 MB with brotli, before any size work.
 - **Build fixes.** Pin `libc` to 0.2.189: 0.2.190 limits the `_dyld_*` functions to macOS, which breaks `backtrace` (pulled in by flutter_rust_bridge) on iOS. Link the `SystemConfiguration` framework on macOS and iOS (reqwest needs it). On wasm, use the nightly `llvm-ar`, as in `spike_cdk_web/tools/build_web.sh`.
 
-### 1. Make the `Wallet` interface fit more than Lightning
+### 1. Make the `Wallet` interface fit more than Lightning (done)
 
 In `packages/lumen_wallets`, with NWC behaving exactly as before. The same changes will serve Bitcoin on-chain later.
 
@@ -91,7 +91,7 @@ In `packages/lumen_wallets`, with NWC behaving exactly as before. The same chang
 
 Done when: `flutter test` and `dart test` pass and the app works as today.
 
-### 2. Liquid wallets in `lumen_wallets`, without UI
+### 2. Liquid wallets in `lumen_wallets`, without UI (done)
 
 - The Rust crate as a dependency of `lumen_wallets`, keeping the rule that the app never imports it directly. Start from the spike's crate, with its build fixes and the sync patch.
 - Wallet state saved by Lumen after each sync (see step 0 for where), and retries around sync and broadcast.
@@ -102,6 +102,20 @@ Done when: `flutter test` and `dart test` pass and the app works as today.
 - Tests: a known phrase gives known addresses (fixed vectors), transaction mapping, recipient parsing, and send errors, all against a fake backend so they run offline in CI.
 
 Done when: the package tests pass and a scratch script can sync a testnet wallet and send from it.
+
+How it came out:
+
+- `packages/lumen_core` is a Flutter FFI plugin (Cargokit) holding the Rust crate in `rust/` and the generated bindings. Only `lumen_wallets` imports it, through `LwkEngine`. `LiquidWallet` talks to the `LiquidEngine` interface, which the tests fake.
+- The app gives `LiquidWalletSource` two `KeyValueStore`s in step 3: one for the phrases and the wallet list (sealed secure storage), one for the chain state (the history database or a file). Testnet is enabled by passing it in `networks`.
+- The app must call `LwkEngine.init()` once before opening a wallet. A sync less than 15 s old is not repeated, so a refresh that reads the balance and then the activity syncs once.
+- Retries: sync and broadcast are tried 3 times on a dropped connection. A broadcast left without an answer is reported as unconfirmed, since it may have reached the server, and the next send syncs first so it cannot spend other coins and pay twice.
+- Restoring: `discover` returns the derivation and the chain state it scanned, which `add` takes back, so nothing about a dropped restore stays in the source.
+- iOS and macOS now build with CocoaPods, since Cargokit only ships a podspec. Flutter warns that plugins without Swift Package Manager support will become an error in a future version (see step 9).
+- A pending transaction is dated from when Lumen first saw it, kept with the chain state.
+- A payment to oneself shows as outgoing, 0 sats, with its fee. Worth a "to yourself" label in step 7.
+- `tool/liquid_testnet.dart` syncs and sends on testnet (about 2 s for a full scan, 33 sats of fee).
+- The crate's own tests (`cargo test`, including the known-phrase vectors) do not run in CI until step 9 installs Rust.
+- Not in the crate yet: "send everything" (step 6, LWK's `drain_lbtc_wallet`).
 
 ### 3. Wire Liquid into the app
 
@@ -155,6 +169,7 @@ Done when: sending on testnet works end to end and the send tests cover each err
 
 - Install Rust and the needed targets in [ci.yml](../.github/workflows/ci.yml), [release.yml](../.github/workflows/release.yml) and the Pages workflow, with caching so builds stay fast. The Pages build needs nightly and the single-threaded wasm build.
 - Build and run on Windows and Linux in CI, since the spike could not.
+- Swift Package Manager: `lumen_core` only has a podspec, and Flutter warns that this will become an error. Check whether Cargokit or flutter_rust_bridge support SwiftPM by then, or write the `Package.swift` that runs the cargo build.
 - Check the size added to the APK, the app bundles and the web build, and that the web build still deploys.
 - Update the README feature list and screenshots, and `zapstore.yaml` if its description lists wallet kinds.
 
@@ -170,4 +185,4 @@ Done when: CI is green and a tagged release produces a working Android build wit
 ## Open questions
 
 - Can the wasm get smaller than 1.8 MB compressed, for example with `wasm-opt` or by loading it only once a Liquid wallet exists?
-- If someone types the 12 words from the Blockstream app or Aqua into Lumen, do they find their funds? Apps can derive different addresses from the same words, so check what those apps do and match it.
+- Restoring checks BIP84 then BIP49 (see [Which descriptor](#which-descriptor)). Still to try by hand: a phrase from the Blockstream app and one from Aqua, restored in Lumen, show the same funds.

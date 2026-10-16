@@ -8,6 +8,7 @@ environment:
   sdk: ^3.13.5
 
 workspace:
+  - packages/lumen_core
   - packages/lumen_wallets
 
 dependencies:
