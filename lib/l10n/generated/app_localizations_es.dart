@@ -963,4 +963,47 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get errorSaveWallet =>
       'Lumen no pudo guardar la billetera. Inténtalo de nuevo.';
+
+  @override
+  String get restoreLiquidWallet => 'Restaurar una billetera';
+
+  @override
+  String get restoreLiquidTitle => 'Restaurar una billetera Liquid';
+
+  @override
+  String get restoreLead =>
+      'Escribe las 12 palabras de tu frase de recuperación, en orden. También puedes pegar la frase entera en el primer campo.';
+
+  @override
+  String get errorWordUnknown =>
+      'Esta palabra no está en la lista de frases de recuperación. Revisa cómo está escrita.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Estas 12 palabras no forman una frase de recuperación. Puede que una sea incorrecta o esté fuera de lugar: compara cada una con tu papel.';
+
+  @override
+  String get restoreScanning =>
+      'Buscando los pagos de esta billetera. Puede tardar un minuto.';
+
+  @override
+  String get restoreWallet => 'Restaurar billetera';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen no pudo conectar con el servidor Liquid para buscar los pagos de esta billetera. Revisa tu conexión e inténtalo de nuevo.';
+
+  @override
+  String get errorRestoreDuplicate => 'Esta billetera ya está en Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palabras rellenadas',
+      one: '1 palabra rellenada',
+    );
+    return '$_temp0';
+  }
 }

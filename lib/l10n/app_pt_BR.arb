@@ -254,5 +254,15 @@
   "testnet": "Testnet",
   "testnetHint": "Apenas para testes. As moedas da testnet não têm valor.",
   "createWallet": "Criar carteira",
-  "errorSaveWallet": "O Lumen não conseguiu salvar a carteira. Tente de novo."
+  "errorSaveWallet": "O Lumen não conseguiu salvar a carteira. Tente de novo.",
+  "restoreLiquidWallet": "Restaurar uma carteira",
+  "restoreLiquidTitle": "Restaurar uma carteira Liquid",
+  "restoreLead": "Digite as 12 palavras da sua frase de recuperação, em ordem. Você também pode colar a frase inteira no primeiro campo.",
+  "errorWordUnknown": "Esta palavra não está na lista das frases de recuperação. Confira a ortografia.",
+  "errorPhraseChecksum": "Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: confira cada uma com o seu papel.",
+  "restoreScanning": "Procurando os pagamentos desta carteira. Isso pode levar um minuto.",
+  "restoreWallet": "Restaurar carteira",
+  "errorRestoreUnreachable": "O Lumen não conseguiu acessar o servidor Liquid para procurar os pagamentos desta carteira. Confira sua conexão e tente de novo.",
+  "errorRestoreDuplicate": "Esta carteira já está no Lumen.",
+  "wordsPasted": "{count, plural, =1{1 palavra preenchida} other{{count} palavras preenchidas}}"
 }

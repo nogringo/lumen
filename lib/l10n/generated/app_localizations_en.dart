@@ -956,4 +956,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorSaveWallet => 'Lumen could not save the wallet. Try again.';
+
+  @override
+  String get restoreLiquidWallet => 'Restore a wallet';
+
+  @override
+  String get restoreLiquidTitle => 'Restore a Liquid wallet';
+
+  @override
+  String get restoreLead =>
+      'Type the 12 words of your recovery phrase, in order. You can also paste the whole phrase into the first field.';
+
+  @override
+  String get errorWordUnknown =>
+      'This word is not in the recovery phrase list. Check its spelling.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'These 12 words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.';
+
+  @override
+  String get restoreScanning =>
+      'Looking for this wallet\'s payments. This can take a minute.';
+
+  @override
+  String get restoreWallet => 'Restore wallet';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen could not reach the Liquid server to look for this wallet\'s payments. Check your connection and try again.';
+
+  @override
+  String get errorRestoreDuplicate => 'This wallet is already in Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count words filled in',
+      one: '1 word filled in',
+    );
+    return '$_temp0';
+  }
 }

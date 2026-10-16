@@ -254,5 +254,15 @@
   "testnet": "Testnet",
   "testnetHint": "Vain testaukseen. Testnet-kolikoilla ei ole arvoa.",
   "createWallet": "Luo lompakko",
-  "errorSaveWallet": "Lumen ei voinut tallentaa lompakkoa. Yritä uudelleen."
+  "errorSaveWallet": "Lumen ei voinut tallentaa lompakkoa. Yritä uudelleen.",
+  "restoreLiquidWallet": "Palauta lompakko",
+  "restoreLiquidTitle": "Palauta Liquid-lompakko",
+  "restoreLead": "Kirjoita palautuslauseesi 12 sanaa järjestyksessä. Voit myös liittää koko lauseen ensimmäiseen kenttään.",
+  "errorWordUnknown": "Tämä sana ei ole palautuslauseiden sanaluettelossa. Tarkista kirjoitusasu.",
+  "errorPhraseChecksum": "Nämä 12 sanaa eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista paperiisi.",
+  "restoreScanning": "Haetaan tämän lompakon maksuja. Tämä voi kestää minuutin.",
+  "restoreWallet": "Palauta lompakko",
+  "errorRestoreUnreachable": "Lumen ei tavoittanut Liquid-palvelinta hakeakseen tämän lompakon maksuja. Tarkista yhteytesi ja yritä uudelleen.",
+  "errorRestoreDuplicate": "Tämä lompakko on jo Lumenissa.",
+  "wordsPasted": "{count, plural, =1{1 sana täytetty} other{{count} sanaa täytetty}}"
 }

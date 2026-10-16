@@ -1644,6 +1644,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lumen could not save the wallet. Try again.'**
   String get errorSaveWallet;
+
+  /// Button that starts restoring a Liquid wallet from its recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore a wallet'**
+  String get restoreLiquidWallet;
+
+  /// Title of the screen where the 12 words of a recovery phrase are typed.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore a Liquid wallet'**
+  String get restoreLiquidTitle;
+
+  /// Lead text of the restore screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the 12 words of your recovery phrase, in order. You can also paste the whole phrase into the first field.'**
+  String get restoreLead;
+
+  /// Error under a restore field whose word is not a BIP39 word.
+  ///
+  /// In en, this message translates to:
+  /// **'This word is not in the recovery phrase list. Check its spelling.'**
+  String get errorWordUnknown;
+
+  /// Error when every word is valid but the phrase checksum fails.
+  ///
+  /// In en, this message translates to:
+  /// **'These 12 words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.'**
+  String get errorPhraseChecksum;
+
+  /// Shown and announced while Lumen scans the chain for a restored wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking for this wallet\'s payments. This can take a minute.'**
+  String get restoreScanning;
+
+  /// Button that restores the wallet from the typed phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore wallet'**
+  String get restoreWallet;
+
+  /// Error when the chain could not be scanned while restoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not reach the Liquid server to look for this wallet\'s payments. Check your connection and try again.'**
+  String get errorRestoreUnreachable;
+
+  /// Error when the restored phrase is already saved.
+  ///
+  /// In en, this message translates to:
+  /// **'This wallet is already in Lumen.'**
+  String get errorRestoreDuplicate;
+
+  /// Announced to screen readers after pasting several words into the restore fields.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 word filled in} other{{count} words filled in}}'**
+  String wordsPasted(int count);
 }
 
 class _AppLocalizationsDelegate

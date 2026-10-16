@@ -87,6 +87,11 @@ GoRouter createRouter(WalletsController wallets) {
                 _page(context, state, const CreateLiquidScreen()),
           ),
           GoRoute(
+            path: '/add/liquid/restore',
+            pageBuilder: (context, state) =>
+                _page(context, state, const RestoreLiquidScreen()),
+          ),
+          GoRoute(
             path: '/connect',
             pageBuilder: (context, state) => _page(
               context,

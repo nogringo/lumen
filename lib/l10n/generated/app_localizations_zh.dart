@@ -909,4 +909,42 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorSaveWallet => 'Lumen 无法保存钱包。请重试。';
+
+  @override
+  String get restoreLiquidWallet => '恢复钱包';
+
+  @override
+  String get restoreLiquidTitle => '恢复 Liquid 钱包';
+
+  @override
+  String get restoreLead => '请按顺序输入恢复短语的 12 个单词。您也可以将整个短语粘贴到第一个输入框。';
+
+  @override
+  String get errorWordUnknown => '此单词不在恢复短语的词表中。请检查拼写。';
+
+  @override
+  String get errorPhraseChecksum => '这 12 个单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。';
+
+  @override
+  String get restoreScanning => '正在查找此钱包的付款记录。这可能需要一分钟。';
+
+  @override
+  String get restoreWallet => '恢复钱包';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen 无法连接 Liquid 服务器来查找此钱包的付款记录。请检查网络连接后重试。';
+
+  @override
+  String get errorRestoreDuplicate => '此钱包已在 Lumen 中。';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已填入 $count 个单词',
+    );
+    return '$_temp0';
+  }
 }

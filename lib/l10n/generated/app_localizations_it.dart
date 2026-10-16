@@ -961,4 +961,47 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get errorSaveWallet =>
       'Lumen non è riuscito a salvare il portafoglio. Riprova.';
+
+  @override
+  String get restoreLiquidWallet => 'Ripristina un portafoglio';
+
+  @override
+  String get restoreLiquidTitle => 'Ripristina un portafoglio Liquid';
+
+  @override
+  String get restoreLead =>
+      'Digita le 12 parole della tua frase di recupero, in ordine. Puoi anche incollare l\'intera frase nel primo campo.';
+
+  @override
+  String get errorWordUnknown =>
+      'Questa parola non è nell\'elenco delle frasi di recupero. Controlla come è scritta.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Queste 12 parole non formano una frase di recupero. Una potrebbe essere sbagliata o fuori posto: confrontale una per una con il tuo foglio.';
+
+  @override
+  String get restoreScanning =>
+      'Ricerca dei pagamenti di questo portafoglio. Può richiedere un minuto.';
+
+  @override
+  String get restoreWallet => 'Ripristina portafoglio';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen non è riuscito a raggiungere il server Liquid per cercare i pagamenti di questo portafoglio. Controlla la connessione e riprova.';
+
+  @override
+  String get errorRestoreDuplicate => 'Questo portafoglio è già in Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count parole inserite',
+      one: '1 parola inserita',
+    );
+    return '$_temp0';
+  }
 }

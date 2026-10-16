@@ -41,6 +41,12 @@ class LiquidStartScreen extends StatelessWidget {
           onPressed: () => context.push('/add/liquid/new'),
           child: Text(l.createLiquidWallet),
         ),
+        const SizedBox(height: 12),
+        FilledButton(
+          onPressed: () => context.push('/add/liquid/restore'),
+          style: quietButtonStyle(context),
+          child: Text(l.restoreLiquidWallet),
+        ),
       ],
     );
   }
@@ -327,10 +333,6 @@ class _CheckScreenState extends State<_CheckScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final testnetAvailable =
-        kDebugMode &&
-        LumenScope.sourcesOf(context).liquid.networks
-            .contains(ChainNetwork.liquidTestnet);
     return NarrowPage(
       title: l.checkPhraseTitle,
       backButton: true,
@@ -368,7 +370,7 @@ class _CheckScreenState extends State<_CheckScreen> {
             ),
           ),
         ),
-        if (testnetAvailable) ...[
+        if (_testnetAvailable(context)) ...[
           const SizedBox(height: 12),
           SwitchRow(
             title: l.testnet,
@@ -400,6 +402,240 @@ class _CheckScreenState extends State<_CheckScreen> {
   }
 }
 
+/// Restores a wallet from the 12 words of its phrase, typed or pasted, and
+/// scans the chain for its history before saving it.
+class RestoreLiquidScreen extends StatefulWidget {
+  const RestoreLiquidScreen({super.key});
+
+  @override
+  State<RestoreLiquidScreen> createState() => _RestoreLiquidScreenState();
+}
+
+enum _RestoreError { invalid, unreachable, duplicate, failed }
+
+class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
+  static const _count = PhraseWordField.total;
+
+  final _controllers = [
+    for (var i = 0; i < _count; i++) TextEditingController(),
+  ];
+  final _focusNodes = [for (var i = 0; i < _count; i++) FocusNode()];
+  final _errors = List<String?>.filled(_count, null);
+  late final _name = TextEditingController(
+    text: AppLocalizations.of(context).kindLiquid,
+  );
+  final _nameFocus = FocusNode();
+  var _nameMissing = false;
+  var _testnet = false;
+  var _scanning = false;
+  _RestoreError? _error;
+
+  @override
+  void dispose() {
+    for (final controller in _controllers) {
+      controller.dispose();
+    }
+    for (final node in _focusNodes) {
+      node.dispose();
+    }
+    _name.dispose();
+    _nameFocus.dispose();
+    super.dispose();
+  }
+
+  String get _phrase => [
+    for (final controller in _controllers) controller.text.trim().toLowerCase(),
+  ].join(' ');
+
+  void _focusAfter(int field) => field + 1 < _count
+      ? _focusNodes[field + 1].requestFocus()
+      : _nameFocus.requestFocus();
+
+  /// Spreads words typed or pasted together over the fields from [field],
+  /// or from the first one for a whole phrase.
+  void _changed(int field, String text) {
+    setState(() {
+      _errors[field] = null;
+      _error = null;
+    });
+    if (!text.contains(RegExp(r'\s'))) return;
+    final words = text.trim().toLowerCase().split(RegExp(r'\s+'))
+      ..removeWhere((word) => word.isEmpty);
+    if (words.isEmpty) {
+      _controllers[field].clear();
+      return;
+    }
+    final start = words.length == _count ? 0 : field;
+    final filled = min(words.length, _count - start);
+    for (var i = 0; i < filled; i++) {
+      _controllers[start + i].value = TextEditingValue(
+        text: words[i],
+        selection: TextSelection.collapsed(offset: words[i].length),
+      );
+      _errors[start + i] = null;
+    }
+    _focusAfter(start + filled - 1);
+    if (words.length > 1) {
+      _announce(
+        context,
+        AppLocalizations.of(context).wordsPasted(filled),
+        assertiveness: Assertiveness.polite,
+      );
+    }
+  }
+
+  Future<void> _restore() async {
+    if (_scanning) return;
+    final l = AppLocalizations.of(context);
+    final liquid = LumenScope.sourcesOf(context).liquid;
+    setState(() {
+      for (var i = 0; i < _count; i++) {
+        final word = _controllers[i].text.trim();
+        _errors[i] = word.isEmpty
+            ? l.errorWordEmpty(i + 1)
+            : isPhraseWord(word)
+            ? null
+            : l.errorWordUnknown;
+      }
+      _nameMissing = _name.text.trim().isEmpty;
+      _error = null;
+    });
+    final wrong = _errors.indexWhere((error) => error != null);
+    if (wrong >= 0) {
+      _focusNodes[wrong].requestFocus();
+      _announce(context, _errors[wrong]!);
+      return;
+    }
+    if (_nameMissing) {
+      _nameFocus.requestFocus();
+      _announce(context, l.errorNameEmpty);
+      return;
+    }
+
+    final phrase = _phrase;
+    final network = _testnet ? ChainNetwork.liquidTestnet : ChainNetwork.liquid;
+    setState(() => _scanning = true);
+    _announce(context, l.restoreScanning, assertiveness: Assertiveness.polite);
+    _RestoreError? error;
+    Wallet? wallet;
+    try {
+      if (await liquid.checkPhrase(phrase) != null) {
+        error = _RestoreError.invalid;
+      } else {
+        final discovery = await liquid.discover(phrase, network: network);
+        wallet = await liquid.add(
+          phrase: phrase,
+          name: _name.text,
+          network: network,
+          discovery: discovery,
+        );
+      }
+    } on LiquidAddException catch (e) {
+      error = switch (e.error) {
+        LiquidAddError.invalidPhrase => _RestoreError.invalid,
+        LiquidAddError.unreachable => _RestoreError.unreachable,
+        LiquidAddError.duplicate => _RestoreError.duplicate,
+      };
+    } catch (_) {
+      error = _RestoreError.failed;
+    }
+    if (!mounted) return;
+    if (wallet != null) {
+      LumenScope.readWallets(context).added(wallet);
+      context.go('/');
+      return;
+    }
+    setState(() {
+      _scanning = false;
+      _error = error;
+    });
+    _announce(context, _message(l, error!));
+  }
+
+  String _message(AppLocalizations l, _RestoreError error) => switch (error) {
+    _RestoreError.invalid => l.errorPhraseChecksum,
+    _RestoreError.unreachable => l.errorRestoreUnreachable,
+    _RestoreError.duplicate => l.errorRestoreDuplicate,
+    _RestoreError.failed => l.errorSaveWallet,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return NarrowPage(
+      title: l.restoreLiquidTitle,
+      content: [
+        _Lead(l.restoreLead),
+        for (var i = 0; i < _count; i++) ...[
+          const SizedBox(height: 20),
+          PhraseWordField(
+            number: i + 1,
+            controller: _controllers[i],
+            focusNode: _focusNodes[i],
+            errorText: _errors[i],
+            onChanged: (text) => _changed(i, text),
+            onDone: () => _focusAfter(i),
+          ),
+        ],
+        const SizedBox(height: 20),
+        LabeledField(
+          label: l.nameLabel,
+          child: TextField(
+            controller: _name,
+            focusNode: _nameFocus,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _restore(),
+            onChanged: (_) {
+              if (_nameMissing) setState(() => _nameMissing = false);
+            },
+            decoration: InputDecoration(
+              errorText: _nameMissing ? l.errorNameEmpty : null,
+            ),
+          ),
+        ),
+        if (_testnetAvailable(context)) ...[
+          const SizedBox(height: 12),
+          SwitchRow(
+            title: l.testnet,
+            hint: l.testnetHint,
+            value: _testnet,
+            onChanged: () => setState(() => _testnet = !_testnet),
+          ),
+        ],
+        if (_error case final error?) ...[
+          const SizedBox(height: 20),
+          ErrorNote(_message(l, error)),
+        ],
+        if (_scanning) ...[
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              const SizedBox.square(
+                dimension: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: _Lead(l.restoreScanning)),
+            ],
+          ),
+        ],
+      ],
+      bottom: [
+        FilledButton(
+          onPressed: _scanning ? null : _restore,
+          child: Text(l.restoreWallet),
+        ),
+      ],
+    );
+  }
+}
+
+bool _testnetAvailable(BuildContext context) =>
+    kDebugMode &&
+    LumenScope.sourcesOf(context).liquid.networks
+        .contains(ChainNetwork.liquidTestnet);
+
 class _Lead extends StatelessWidget {
   const _Lead(this.text);
 
@@ -413,10 +649,13 @@ class _Lead extends StatelessWidget {
   );
 }
 
-void _announce(BuildContext context, String message) =>
-    SemanticsService.sendAnnouncement(
-      View.of(context),
-      message,
-      Directionality.of(context),
-      assertiveness: Assertiveness.assertive,
-    );
+void _announce(
+  BuildContext context,
+  String message, {
+  Assertiveness assertiveness = Assertiveness.assertive,
+}) => SemanticsService.sendAnnouncement(
+  View.of(context),
+  message,
+  Directionality.of(context),
+  assertiveness: assertiveness,
+);

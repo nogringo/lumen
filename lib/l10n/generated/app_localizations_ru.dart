@@ -981,4 +981,49 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get errorSaveWallet =>
       'Lumen не удалось сохранить кошелёк. Повторите попытку.';
+
+  @override
+  String get restoreLiquidWallet => 'Восстановить кошелёк';
+
+  @override
+  String get restoreLiquidTitle => 'Восстановление кошелька Liquid';
+
+  @override
+  String get restoreLead =>
+      'Введите 12 слов фразы восстановления по порядку. Можно также вставить всю фразу в первое поле.';
+
+  @override
+  String get errorWordUnknown =>
+      'Этого слова нет в списке слов для фраз восстановления. Проверьте написание.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Эти 12 слов не образуют фразу восстановления. Возможно, одно из них неверно или стоит не на своём месте: сверьте каждое с записью.';
+
+  @override
+  String get restoreScanning =>
+      'Поиск платежей этого кошелька. Это может занять минуту.';
+
+  @override
+  String get restoreWallet => 'Восстановить кошелёк';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen не удалось связаться с сервером Liquid, чтобы найти платежи этого кошелька. Проверьте подключение и повторите попытку.';
+
+  @override
+  String get errorRestoreDuplicate => 'Этот кошелёк уже есть в Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Заполнено $count слова',
+      many: 'Заполнено $count слов',
+      few: 'Заполнено $count слова',
+      one: 'Заполнено 1 слово',
+    );
+    return '$_temp0';
+  }
 }

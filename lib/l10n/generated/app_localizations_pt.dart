@@ -964,6 +964,49 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get errorSaveWallet =>
       'O Lumen não conseguiu guardar a carteira. Tente de novo.';
+
+  @override
+  String get restoreLiquidWallet => 'Restaurar uma carteira';
+
+  @override
+  String get restoreLiquidTitle => 'Restaurar uma carteira Liquid';
+
+  @override
+  String get restoreLead =>
+      'Escreva as 12 palavras da sua frase de recuperação, por ordem. Também pode colar a frase inteira no primeiro campo.';
+
+  @override
+  String get errorWordUnknown =>
+      'Esta palavra não faz parte da lista das frases de recuperação. Verifique a ortografia.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: compare cada uma com o seu papel.';
+
+  @override
+  String get restoreScanning =>
+      'A procurar os pagamentos desta carteira. Pode demorar um minuto.';
+
+  @override
+  String get restoreWallet => 'Restaurar carteira';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'O Lumen não conseguiu contactar o servidor Liquid para procurar os pagamentos desta carteira. Verifique a ligação e tente de novo.';
+
+  @override
+  String get errorRestoreDuplicate => 'Esta carteira já está no Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palavras preenchidas',
+      one: '1 palavra preenchida',
+    );
+    return '$_temp0';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1922,4 +1965,47 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get errorSaveWallet =>
       'O Lumen não conseguiu salvar a carteira. Tente de novo.';
+
+  @override
+  String get restoreLiquidWallet => 'Restaurar uma carteira';
+
+  @override
+  String get restoreLiquidTitle => 'Restaurar uma carteira Liquid';
+
+  @override
+  String get restoreLead =>
+      'Digite as 12 palavras da sua frase de recuperação, em ordem. Você também pode colar a frase inteira no primeiro campo.';
+
+  @override
+  String get errorWordUnknown =>
+      'Esta palavra não está na lista das frases de recuperação. Confira a ortografia.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Estas 12 palavras não formam uma frase de recuperação. Uma delas pode estar errada ou fora do lugar: confira cada uma com o seu papel.';
+
+  @override
+  String get restoreScanning =>
+      'Procurando os pagamentos desta carteira. Isso pode levar um minuto.';
+
+  @override
+  String get restoreWallet => 'Restaurar carteira';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'O Lumen não conseguiu acessar o servidor Liquid para procurar os pagamentos desta carteira. Confira sua conexão e tente de novo.';
+
+  @override
+  String get errorRestoreDuplicate => 'Esta carteira já está no Lumen.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count palavras preenchidas',
+      one: '1 palavra preenchida',
+    );
+    return '$_temp0';
+  }
 }

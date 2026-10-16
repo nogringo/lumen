@@ -254,5 +254,15 @@
   "testnet": "Testnet",
   "testnetHint": "Solo per i test. Le monete testnet non hanno valore.",
   "createWallet": "Crea portafoglio",
-  "errorSaveWallet": "Lumen non è riuscito a salvare il portafoglio. Riprova."
+  "errorSaveWallet": "Lumen non è riuscito a salvare il portafoglio. Riprova.",
+  "restoreLiquidWallet": "Ripristina un portafoglio",
+  "restoreLiquidTitle": "Ripristina un portafoglio Liquid",
+  "restoreLead": "Digita le 12 parole della tua frase di recupero, in ordine. Puoi anche incollare l'intera frase nel primo campo.",
+  "errorWordUnknown": "Questa parola non è nell'elenco delle frasi di recupero. Controlla come è scritta.",
+  "errorPhraseChecksum": "Queste 12 parole non formano una frase di recupero. Una potrebbe essere sbagliata o fuori posto: confrontale una per una con il tuo foglio.",
+  "restoreScanning": "Ricerca dei pagamenti di questo portafoglio. Può richiedere un minuto.",
+  "restoreWallet": "Ripristina portafoglio",
+  "errorRestoreUnreachable": "Lumen non è riuscito a raggiungere il server Liquid per cercare i pagamenti di questo portafoglio. Controlla la connessione e riprova.",
+  "errorRestoreDuplicate": "Questo portafoglio è già in Lumen.",
+  "wordsPasted": "{count, plural, =1{1 parola inserita} other{{count} parole inserite}}"
 }

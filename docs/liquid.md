@@ -147,7 +147,7 @@ How it came out:
 
 Done when: widget and accessibility tests cover both flows, and a wallet created on one device restores on another.
 
-Done in three commits: create (done), restore, then the screen privacy.
+Done in three commits: create (done), restore (done), then the screen privacy.
 
 How create came out:
 
@@ -158,6 +158,13 @@ How create came out:
 - Going back to the explanation keeps the same phrase, since it may be written down already.
 - `LiquidWalletSource.newPhrase` and `checkPhrase` are now asynchronous: they wait for `LiquidEngine.ready`, which loads LWK. When it cannot load, the screen says so instead of showing words.
 - Not tried in the running app yet: the widget tests run on a fake engine.
+
+How restore came out:
+
+- The Liquid screen offers "Restore a wallet" next to "Create a new wallet". The restore screen has 12 word fields, the name and, in debug builds, the Testnet switch.
+- Words typed or pasted together are spread over the fields: a whole phrase from the first field, fewer words from the field they were typed in. A word followed by a space moves on to the next field. Pasting several words is announced ("12 words filled in").
+- Checks run in order, each written as a fix: an empty field or a word outside the BIP39 list is flagged under its own field, which takes focus; then the checksum, under the list.
+- Restoring runs `discover` (BIP84 then BIP49) before saving, with a message shown and announced while it scans. A server that does not answer (after the retries) and a phrase already saved each get their own message, and nothing is saved.
 
 ### 5. Receive
 

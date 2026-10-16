@@ -208,9 +208,13 @@ final class FakeLiquidChain implements LiquidChain {
   List<ChainTx> txs = [];
   int syncs = 0;
 
+  /// Thrown by every sync while set.
+  LiquidChainException? syncError;
+
   @override
   Future<bool> sync() async {
     syncs++;
+    if (syncError case final error?) throw error;
     return true;
   }
 
@@ -254,9 +258,12 @@ final class FakeLiquidEngine implements LiquidEngine {
   @override
   String generatePhrase() => liquidPhrase;
 
+  /// What [phraseProblem] says of any 12 words.
+  PhraseProblem? problem;
+
   @override
   PhraseProblem? phraseProblem(String phrase) =>
-      phrase.split(' ').length == 12 ? null : PhraseProblem.wordCount;
+      phrase.split(' ').length == 12 ? problem : PhraseProblem.wordCount;
 
   @override
   Future<LiquidChain> open({

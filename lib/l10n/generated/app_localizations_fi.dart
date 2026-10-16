@@ -960,4 +960,47 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get errorSaveWallet =>
       'Lumen ei voinut tallentaa lompakkoa. Yritä uudelleen.';
+
+  @override
+  String get restoreLiquidWallet => 'Palauta lompakko';
+
+  @override
+  String get restoreLiquidTitle => 'Palauta Liquid-lompakko';
+
+  @override
+  String get restoreLead =>
+      'Kirjoita palautuslauseesi 12 sanaa järjestyksessä. Voit myös liittää koko lauseen ensimmäiseen kenttään.';
+
+  @override
+  String get errorWordUnknown =>
+      'Tämä sana ei ole palautuslauseiden sanaluettelossa. Tarkista kirjoitusasu.';
+
+  @override
+  String get errorPhraseChecksum =>
+      'Nämä 12 sanaa eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista paperiisi.';
+
+  @override
+  String get restoreScanning =>
+      'Haetaan tämän lompakon maksuja. Tämä voi kestää minuutin.';
+
+  @override
+  String get restoreWallet => 'Palauta lompakko';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'Lumen ei tavoittanut Liquid-palvelinta hakeakseen tämän lompakon maksuja. Tarkista yhteytesi ja yritä uudelleen.';
+
+  @override
+  String get errorRestoreDuplicate => 'Tämä lompakko on jo Lumenissa.';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sanaa täytetty',
+      one: '1 sana täytetty',
+    );
+    return '$_temp0';
+  }
 }

@@ -930,4 +930,44 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorSaveWallet => 'ウォレットを保存できませんでした。もう一度お試しください。';
+
+  @override
+  String get restoreLiquidWallet => 'ウォレットを復元';
+
+  @override
+  String get restoreLiquidTitle => 'Liquid ウォレットを復元';
+
+  @override
+  String get restoreLead =>
+      'リカバリーフレーズの 12 個の単語を順番に入力してください。フレーズ全体を最初の欄に貼り付けることもできます。';
+
+  @override
+  String get errorWordUnknown => 'この単語はリカバリーフレーズの単語リストにありません。綴りを確認してください。';
+
+  @override
+  String get errorPhraseChecksum =>
+      'この 12 個の単語はリカバリーフレーズになっていません。どれかが間違っているか、順番が違う可能性があります。紙と 1 つずつ照らし合わせてください。';
+
+  @override
+  String get restoreScanning => 'このウォレットの支払いを探しています。1 分ほどかかることがあります。';
+
+  @override
+  String get restoreWallet => 'ウォレットを復元';
+
+  @override
+  String get errorRestoreUnreachable =>
+      'このウォレットの支払いを探すために Liquid サーバーに接続できませんでした。接続を確認して、もう一度お試しください。';
+
+  @override
+  String get errorRestoreDuplicate => 'このウォレットはすでに Lumen にあります。';
+
+  @override
+  String wordsPasted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 個の単語を入力しました',
+    );
+    return '$_temp0';
+  }
 }
