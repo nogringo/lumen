@@ -4,6 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'layout/app_shell.dart';
 import 'layout/layout.dart';
 import 'screens/activity_screen.dart';
+import 'screens/add_liquid_screen.dart';
+import 'screens/add_wallet_screen.dart';
 import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/payment_screen.dart';
@@ -68,6 +70,21 @@ GoRouter createRouter(WalletsController wallets) {
                 transactionId: state.pathParameters['id']!,
               ),
             ),
+          ),
+          GoRoute(
+            path: '/add',
+            pageBuilder: (context, state) =>
+                _page(context, state, const AddWalletScreen()),
+          ),
+          GoRoute(
+            path: '/add/liquid',
+            pageBuilder: (context, state) =>
+                _page(context, state, const LiquidStartScreen()),
+          ),
+          GoRoute(
+            path: '/add/liquid/new',
+            pageBuilder: (context, state) =>
+                _page(context, state, const CreateLiquidScreen()),
           ),
           GoRoute(
             path: '/connect',

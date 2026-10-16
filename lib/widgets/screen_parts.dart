@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
+import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
 
 class LumenBackButton extends StatelessWidget {
@@ -154,6 +157,103 @@ class LabeledField extends StatelessWidget {
           Text(label, style: Theme.of(context).textTheme.labelMedium),
           const SizedBox(height: 8),
           child,
+        ],
+      ),
+    );
+  }
+}
+
+/// A form-like page: a header, then [content] in one column no wider than
+/// a phone, with [bottom] pushed to the bottom on phones.
+class NarrowPage extends StatelessWidget {
+  const NarrowPage({
+    super.key,
+    required this.title,
+    required this.content,
+    this.bottom = const [],
+    this.backButton = false,
+  });
+
+  final String title;
+  final List<Widget> content;
+  final List<Widget> bottom;
+
+  /// Shows a back button on desktop too, as inside a multi-step flow.
+  final bool backButton;
+
+  static const _maxWidth = 560.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final sidebar = hasSidebar(context);
+    final padding = LayoutSize.of(context).screenPadding;
+    return Scaffold(
+      body: SafeArea(
+        // Spare width goes into the padding rather than a max width, which
+        // FillScroll would not see when it measures the content's height.
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final spare = max(
+              0.0,
+              constraints.maxWidth - padding.horizontal - _maxWidth,
+            );
+            final inset = sidebar
+                ? EdgeInsetsDirectional.only(end: spare)
+                : EdgeInsetsDirectional.symmetric(horizontal: spare / 2);
+            return FillScroll(
+              padding: padding + inset.resolve(Directionality.of(context)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (sidebar && !backButton)
+                    PageTitle(title)
+                  else
+                    TopBar(title: title),
+                  const SizedBox(height: 20),
+                  ...content,
+                  if (bottom.isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    if (LayoutSize.of(context) == LayoutSize.phone)
+                      const Spacer(),
+                    ...bottom,
+                  ],
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// One point of a short list, after a check mark.
+class CheckLine extends StatelessWidget {
+  const CheckLine(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: ExcludeSemantics(
+              child: Icon(Icons.check, size: 18, color: c.positive),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 15, height: 1.4, color: c.text),
+            ),
+          ),
         ],
       ),
     );

@@ -33,6 +33,8 @@ void main() {
     await pumpLumen(tester, sources, wallets: []);
     await tester.tap(find.text('Add a wallet'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Lightning wallet'));
+    await tester.pumpAndSettle();
   }
 
   testWidgets('a saved connection is flagged as soon as it is entered', (

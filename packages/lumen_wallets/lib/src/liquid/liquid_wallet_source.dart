@@ -68,10 +68,25 @@ final class LiquidWalletSource implements WalletSource {
   /// transactions are read one after the other.
   static const _fresh = Duration(seconds: 15);
 
-  String newPhrase() => _engine.generatePhrase();
+  /// Throws a [LiquidChainException] when the engine cannot start, as on a
+  /// web build without its wasm.
+  Future<String> newPhrase() async {
+    await _ready();
+    return _engine.generatePhrase();
+  }
 
-  PhraseProblem? checkPhrase(String phrase) =>
-      _engine.phraseProblem(_normalized(phrase));
+  Future<PhraseProblem?> checkPhrase(String phrase) async {
+    await _ready();
+    return _engine.phraseProblem(_normalized(phrase));
+  }
+
+  Future<void> _ready() async {
+    try {
+      await _engine.ready();
+    } catch (e) {
+      throw LiquidChainException(LiquidChainError.other, '$e');
+    }
+  }
 
   /// Scans the chain for the history of a [phrase] to restore, and finds
   /// the derivation it was used with: nested segwit when only that one has

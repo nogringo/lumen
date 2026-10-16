@@ -12,8 +12,8 @@ final class LwkEngine implements LiquidEngine {
   /// Loads the Rust library, once. In the app it is bundled; elsewhere, as
   /// in a script, pass the path of the one `cargo build` made.
   ///
-  /// [open] calls it itself, so the web app downloads the wasm only once a
-  /// Liquid wallet opens. [generatePhrase] and [phraseProblem] need it done.
+  /// [ready] and [open] call it, so the web app downloads the wasm only when
+  /// a Liquid wallet is opened or created.
   static Future<void> init({String? libraryPath}) => _loading ??=
       core.RustLib.init(
         externalLibrary: libraryPath == null
@@ -23,6 +23,9 @@ final class LwkEngine implements LiquidEngine {
         _loading = null;
         throw e;
       });
+
+  @override
+  Future<void> ready() => init();
 
   @override
   String generatePhrase() => _guard(core.generatePhrase);

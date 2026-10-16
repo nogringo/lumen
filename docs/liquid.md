@@ -147,6 +147,18 @@ How it came out:
 
 Done when: widget and accessibility tests cover both flows, and a wallet created on one device restores on another.
 
+Done in three commits: create (done), restore, then the screen privacy.
+
+How create came out:
+
+- "Add a wallet" opens a choice of wallet types, as in the mockups (frame 02): Lightning goes on to the NWC screen, Liquid to a screen that offers to create (and, next, to restore).
+- The 12 words and the check are pushed outside the router (`pushStep`), so the phrase never reaches a URL, a route's `extra` or the browser history. They are still routes, so a screen reader lands on each new title.
+- The words are shown down one column then the other, each column its own semantics node so screen readers read 1 to 12. At large text sizes they stack in one column.
+- The check asks for 3 words picked at random, typed in the same field restore will use: BIP39 suggestions while it has focus (`phraseWordsStartingWith`, the English list in Dart), announced, reachable with Tab, and a keyboard that neither learns nor suggests words. The name comes prefilled with "Liquid". A Testnet switch shows in debug builds only.
+- Going back to the explanation keeps the same phrase, since it may be written down already.
+- `LiquidWalletSource.newPhrase` and `checkPhrase` are now asynchronous: they wait for `LiquidEngine.ready`, which loads LWK. When it cannot load, the screen says so instead of showing words.
+- Not tried in the running app yet: the widget tests run on a fake engine.
+
 ### 5. Receive
 
 - A fresh address for each request, shown as text and QR. An optional amount turns it into a `liquidnetwork:` URI.

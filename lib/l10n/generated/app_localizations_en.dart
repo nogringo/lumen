@@ -830,4 +830,130 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noCamera =>
       'No camera is available. Close this screen and paste the text instead.';
+
+  @override
+  String get addWalletLead =>
+      'Create a new wallet or restore one you already have.';
+
+  @override
+  String get addLightningTitle => 'Lightning wallet';
+
+  @override
+  String get addLightningBody =>
+      'Connect a node or a wallet service with Nostr Wallet Connect (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Fast, confidential transfers on the Liquid sidechain. Lumen holds its keys.';
+
+  @override
+  String get liquidStartTitle => 'Liquid wallet';
+
+  @override
+  String get liquidStartLead =>
+      'Lumen creates the wallet and keeps its keys on this device. A recovery phrase of 12 words lets you get it back.';
+
+  @override
+  String get liquidPointFast => 'Payments confirm in about a minute';
+
+  @override
+  String get liquidPointConfidential =>
+      'Amounts are hidden from anyone watching the chain';
+
+  @override
+  String get liquidPointKeys => 'Your keys stay on your device';
+
+  @override
+  String get createLiquidWallet => 'Create a new wallet';
+
+  @override
+  String get newLiquidTitle => 'New Liquid wallet';
+
+  @override
+  String get phraseIntroHeading => 'First, your recovery phrase';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen will show 12 words. They are the only way to get this wallet back if you lose or reset this device, and anyone who has them can spend its funds.';
+
+  @override
+  String get phrasePointPaper => 'Write them on paper, in order';
+
+  @override
+  String get phrasePointOffline =>
+      'Keep them offline: no screenshot, photo or cloud note';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'Lumen only asks for them to restore a wallet';
+
+  @override
+  String get showPhrase => 'Show the 12 words';
+
+  @override
+  String get liquidUnavailable =>
+      'Lumen could not start Liquid on this device. Try again later.';
+
+  @override
+  String get phraseTitle => 'Recovery phrase';
+
+  @override
+  String get phraseLead =>
+      'Write these 12 words on paper, in this order. You will type three of them next.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Word $number of $total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'I wrote them down';
+
+  @override
+  String get checkPhraseTitle => 'Check your phrase';
+
+  @override
+  String get checkPhraseLead =>
+      'Type these words from your paper, to make sure they are right.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Word $number of $total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Type word $number from your paper.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'This is not word $number. Check your paper and type it again.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count suggestions',
+      one: '1 suggestion',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Show the words again';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint => 'For testing only. Testnet coins have no value.';
+
+  @override
+  String get createWallet => 'Create wallet';
+
+  @override
+  String get errorSaveWallet => 'Lumen could not save the wallet. Try again.';
 }

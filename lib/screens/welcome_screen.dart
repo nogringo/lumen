@@ -20,7 +20,7 @@ class WelcomeScreen extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final phone = LayoutSize.of(context) == LayoutSize.phone;
     final addButton = FilledButton(
-      onPressed: () => context.push('/connect'),
+      onPressed: () => context.push('/add'),
       child: Text(l.addAWallet),
     );
 

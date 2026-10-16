@@ -832,4 +832,132 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get noCamera =>
       'Kameraa ei ole käytettävissä. Sulje tämä näkymä ja liitä teksti.';
+
+  @override
+  String get addWalletLead =>
+      'Luo uusi lompakko tai palauta jo olemassa oleva.';
+
+  @override
+  String get addLightningTitle => 'Lightning-lompakko';
+
+  @override
+  String get addLightningBody =>
+      'Yhdistä solmu tai lompakkopalvelu Nostr Wallet Connectilla (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Nopeita, luottamuksellisia siirtoja Liquid-sivuketjussa. Lumen säilyttää avaimet.';
+
+  @override
+  String get liquidStartTitle => 'Liquid-lompakko';
+
+  @override
+  String get liquidStartLead =>
+      'Lumen luo lompakon ja säilyttää sen avaimet tällä laitteella. 12 sanan palautuslauseella saat sen takaisin.';
+
+  @override
+  String get liquidPointFast => 'Maksut vahvistuvat noin minuutissa';
+
+  @override
+  String get liquidPointConfidential =>
+      'Summat pysyvät piilossa ketjua seuraavilta';
+
+  @override
+  String get liquidPointKeys => 'Avaimesi pysyvät laitteellasi';
+
+  @override
+  String get createLiquidWallet => 'Luo uusi lompakko';
+
+  @override
+  String get newLiquidTitle => 'Uusi Liquid-lompakko';
+
+  @override
+  String get phraseIntroHeading => 'Ensin palautuslauseesi';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen näyttää 12 sanaa. Ne ovat ainoa tapa saada tämä lompakko takaisin, jos kadotat tai nollaat tämän laitteen, ja kuka tahansa, jolla ne ovat, voi käyttää sen varat.';
+
+  @override
+  String get phrasePointPaper => 'Kirjoita ne paperille järjestyksessä';
+
+  @override
+  String get phrasePointOffline =>
+      'Pidä ne poissa verkosta: ei kuvakaappausta, valokuvaa eikä pilvimuistiinpanoa';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'Lumen kysyy niitä vain lompakon palauttamiseen';
+
+  @override
+  String get showPhrase => 'Näytä 12 sanaa';
+
+  @override
+  String get liquidUnavailable =>
+      'Lumen ei voinut käynnistää Liquidia tällä laitteella. Yritä myöhemmin uudelleen.';
+
+  @override
+  String get phraseTitle => 'Palautuslause';
+
+  @override
+  String get phraseLead =>
+      'Kirjoita nämä 12 sanaa paperille tässä järjestyksessä. Seuraavaksi kirjoitat niistä kolme.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Sana $number/$total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'Kirjoitin ne muistiin';
+
+  @override
+  String get checkPhraseTitle => 'Tarkista lauseesi';
+
+  @override
+  String get checkPhraseLead =>
+      'Kirjoita nämä sanat paperiltasi varmistaaksesi, että ne ovat oikein.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Sana $number/$total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Kirjoita sana $number paperiltasi.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'Tämä ei ole sana $number. Tarkista paperisi ja kirjoita se uudelleen.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ehdotusta',
+      one: '1 ehdotus',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Näytä sanat uudelleen';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint =>
+      'Vain testaukseen. Testnet-kolikoilla ei ole arvoa.';
+
+  @override
+  String get createWallet => 'Luo lompakko';
+
+  @override
+  String get errorSaveWallet =>
+      'Lumen ei voinut tallentaa lompakkoa. Yritä uudelleen.';
 }

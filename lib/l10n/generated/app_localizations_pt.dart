@@ -836,6 +836,134 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get noCamera =>
       'Nenhuma câmara disponível. Feche este ecrã e cole o texto.';
+
+  @override
+  String get addWalletLead =>
+      'Crie uma carteira nova ou restaure uma que já tenha.';
+
+  @override
+  String get addLightningTitle => 'Carteira Lightning';
+
+  @override
+  String get addLightningBody =>
+      'Ligue um nó ou um serviço de carteira com Nostr Wallet Connect (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Transferências rápidas e confidenciais na sidechain Liquid. O Lumen guarda as chaves.';
+
+  @override
+  String get liquidStartTitle => 'Carteira Liquid';
+
+  @override
+  String get liquidStartLead =>
+      'O Lumen cria a carteira e guarda as chaves neste dispositivo. Uma frase de recuperação de 12 palavras permite recuperá-la.';
+
+  @override
+  String get liquidPointFast => 'Os pagamentos confirmam em cerca de um minuto';
+
+  @override
+  String get liquidPointConfidential =>
+      'Os montantes ficam ocultos para quem observa a cadeia';
+
+  @override
+  String get liquidPointKeys => 'As suas chaves ficam no seu dispositivo';
+
+  @override
+  String get createLiquidWallet => 'Criar uma carteira nova';
+
+  @override
+  String get newLiquidTitle => 'Nova carteira Liquid';
+
+  @override
+  String get phraseIntroHeading => 'Primeiro, a sua frase de recuperação';
+
+  @override
+  String get phraseIntroBody =>
+      'O Lumen vai mostrar 12 palavras. São a única forma de recuperar esta carteira se perder ou repuser este dispositivo, e quem as tiver pode gastar os fundos.';
+
+  @override
+  String get phrasePointPaper => 'Escreva-as em papel, por ordem';
+
+  @override
+  String get phrasePointOffline =>
+      'Guarde-as offline: sem capturas de ecrã, fotos ou notas na nuvem';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'O Lumen só as pede para restaurar uma carteira';
+
+  @override
+  String get showPhrase => 'Mostrar as 12 palavras';
+
+  @override
+  String get liquidUnavailable =>
+      'O Lumen não conseguiu iniciar o Liquid neste dispositivo. Tente mais tarde.';
+
+  @override
+  String get phraseTitle => 'Frase de recuperação';
+
+  @override
+  String get phraseLead =>
+      'Escreva estas 12 palavras em papel, por esta ordem. A seguir vai escrever três delas.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Palavra $number de $total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'Já as escrevi';
+
+  @override
+  String get checkPhraseTitle => 'Confirme a frase';
+
+  @override
+  String get checkPhraseLead =>
+      'Escreva estas palavras a partir do seu papel, para confirmar que estão certas.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Palavra $number de $total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Escreva a palavra $number do seu papel.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'Esta não é a palavra $number. Verifique o papel e escreva-a de novo.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sugestões',
+      one: '1 sugestão',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Ver as palavras outra vez';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint =>
+      'Apenas para testes. As moedas da testnet não têm valor.';
+
+  @override
+  String get createWallet => 'Criar carteira';
+
+  @override
+  String get errorSaveWallet =>
+      'O Lumen não conseguiu guardar a carteira. Tente de novo.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -1666,4 +1794,132 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get noCamera =>
       'Nenhuma câmera disponível. Feche esta tela e cole o texto.';
+
+  @override
+  String get addWalletLead =>
+      'Crie uma carteira nova ou restaure uma que você já tem.';
+
+  @override
+  String get addLightningTitle => 'Carteira Lightning';
+
+  @override
+  String get addLightningBody =>
+      'Conecte um nó ou um serviço de carteira com Nostr Wallet Connect (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Transferências rápidas e confidenciais na sidechain Liquid. O Lumen guarda as chaves.';
+
+  @override
+  String get liquidStartTitle => 'Carteira Liquid';
+
+  @override
+  String get liquidStartLead =>
+      'O Lumen cria a carteira e guarda as chaves neste dispositivo. Uma frase de recuperação de 12 palavras permite recuperá-la.';
+
+  @override
+  String get liquidPointFast => 'Os pagamentos confirmam em cerca de um minuto';
+
+  @override
+  String get liquidPointConfidential =>
+      'Os valores ficam ocultos para quem observa a rede';
+
+  @override
+  String get liquidPointKeys => 'Suas chaves ficam no seu dispositivo';
+
+  @override
+  String get createLiquidWallet => 'Criar uma carteira nova';
+
+  @override
+  String get newLiquidTitle => 'Nova carteira Liquid';
+
+  @override
+  String get phraseIntroHeading => 'Primeiro, sua frase de recuperação';
+
+  @override
+  String get phraseIntroBody =>
+      'O Lumen vai mostrar 12 palavras. Elas são o único jeito de recuperar esta carteira se você perder ou redefinir este dispositivo, e quem tiver as palavras pode gastar os fundos.';
+
+  @override
+  String get phrasePointPaper => 'Anote-as no papel, em ordem';
+
+  @override
+  String get phrasePointOffline =>
+      'Guarde-as offline: sem captura de tela, foto ou nota na nuvem';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'O Lumen só pede as palavras para restaurar uma carteira';
+
+  @override
+  String get showPhrase => 'Mostrar as 12 palavras';
+
+  @override
+  String get liquidUnavailable =>
+      'O Lumen não conseguiu iniciar o Liquid neste dispositivo. Tente mais tarde.';
+
+  @override
+  String get phraseTitle => 'Frase de recuperação';
+
+  @override
+  String get phraseLead =>
+      'Anote estas 12 palavras no papel, nesta ordem. Em seguida, você vai digitar três delas.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Palavra $number de $total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'Já anotei';
+
+  @override
+  String get checkPhraseTitle => 'Confira sua frase';
+
+  @override
+  String get checkPhraseLead =>
+      'Digite estas palavras a partir do seu papel, para conferir se estão certas.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Palavra $number de $total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Digite a palavra $number do seu papel.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'Esta não é a palavra $number. Confira o papel e digite de novo.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sugestões',
+      one: '1 sugestão',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Ver as palavras de novo';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint =>
+      'Apenas para testes. As moedas da testnet não têm valor.';
+
+  @override
+  String get createWallet => 'Criar carteira';
+
+  @override
+  String get errorSaveWallet =>
+      'O Lumen não conseguiu salvar a carteira. Tente de novo.';
 }

@@ -1446,6 +1446,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No camera is available. Close this screen and paste the text instead.'**
   String get noCamera;
+
+  /// Lead text of the Add a wallet screen, above the wallet types.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new wallet or restore one you already have.'**
+  String get addWalletLead;
+
+  /// Add a wallet option: a Lightning wallet connected with NWC.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning wallet'**
+  String get addLightningTitle;
+
+  /// Description of the Lightning option on the Add a wallet screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect a node or a wallet service with Nostr Wallet Connect (NIP-47).'**
+  String get addLightningBody;
+
+  /// Description of the Liquid option on the Add a wallet screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast, confidential transfers on the Liquid sidechain. Lumen holds its keys.'**
+  String get addLiquidBody;
+
+  /// Title of the screen that offers to create or restore a Liquid wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid wallet'**
+  String get liquidStartTitle;
+
+  /// Lead text of the Liquid wallet screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen creates the wallet and keeps its keys on this device. A recovery phrase of 12 words lets you get it back.'**
+  String get liquidStartLead;
+
+  /// Point about Liquid, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments confirm in about a minute'**
+  String get liquidPointFast;
+
+  /// Point about Liquid confidential transactions, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Amounts are hidden from anyone watching the chain'**
+  String get liquidPointConfidential;
+
+  /// Point about Liquid in Lumen, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Your keys stay on your device'**
+  String get liquidPointKeys;
+
+  /// Button that starts creating a Liquid wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new wallet'**
+  String get createLiquidWallet;
+
+  /// Title of the screen that explains the recovery phrase before showing it.
+  ///
+  /// In en, this message translates to:
+  /// **'New Liquid wallet'**
+  String get newLiquidTitle;
+
+  /// Heading above the explanation of the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'First, your recovery phrase'**
+  String get phraseIntroHeading;
+
+  /// Explains what the recovery phrase is, before it is shown.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen will show 12 words. They are the only way to get this wallet back if you lose or reset this device, and anyone who has them can spend its funds.'**
+  String get phraseIntroBody;
+
+  /// Advice about the recovery phrase, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Write them on paper, in order'**
+  String get phrasePointPaper;
+
+  /// Advice about the recovery phrase, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep them offline: no screenshot, photo or cloud note'**
+  String get phrasePointOffline;
+
+  /// Advice about the recovery phrase, after a check mark.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen only asks for them to restore a wallet'**
+  String get phrasePointNeverAsked;
+
+  /// Button that shows the new recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the 12 words'**
+  String get showPhrase;
+
+  /// Error when the Liquid library could not be loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not start Liquid on this device. Try again later.'**
+  String get liquidUnavailable;
+
+  /// Title of the screen that shows the 12 words.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery phrase'**
+  String get phraseTitle;
+
+  /// Lead text above the 12 words of the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Write these 12 words on paper, in this order. You will type three of them next.'**
+  String get phraseLead;
+
+  /// Read by screen readers for one word of the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Word {number} of {total}, {word}'**
+  String phraseWord(int number, int total, String word);
+
+  /// Button under the recovery phrase, to go on to the check.
+  ///
+  /// In en, this message translates to:
+  /// **'I wrote them down'**
+  String get phraseWrittenDown;
+
+  /// Title of the screen that asks for some words of the recovery phrase back.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your phrase'**
+  String get checkPhraseTitle;
+
+  /// Lead text of the recovery phrase check.
+  ///
+  /// In en, this message translates to:
+  /// **'Type these words from your paper, to make sure they are right.'**
+  String get checkPhraseLead;
+
+  /// Label of the field for one word of a recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Word {number} of {total}'**
+  String wordLabel(int number, int total);
+
+  /// Error when a word of the recovery phrase check is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Type word {number} from your paper.'**
+  String errorWordEmpty(int number);
+
+  /// Error when a word typed in the recovery phrase check is wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not word {number}. Check your paper and type it again.'**
+  String errorWordMismatch(int number);
+
+  /// Announced to screen readers when word suggestions appear under a recovery phrase field.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 suggestion} other{{count} suggestions}}'**
+  String wordSuggestions(int count);
+
+  /// Button that goes back to the recovery phrase from its check.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the words again'**
+  String get showWordsAgain;
+
+  /// Switch to create the wallet on Liquid testnet. Only in development builds.
+  ///
+  /// In en, this message translates to:
+  /// **'Testnet'**
+  String get testnet;
+
+  /// Hint under the Testnet switch.
+  ///
+  /// In en, this message translates to:
+  /// **'For testing only. Testnet coins have no value.'**
+  String get testnetHint;
+
+  /// Button that creates the wallet once the recovery phrase is checked.
+  ///
+  /// In en, this message translates to:
+  /// **'Create wallet'**
+  String get createWallet;
+
+  /// Error when the new wallet could not be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not save the wallet. Try again.'**
+  String get errorSaveWallet;
 }
 
 class _AppLocalizationsDelegate

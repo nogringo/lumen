@@ -794,4 +794,119 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noCamera => '没有可用的相机。请关闭此页面并粘贴文本。';
+
+  @override
+  String get addWalletLead => '创建新钱包，或恢复已有的钱包。';
+
+  @override
+  String get addLightningTitle => 'Lightning 钱包';
+
+  @override
+  String get addLightningBody => '通过 Nostr Wallet Connect (NIP-47) 连接节点或钱包服务。';
+
+  @override
+  String get addLiquidBody => '在 Liquid 侧链上快速、保密地转账。密钥由 Lumen 保管。';
+
+  @override
+  String get liquidStartTitle => 'Liquid 钱包';
+
+  @override
+  String get liquidStartLead => 'Lumen 会创建钱包，并将密钥保存在此设备上。凭 12 个单词的恢复短语即可找回钱包。';
+
+  @override
+  String get liquidPointFast => '付款约一分钟即可确认';
+
+  @override
+  String get liquidPointConfidential => '金额对观察链的人保密';
+
+  @override
+  String get liquidPointKeys => '您的密钥留在您的设备上';
+
+  @override
+  String get createLiquidWallet => '创建新钱包';
+
+  @override
+  String get newLiquidTitle => '新的 Liquid 钱包';
+
+  @override
+  String get phraseIntroHeading => '首先，您的恢复短语';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen 将显示 12 个单词。如果您丢失或重置此设备，它们是找回此钱包的唯一方式，任何拥有它们的人都可以花费其中的资金。';
+
+  @override
+  String get phrasePointPaper => '按顺序写在纸上';
+
+  @override
+  String get phrasePointOffline => '离线保存：不要截图、拍照或存在云笔记中';
+
+  @override
+  String get phrasePointNeverAsked => 'Lumen 只在恢复钱包时才会要求输入';
+
+  @override
+  String get showPhrase => '显示 12 个单词';
+
+  @override
+  String get liquidUnavailable => 'Lumen 无法在此设备上启动 Liquid。请稍后再试。';
+
+  @override
+  String get phraseTitle => '恢复短语';
+
+  @override
+  String get phraseLead => '请按此顺序将这 12 个单词写在纸上。接下来您需要输入其中三个。';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return '第 $number 个单词，共 $total 个，$word';
+  }
+
+  @override
+  String get phraseWrittenDown => '我已写下';
+
+  @override
+  String get checkPhraseTitle => '核对短语';
+
+  @override
+  String get checkPhraseLead => '根据您的纸张输入这些单词，确认它们无误。';
+
+  @override
+  String wordLabel(int number, int total) {
+    return '第 $number 个单词，共 $total 个';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return '请输入纸上的第 $number 个单词。';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return '这不是第 $number 个单词。请核对纸张后重新输入。';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 条建议',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => '再次显示单词';
+
+  @override
+  String get testnet => '测试网';
+
+  @override
+  String get testnetHint => '仅用于测试。测试网币没有价值。';
+
+  @override
+  String get createWallet => '创建钱包';
+
+  @override
+  String get errorSaveWallet => 'Lumen 无法保存钱包。请重试。';
 }

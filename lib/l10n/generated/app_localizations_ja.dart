@@ -813,4 +813,121 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noCamera => '使用できるカメラがありません。この画面を閉じてテキストを貼り付けてください。';
+
+  @override
+  String get addWalletLead => '新しいウォレットを作成するか、お持ちのウォレットを復元します。';
+
+  @override
+  String get addLightningTitle => 'Lightning ウォレット';
+
+  @override
+  String get addLightningBody =>
+      'Nostr Wallet Connect (NIP-47) でノードやウォレットサービスに接続します。';
+
+  @override
+  String get addLiquidBody => 'Liquid サイドチェーンで高速かつ秘匿性の高い送金。鍵は Lumen が保管します。';
+
+  @override
+  String get liquidStartTitle => 'Liquid ウォレット';
+
+  @override
+  String get liquidStartLead =>
+      'Lumen がウォレットを作成し、鍵をこのデバイスに保管します。12 語のリカバリーフレーズで復元できます。';
+
+  @override
+  String get liquidPointFast => '支払いは約 1 分で承認されます';
+
+  @override
+  String get liquidPointConfidential => '金額はチェーンを見ている人から隠されます';
+
+  @override
+  String get liquidPointKeys => '鍵はあなたのデバイスに保管されます';
+
+  @override
+  String get createLiquidWallet => '新しいウォレットを作成';
+
+  @override
+  String get newLiquidTitle => '新しい Liquid ウォレット';
+
+  @override
+  String get phraseIntroHeading => 'まず、リカバリーフレーズ';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen が 12 個の単語を表示します。このデバイスを紛失したりリセットしたりしたとき、ウォレットを取り戻す唯一の方法です。単語を知っている人は誰でも資金を使えます。';
+
+  @override
+  String get phrasePointPaper => '順番どおりに紙に書き留める';
+
+  @override
+  String get phrasePointOffline => 'オフラインで保管する。スクリーンショット、写真、クラウドのメモは使わない';
+
+  @override
+  String get phrasePointNeverAsked => 'Lumen が単語を求めるのはウォレットの復元時だけです';
+
+  @override
+  String get showPhrase => '12 個の単語を表示';
+
+  @override
+  String get liquidUnavailable => 'このデバイスで Liquid を起動できませんでした。あとでもう一度お試しください。';
+
+  @override
+  String get phraseTitle => 'リカバリーフレーズ';
+
+  @override
+  String get phraseLead => 'この 12 個の単語を、この順番で紙に書き留めてください。次にそのうち 3 つを入力します。';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return '$total 語中 $number 番目、$word';
+  }
+
+  @override
+  String get phraseWrittenDown => '書き留めました';
+
+  @override
+  String get checkPhraseTitle => 'フレーズの確認';
+
+  @override
+  String get checkPhraseLead => '紙に書いた単語を入力して、正しいか確認してください。';
+
+  @override
+  String wordLabel(int number, int total) {
+    return '$total 語中 $number 番目';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return '紙に書いた $number 番目の単語を入力してください。';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return '$number 番目の単語ではありません。紙を確認して、もう一度入力してください。';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '候補 $count 件',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => '単語をもう一度表示';
+
+  @override
+  String get testnet => 'テストネット';
+
+  @override
+  String get testnetHint => 'テスト専用です。テストネットのコインには価値がありません。';
+
+  @override
+  String get createWallet => 'ウォレットを作成';
+
+  @override
+  String get errorSaveWallet => 'ウォレットを保存できませんでした。もう一度お試しください。';
 }

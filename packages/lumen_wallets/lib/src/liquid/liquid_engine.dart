@@ -46,6 +46,9 @@ class LiquidChainException implements Exception {
 
 /// Creates and opens Liquid wallets: LWK in Lumen, a fake in tests.
 abstract interface class LiquidEngine {
+  /// Completes once the engine can be used, which may mean loading a library.
+  Future<void> ready();
+
   /// A new 12-word recovery phrase.
   String generatePhrase();
 

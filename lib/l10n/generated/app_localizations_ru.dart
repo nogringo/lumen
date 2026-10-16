@@ -851,4 +851,134 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get noCamera =>
       'Камера недоступна. Закройте этот экран и вставьте текст.';
+
+  @override
+  String get addWalletLead =>
+      'Создайте новый кошелёк или восстановите существующий.';
+
+  @override
+  String get addLightningTitle => 'Кошелёк Lightning';
+
+  @override
+  String get addLightningBody =>
+      'Подключите узел или сервис кошелька через Nostr Wallet Connect (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Быстрые конфиденциальные переводы в сайдчейне Liquid. Ключи хранит Lumen.';
+
+  @override
+  String get liquidStartTitle => 'Кошелёк Liquid';
+
+  @override
+  String get liquidStartLead =>
+      'Lumen создаёт кошелёк и хранит его ключи на этом устройстве. Фраза восстановления из 12 слов позволит вернуть его.';
+
+  @override
+  String get liquidPointFast => 'Платежи подтверждаются примерно за минуту';
+
+  @override
+  String get liquidPointConfidential =>
+      'Суммы скрыты от всех, кто наблюдает за блокчейном';
+
+  @override
+  String get liquidPointKeys => 'Ваши ключи остаются на вашем устройстве';
+
+  @override
+  String get createLiquidWallet => 'Создать новый кошелёк';
+
+  @override
+  String get newLiquidTitle => 'Новый кошелёк Liquid';
+
+  @override
+  String get phraseIntroHeading => 'Сначала фраза восстановления';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen покажет 12 слов. Только с ними можно вернуть этот кошелёк, если вы потеряете или сбросите это устройство, и любой, у кого они есть, может потратить его средства.';
+
+  @override
+  String get phrasePointPaper => 'Запишите их на бумаге по порядку';
+
+  @override
+  String get phrasePointOffline =>
+      'Храните их офлайн: без снимков экрана, фото и заметок в облаке';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'Lumen просит их только для восстановления кошелька';
+
+  @override
+  String get showPhrase => 'Показать 12 слов';
+
+  @override
+  String get liquidUnavailable =>
+      'Lumen не удалось запустить Liquid на этом устройстве. Повторите попытку позже.';
+
+  @override
+  String get phraseTitle => 'Фраза восстановления';
+
+  @override
+  String get phraseLead =>
+      'Запишите эти 12 слов на бумаге в этом порядке. Затем вы введёте три из них.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Слово $number из $total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'Я записал слова';
+
+  @override
+  String get checkPhraseTitle => 'Проверка фразы';
+
+  @override
+  String get checkPhraseLead =>
+      'Введите эти слова со своей бумаги, чтобы убедиться, что они записаны верно.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Слово $number из $total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Введите слово $number со своей бумаги.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'Это не слово $number. Проверьте запись и введите его снова.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count подсказки',
+      many: '$count подсказок',
+      few: '$count подсказки',
+      one: '1 подсказка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Показать слова снова';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint =>
+      'Только для тестирования. Монеты testnet ничего не стоят.';
+
+  @override
+  String get createWallet => 'Создать кошелёк';
+
+  @override
+  String get errorSaveWallet =>
+      'Lumen не удалось сохранить кошелёк. Повторите попытку.';
 }

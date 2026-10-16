@@ -27,7 +27,7 @@ Future<void> main(List<String> args) async {
   );
   var phrase = Platform.environment['LUMEN_TESTNET_PHRASE'] ?? '';
   if (phrase.isEmpty) {
-    phrase = source.newPhrase();
+    phrase = await source.newPhrase();
     print('New phrase: $phrase');
   }
 

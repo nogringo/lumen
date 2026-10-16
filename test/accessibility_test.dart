@@ -43,13 +43,6 @@ void main() {
       ..activityError = ActivityError.unreachable,
   ];
 
-  Future<void> expectGuidelines(WidgetTester tester) async {
-    await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
-    await expectLater(tester, meetsGuideline(textContrastGuideline));
-  }
-
   Future<void> openPayment(WidgetTester tester, String title) async {
     await tester.scrollUntilVisible(
       find.text(title),
@@ -618,33 +611,45 @@ void main() {
       expect(find.text('Zap from bob'), findsOneWidget);
     }, variant: _platformFor(size));
 
-    testWidgets('welcome and connect lay out at 200% text, $name', (
-      tester,
-    ) async {
-      await pumpLumen(tester, sources, wallets: [], size: size, textScale: 2);
-      expect(tester.takeException(), isNull, reason: 'welcome');
+    testWidgets(
+      'welcome, add a wallet and connect lay out at 200% text, $name',
+      (tester) async {
+        await pumpLumen(tester, sources, wallets: [], size: size, textScale: 2);
+        expect(tester.takeException(), isNull, reason: 'welcome');
 
-      await tester.tap(find.text('Add a wallet'));
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull, reason: 'connect');
-    }, variant: _platformFor(size));
+        await tester.tap(find.text('Add a wallet'));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'add a wallet');
+
+        await tester.tap(find.text('Lightning wallet'));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull, reason: 'connect');
+      },
+      variant: _platformFor(size),
+    );
   }
 
   for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
-    testWidgets('welcome and connect fit without scrolling, $name', (
-      tester,
-    ) async {
-      await pumpLumen(tester, sources, wallets: [], size: size);
-      expect(_maxScroll(tester), 0, reason: 'welcome');
+    testWidgets(
+      'welcome, add a wallet and connect fit without scrolling, $name',
+      (tester) async {
+        await pumpLumen(tester, sources, wallets: [], size: size);
+        expect(_maxScroll(tester), 0, reason: 'welcome');
 
-      await tester.tap(find.text('Add a wallet'));
-      await tester.pumpAndSettle();
-      expect(_maxScroll(tester), 0, reason: 'connect');
-      final button = tester.getRect(
-        find.widgetWithText(FilledButton, 'Connect'),
-      );
-      expect(button.bottom, lessThanOrEqualTo(size.height - 32));
-    }, variant: _platformFor(size));
+        await tester.tap(find.text('Add a wallet'));
+        await tester.pumpAndSettle();
+        expect(_maxScroll(tester), 0, reason: 'add a wallet');
+
+        await tester.tap(find.text('Lightning wallet'));
+        await tester.pumpAndSettle();
+        expect(_maxScroll(tester), 0, reason: 'connect');
+        final button = tester.getRect(
+          find.widgetWithText(FilledButton, 'Connect'),
+        );
+        expect(button.bottom, lessThanOrEqualTo(size.height - 32));
+      },
+      variant: _platformFor(size),
+    );
   }
 
   testWidgets('a connection without balance permission says how to fix it', (
@@ -676,6 +681,8 @@ void main() {
     await pumpLumen(tester, sources, wallets: []);
 
     await tester.tap(find.text('Add a wallet'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lightning wallet'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'lnbc1...');
     await tester.enterText(find.byType(TextField).last, 'Home node');

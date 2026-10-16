@@ -243,6 +243,14 @@ final class FakeLiquidChain implements LiquidChain {
 final class FakeLiquidEngine implements LiquidEngine {
   final chain = FakeLiquidChain();
 
+  /// Set to make the engine fail to start.
+  bool unavailable = false;
+
+  @override
+  Future<void> ready() async {
+    if (unavailable) throw StateError('No engine');
+  }
+
   @override
   String generatePhrase() => liquidPhrase;
 
@@ -412,4 +420,11 @@ List<String> watchHaptics(WidgetTester tester) {
     ),
   );
   return played;
+}
+
+Future<void> expectGuidelines(WidgetTester tester) async {
+  await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+  await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+  await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+  await expectLater(tester, meetsGuideline(textContrastGuideline));
 }

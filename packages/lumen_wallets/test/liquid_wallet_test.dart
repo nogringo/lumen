@@ -91,6 +91,11 @@ final class _FakeEngine implements LiquidEngine {
   };
   final List<List<String>> openedWith = [];
 
+  var started = false;
+
+  @override
+  Future<void> ready() async => started = true;
+
   @override
   String generatePhrase() => _phrase;
 
@@ -139,6 +144,12 @@ void main() {
     secrets = MemoryKeyValueStore();
     chainState = MemoryKeyValueStore();
     now = DateTime(2026, 10, 16, 12);
+  });
+
+  test('a new phrase waits for the engine to start', () async {
+    expect(await source().newPhrase(), _phrase);
+    expect(engine.started, isTrue);
+    expect(await source().checkPhrase('abandon zzz'), PhraseProblem.wordCount);
   });
 
   group('saving', () {

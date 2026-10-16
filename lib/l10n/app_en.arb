@@ -1103,5 +1103,171 @@
   "noCamera": "No camera is available. Close this screen and paste the text instead.",
   "@noCamera": {
     "description": "Shown on the camera screen when the device has no usable camera."
+  },
+  "addWalletLead": "Create a new wallet or restore one you already have.",
+  "@addWalletLead": {
+    "description": "Lead text of the Add a wallet screen, above the wallet types."
+  },
+  "addLightningTitle": "Lightning wallet",
+  "@addLightningTitle": {
+    "description": "Add a wallet option: a Lightning wallet connected with NWC."
+  },
+  "addLightningBody": "Connect a node or a wallet service with Nostr Wallet Connect (NIP-47).",
+  "@addLightningBody": {
+    "description": "Description of the Lightning option on the Add a wallet screen."
+  },
+  "addLiquidBody": "Fast, confidential transfers on the Liquid sidechain. Lumen holds its keys.",
+  "@addLiquidBody": {
+    "description": "Description of the Liquid option on the Add a wallet screen."
+  },
+  "liquidStartTitle": "Liquid wallet",
+  "@liquidStartTitle": {
+    "description": "Title of the screen that offers to create or restore a Liquid wallet."
+  },
+  "liquidStartLead": "Lumen creates the wallet and keeps its keys on this device. A recovery phrase of 12 words lets you get it back.",
+  "@liquidStartLead": {
+    "description": "Lead text of the Liquid wallet screen."
+  },
+  "liquidPointFast": "Payments confirm in about a minute",
+  "@liquidPointFast": {
+    "description": "Point about Liquid, after a check mark."
+  },
+  "liquidPointConfidential": "Amounts are hidden from anyone watching the chain",
+  "@liquidPointConfidential": {
+    "description": "Point about Liquid confidential transactions, after a check mark."
+  },
+  "liquidPointKeys": "Your keys stay on your device",
+  "@liquidPointKeys": {
+    "description": "Point about Liquid in Lumen, after a check mark."
+  },
+  "createLiquidWallet": "Create a new wallet",
+  "@createLiquidWallet": {
+    "description": "Button that starts creating a Liquid wallet."
+  },
+  "newLiquidTitle": "New Liquid wallet",
+  "@newLiquidTitle": {
+    "description": "Title of the screen that explains the recovery phrase before showing it."
+  },
+  "phraseIntroHeading": "First, your recovery phrase",
+  "@phraseIntroHeading": {
+    "description": "Heading above the explanation of the recovery phrase."
+  },
+  "phraseIntroBody": "Lumen will show 12 words. They are the only way to get this wallet back if you lose or reset this device, and anyone who has them can spend its funds.",
+  "@phraseIntroBody": {
+    "description": "Explains what the recovery phrase is, before it is shown."
+  },
+  "phrasePointPaper": "Write them on paper, in order",
+  "@phrasePointPaper": {
+    "description": "Advice about the recovery phrase, after a check mark."
+  },
+  "phrasePointOffline": "Keep them offline: no screenshot, photo or cloud note",
+  "@phrasePointOffline": {
+    "description": "Advice about the recovery phrase, after a check mark."
+  },
+  "phrasePointNeverAsked": "Lumen only asks for them to restore a wallet",
+  "@phrasePointNeverAsked": {
+    "description": "Advice about the recovery phrase, after a check mark."
+  },
+  "showPhrase": "Show the 12 words",
+  "@showPhrase": {
+    "description": "Button that shows the new recovery phrase."
+  },
+  "liquidUnavailable": "Lumen could not start Liquid on this device. Try again later.",
+  "@liquidUnavailable": {
+    "description": "Error when the Liquid library could not be loaded."
+  },
+  "phraseTitle": "Recovery phrase",
+  "@phraseTitle": {
+    "description": "Title of the screen that shows the 12 words."
+  },
+  "phraseLead": "Write these 12 words on paper, in this order. You will type three of them next.",
+  "@phraseLead": {
+    "description": "Lead text above the 12 words of the recovery phrase."
+  },
+  "phraseWord": "Word {number} of {total}, {word}",
+  "@phraseWord": {
+    "description": "Read by screen readers for one word of the recovery phrase.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "word": {
+        "type": "String"
+      }
+    }
+  },
+  "phraseWrittenDown": "I wrote them down",
+  "@phraseWrittenDown": {
+    "description": "Button under the recovery phrase, to go on to the check."
+  },
+  "checkPhraseTitle": "Check your phrase",
+  "@checkPhraseTitle": {
+    "description": "Title of the screen that asks for some words of the recovery phrase back."
+  },
+  "checkPhraseLead": "Type these words from your paper, to make sure they are right.",
+  "@checkPhraseLead": {
+    "description": "Lead text of the recovery phrase check."
+  },
+  "wordLabel": "Word {number} of {total}",
+  "@wordLabel": {
+    "description": "Label of the field for one word of a recovery phrase.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "errorWordEmpty": "Type word {number} from your paper.",
+  "@errorWordEmpty": {
+    "description": "Error when a word of the recovery phrase check is empty.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "errorWordMismatch": "This is not word {number}. Check your paper and type it again.",
+  "@errorWordMismatch": {
+    "description": "Error when a word typed in the recovery phrase check is wrong.",
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "wordSuggestions": "{count, plural, =1{1 suggestion} other{{count} suggestions}}",
+  "@wordSuggestions": {
+    "description": "Announced to screen readers when word suggestions appear under a recovery phrase field.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showWordsAgain": "Show the words again",
+  "@showWordsAgain": {
+    "description": "Button that goes back to the recovery phrase from its check."
+  },
+  "testnet": "Testnet",
+  "@testnet": {
+    "description": "Switch to create the wallet on Liquid testnet. Only in development builds."
+  },
+  "testnetHint": "For testing only. Testnet coins have no value.",
+  "@testnetHint": {
+    "description": "Hint under the Testnet switch."
+  },
+  "createWallet": "Create wallet",
+  "@createWallet": {
+    "description": "Button that creates the wallet once the recovery phrase is checked."
+  },
+  "errorSaveWallet": "Lumen could not save the wallet. Try again.",
+  "@errorSaveWallet": {
+    "description": "Error when the new wallet could not be saved."
   }
 }

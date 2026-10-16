@@ -54,7 +54,7 @@ class HomeScreen extends StatelessWidget {
                 SectionHead(
                   title: l.wallets,
                   action: TextButton.icon(
-                    onPressed: () => context.push('/connect'),
+                    onPressed: () => context.push('/add'),
                     icon: const Icon(Icons.add),
                     label: Text(l.add, semanticsLabel: l.addWallet),
                   ),

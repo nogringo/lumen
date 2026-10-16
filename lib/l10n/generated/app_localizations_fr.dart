@@ -835,4 +835,133 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get noCamera =>
       'Aucun appareil photo n\'est disponible. Fermez cet écran et collez le texte.';
+
+  @override
+  String get addWalletLead =>
+      'Créez un nouveau portefeuille ou restaurez celui que vous avez déjà.';
+
+  @override
+  String get addLightningTitle => 'Portefeuille Lightning';
+
+  @override
+  String get addLightningBody =>
+      'Connectez un nœud ou un service de portefeuille avec Nostr Wallet Connect (NIP-47).';
+
+  @override
+  String get addLiquidBody =>
+      'Des transferts rapides et confidentiels sur la sidechain Liquid. Lumen garde ses clés.';
+
+  @override
+  String get liquidStartTitle => 'Portefeuille Liquid';
+
+  @override
+  String get liquidStartLead =>
+      'Lumen crée le portefeuille et garde ses clés sur cet appareil. Une phrase de récupération de 12 mots permet de le retrouver.';
+
+  @override
+  String get liquidPointFast =>
+      'Les paiements sont confirmés en une minute environ';
+
+  @override
+  String get liquidPointConfidential =>
+      'Les montants sont cachés à quiconque observe la chaîne';
+
+  @override
+  String get liquidPointKeys => 'Vos clés restent sur votre appareil';
+
+  @override
+  String get createLiquidWallet => 'Créer un nouveau portefeuille';
+
+  @override
+  String get newLiquidTitle => 'Nouveau portefeuille Liquid';
+
+  @override
+  String get phraseIntroHeading => 'D\'abord, votre phrase de récupération';
+
+  @override
+  String get phraseIntroBody =>
+      'Lumen va afficher 12 mots. Ils sont le seul moyen de retrouver ce portefeuille si vous perdez ou réinitialisez cet appareil, et quiconque les possède peut dépenser ses fonds.';
+
+  @override
+  String get phrasePointPaper => 'Écrivez-les sur papier, dans l\'ordre';
+
+  @override
+  String get phrasePointOffline =>
+      'Gardez-les hors ligne : pas de capture d\'écran, de photo ni de note dans le cloud';
+
+  @override
+  String get phrasePointNeverAsked =>
+      'Lumen ne les demande que pour restaurer un portefeuille';
+
+  @override
+  String get showPhrase => 'Afficher les 12 mots';
+
+  @override
+  String get liquidUnavailable =>
+      'Lumen n\'a pas pu démarrer Liquid sur cet appareil. Réessayez plus tard.';
+
+  @override
+  String get phraseTitle => 'Phrase de récupération';
+
+  @override
+  String get phraseLead =>
+      'Écrivez ces 12 mots sur papier, dans cet ordre. Vous en taperez trois ensuite.';
+
+  @override
+  String phraseWord(int number, int total, String word) {
+    return 'Mot $number sur $total, $word';
+  }
+
+  @override
+  String get phraseWrittenDown => 'Je les ai écrits';
+
+  @override
+  String get checkPhraseTitle => 'Vérifiez votre phrase';
+
+  @override
+  String get checkPhraseLead =>
+      'Tapez ces mots depuis votre papier, pour vérifier qu\'ils sont justes.';
+
+  @override
+  String wordLabel(int number, int total) {
+    return 'Mot $number sur $total';
+  }
+
+  @override
+  String errorWordEmpty(int number) {
+    return 'Tapez le mot $number de votre papier.';
+  }
+
+  @override
+  String errorWordMismatch(int number) {
+    return 'Ce n\'est pas le mot $number. Vérifiez votre papier et tapez-le à nouveau.';
+  }
+
+  @override
+  String wordSuggestions(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count suggestions',
+      one: '1 suggestion',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get showWordsAgain => 'Revoir les mots';
+
+  @override
+  String get testnet => 'Testnet';
+
+  @override
+  String get testnetHint =>
+      'Pour les tests uniquement. Les coins du testnet n\'ont aucune valeur.';
+
+  @override
+  String get createWallet => 'Créer le portefeuille';
+
+  @override
+  String get errorSaveWallet =>
+      'Lumen n\'a pas pu enregistrer le portefeuille. Réessayez.';
 }

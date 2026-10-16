@@ -46,6 +46,24 @@ Future<void> openFlow(
   );
 }
 
+/// Pushes one step of a multi-step flow outside the router, so what it
+/// shows, such as a recovery phrase, never reaches the URL or the browser
+/// history.
+Future<T?> pushStep<T>(BuildContext context, WidgetBuilder builder) {
+  final instant =
+      MediaQuery.disableAnimationsOf(context) ||
+      LayoutSize.of(context) == LayoutSize.desktop;
+  return Navigator.of(context).push(
+    instant
+        ? PageRouteBuilder<T>(
+            pageBuilder: (context, _, _) => builder(context),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          )
+        : MaterialPageRoute<T>(builder: builder),
+  );
+}
+
 class FlowScreen extends StatelessWidget {
   const FlowScreen({super.key, required this.title, required this.builder});
 

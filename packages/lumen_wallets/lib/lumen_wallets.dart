@@ -1,5 +1,6 @@
 export 'src/lightning/lnurl_pay.dart';
-export 'src/liquid/liquid_engine.dart' show LiquidScript, PhraseProblem;
+export 'src/liquid/liquid_engine.dart'
+    show LiquidChainException, LiquidScript, PhraseProblem;
 export 'src/liquid/liquid_wallet_source.dart'
     show
         LiquidAddError,
@@ -8,6 +9,7 @@ export 'src/liquid/liquid_wallet_source.dart'
         LiquidWallet,
         LiquidWalletSource;
 export 'src/liquid/lwk_engine.dart' show LwkEngine;
+export 'src/liquid/phrase_words.dart';
 export 'src/lightning/recipient.dart'
     show
         AddressRecipient,

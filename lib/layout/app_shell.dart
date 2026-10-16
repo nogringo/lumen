@@ -126,7 +126,7 @@ class _Sidebar extends StatelessWidget {
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
-                onPressed: () => context.go('/connect'),
+                onPressed: () => context.go('/add'),
                 icon: const Icon(Icons.add),
                 label: Text(l.addWallet),
               ),
