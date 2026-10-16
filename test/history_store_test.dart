@@ -96,6 +96,24 @@ void main() {
     expect(saved.isPending, isTrue);
   });
 
+  test('chain state is sealed on disk and open again', () async {
+    final history = await open();
+    await history.chainState.write('lumen.liquid.a.state', 'lwk-update');
+    await history.chainState.write('lumen.liquid.b.state', 'other');
+    await history.chainState.delete('lumen.liquid.b.state');
+    await history.close();
+
+    expect(await File(path).readAsString(), isNot(contains('lwk-update')));
+
+    final reopened = await open();
+    addTearDown(reopened.close);
+    expect(
+      await reopened.chainState.read('lumen.liquid.a.state'),
+      'lwk-update',
+    );
+    expect(await reopened.chainState.read('lumen.liquid.b.state'), isNull);
+  });
+
   test('a history its key no longer opens starts again empty', () async {
     final history = await open();
     await history.save('a', [tx('hash1')]);

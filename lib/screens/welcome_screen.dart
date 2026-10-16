@@ -12,7 +12,7 @@ import '../widgets/wallet_kind_style.dart';
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
-  static const _kinds = [WalletKind.lightning];
+  static const _kinds = [WalletKind.lightning, WalletKind.liquid];
 
   @override
   Widget build(BuildContext context) {

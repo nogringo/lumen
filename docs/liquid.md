@@ -107,7 +107,7 @@ How it came out:
 
 - `packages/lumen_core` is a Flutter FFI plugin (Cargokit) holding the Rust crate in `rust/` and the generated bindings. Only `lumen_wallets` imports it, through `LwkEngine`. `LiquidWallet` talks to the `LiquidEngine` interface, which the tests fake.
 - The app gives `LiquidWalletSource` two `KeyValueStore`s in step 3: one for the phrases and the wallet list (sealed secure storage), one for the chain state (the history database or a file). Testnet is enabled by passing it in `networks`.
-- The app must call `LwkEngine.init()` once before opening a wallet. A sync less than 15 s old is not repeated, so a refresh that reads the balance and then the activity syncs once.
+- A sync less than 15 s old is not repeated, so a refresh that reads the balance and then the activity syncs once.
 - Retries: sync and broadcast are tried 3 times on a dropped connection. A broadcast left without an answer is reported as unconfirmed, since it may have reached the server, and the next send syncs first so it cannot spend other coins and pay twice.
 - Restoring: `discover` returns the derivation and the chain state it scanned, which `add` takes back, so nothing about a dropped restore stays in the source.
 - iOS and macOS now build with CocoaPods, since Cargokit only ships a podspec. Flutter warns that plugins without Swift Package Manager support will become an error in a future version (see step 9).
@@ -117,7 +117,7 @@ How it came out:
 - The crate's own tests (`cargo test`, including the known-phrase vectors) do not run in CI until step 9 installs Rust.
 - Not in the crate yet: "send everything" (step 6, LWK's `drain_lbtc_wallet`).
 
-### 3. Wire Liquid into the app
+### 3. Wire Liquid into the app (done)
 
 - `WalletSources.liquid` next to `nwc`, and in `all`.
 - `WalletsController` loads, refreshes and caches Liquid wallets like the others. Check that refresh timing suits chain sync, which is slower than an NWC call.
@@ -125,6 +125,17 @@ How it came out:
 - `WelcomeScreen._kinds` lists Liquid.
 
 Done when: a wallet added by a test shows its balance and activity on Home, on its wallet screen and in Activity.
+
+How it came out:
+
+- `WalletSources.create` takes the Liquid stores and networks. The app passes `SealedStorage` for the phrases and `HistoryStore.chainState`, a store inside the encrypted history database, for the chain state. Testnet is enabled in debug builds only.
+- `LwkEngine.open` loads the Rust library on first use, so the web app downloads the wasm only once a Liquid wallet opens. `generatePhrase` and `phraseProblem` are synchronous: step 4 must `await LwkEngine.init()` before calling them.
+- Refresh timing suits chain sync as it is. Balance and activity share one sync. A background refresh waits 30 s, longer than the 15 s a sync stays fresh, so coming back to the app syncs. A pull to refresh within 15 s of the last sync reads the saved state. Walking older pages into the history reads local state, with no extra request.
+- History: the newest page is saved again at each refresh, so a pending payment shows as confirmed once it is. The confirmation count saved with a payment then stops growing, so step 7 should read it live. A pending payment that never confirms (dropped from the mempool) stays in the history as pending.
+- The launch cache keeps the txid and confirmations, so a pending payment is still pending at launch.
+- The wallet menu hides "Copy connection string" for Liquid wallets.
+- Still to adapt before anyone can add a Liquid wallet in the UI: Receive asks every wallet for an invoice, which Liquid wallets refuse (step 5); activity rows do not mark pending payments yet (step 5); the remove dialog says the funds stay where they are (step 8).
+- `test/fakes.dart` has a `FakeLiquidEngine`, through `package:lumen_wallets/liquid_engine.dart`, and `memorySources` uses it.
 
 ### 4. Create and restore
 

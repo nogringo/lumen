@@ -31,6 +31,8 @@ void main() {
     sources = WalletSources.create(
       repo: repo,
       eventVerifier: Bip340EventVerifier(),
+      liquidSecrets: MemoryKeyValueStore(),
+      liquidChainState: MemoryKeyValueStore(),
     );
   });
 
@@ -64,6 +66,8 @@ void main() {
     final saved = WalletSources.create(
       repo: savedRepo,
       eventVerifier: Bip340EventVerifier(),
+      liquidSecrets: MemoryKeyValueStore(),
+      liquidChainState: MemoryKeyValueStore(),
     );
     addTearDown(saved.dispose);
     final loaded = (await saved.nwc.load()).single;

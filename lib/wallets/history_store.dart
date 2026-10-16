@@ -35,6 +35,7 @@ class HistoryStore {
 
   static final _transactions = stringMapStoreFactory.store('transactions');
   static final _syncs = stringMapStoreFactory.store('sync');
+  static final _chainState = StoreRef<String, String>('chain_state');
 
   static const keyName = 'lumen.history.key';
 
@@ -79,6 +80,10 @@ class HistoryStore {
     );
     return key;
   }
+
+  /// What chain wallets know of the chain, sealed with the history. It grows
+  /// with each transaction, too much for secure storage.
+  late final KeyValueStore chainState = _ChainStateStore(_db);
 
   /// Saves [transactions] of [walletId], replacing those with the same id.
   /// Returns how many were not saved yet.
@@ -182,6 +187,26 @@ class HistoryStore {
       confirmations: json['confirmations'] as int?,
     ),
   );
+}
+
+final class _ChainStateStore implements KeyValueStore {
+  const _ChainStateStore(this._db);
+
+  final Database _db;
+
+  @override
+  Future<String?> read(String key) =>
+      HistoryStore._chainState.record(key).get(_db);
+
+  @override
+  Future<void> write(String key, String value) async {
+    await HistoryStore._chainState.record(key).put(_db, value);
+  }
+
+  @override
+  Future<void> delete(String key) async {
+    await HistoryStore._chainState.record(key).delete(_db);
+  }
 }
 
 /// Seals each record with AES-256-GCM, so the file or IndexedDB alone shows

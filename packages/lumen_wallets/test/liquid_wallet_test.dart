@@ -11,19 +11,6 @@ const _elsewhere = ChainAddress(
   network: ChainNetwork.liquid,
 );
 
-final class _MemoryStore implements KeyValueStore {
-  final Map<String, String> values = {};
-
-  @override
-  Future<String?> read(String key) async => values[key];
-
-  @override
-  Future<void> write(String key, String value) async => values[key] = value;
-
-  @override
-  Future<void> delete(String key) async => values.remove(key);
-}
-
 LiquidChainException _fails(LiquidChainError error) =>
     LiquidChainException(error);
 
@@ -129,8 +116,8 @@ final class _FakeEngine implements LiquidEngine {
 
 void main() {
   late _FakeEngine engine;
-  late _MemoryStore secrets;
-  late _MemoryStore chainState;
+  late MemoryKeyValueStore secrets;
+  late MemoryKeyValueStore chainState;
   late DateTime now;
 
   LiquidWalletSource source({Set<ChainNetwork>? networks}) =>
@@ -149,8 +136,8 @@ void main() {
   setUp(() {
     engine = _FakeEngine();
     chain = engine.chains[LiquidScript.nativeSegwit]!;
-    secrets = _MemoryStore();
-    chainState = _MemoryStore();
+    secrets = MemoryKeyValueStore();
+    chainState = MemoryKeyValueStore();
     now = DateTime(2026, 10, 16, 12);
   });
 

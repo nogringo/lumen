@@ -290,6 +290,20 @@ abstract interface class KeyValueStore {
   Future<void> delete(String key);
 }
 
+/// A [KeyValueStore] that lasts as long as the object, for tests and scripts.
+final class MemoryKeyValueStore implements KeyValueStore {
+  final Map<String, String> values = {};
+
+  @override
+  Future<String?> read(String key) async => values[key];
+
+  @override
+  Future<void> write(String key, String value) async => values[key] = value;
+
+  @override
+  Future<void> delete(String key) async => values.remove(key);
+}
+
 /// Loads the saved wallets of one kind. Adding a wallet is specific to each
 /// source, since every kind needs different input.
 abstract interface class WalletSource {

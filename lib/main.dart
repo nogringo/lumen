@@ -11,6 +11,7 @@ import 'lock/lock_store.dart';
 import 'lock/sealed_storage.dart';
 import 'settings/language.dart';
 import 'wallets/history_store.dart';
+import 'wallets/secure_key_value_store.dart';
 import 'wallets/wallet_cache.dart';
 import 'wallets/wallets_controller.dart';
 
@@ -23,16 +24,23 @@ Future<void> main() async {
     lock: AppLock(SecureLockStore()),
     storage: storage,
     openSession: () async {
+      // Without a history on disk, Lumen still works for this session.
+      final history = await HistoryStore.open(storage)
+          .catchError((Object _) => HistoryStore.memory());
       final sources = WalletSources.create(
         repo: FlutterSecureStorageWalletsRepo(storage: storage),
         eventVerifier: NdkEventVerifier(),
+        liquidSecrets: SecureKeyValueStore(storage),
+        liquidChainState: history.chainState,
+        liquidNetworks: {
+          ChainNetwork.liquid,
+          if (kDebugMode) ChainNetwork.liquidTestnet,
+        },
       );
       final wallets = WalletsController(
         sources.all,
         cache: SecureWalletCache(storage: storage),
-        // Without a history on disk, Lumen still works for this session.
-        history: await HistoryStore.open(storage)
-            .catchError((Object _) => HistoryStore.memory()),
+        history: history,
       );
       await wallets.load();
       return LumenSession(sources, wallets);

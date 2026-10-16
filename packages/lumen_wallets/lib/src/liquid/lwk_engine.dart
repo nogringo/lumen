@@ -7,13 +7,22 @@ import 'liquid_engine.dart';
 final class LwkEngine implements LiquidEngine {
   const LwkEngine();
 
-  /// Loads the Rust library. In the app it is bundled; elsewhere, as in a
-  /// script, pass the path of the one `cargo build` made.
-  static Future<void> init({String? libraryPath}) => core.RustLib.init(
-    externalLibrary: libraryPath == null
-        ? null
-        : core.ExternalLibrary.open(libraryPath),
-  );
+  static Future<void>? _loading;
+
+  /// Loads the Rust library, once. In the app it is bundled; elsewhere, as
+  /// in a script, pass the path of the one `cargo build` made.
+  ///
+  /// [open] calls it itself, so the web app downloads the wasm only once a
+  /// Liquid wallet opens. [generatePhrase] and [phraseProblem] need it done.
+  static Future<void> init({String? libraryPath}) => _loading ??=
+      core.RustLib.init(
+        externalLibrary: libraryPath == null
+            ? null
+            : core.ExternalLibrary.open(libraryPath),
+      ).catchError((Object e) {
+        _loading = null;
+        throw e;
+      });
 
   @override
   String generatePhrase() => _guard(core.generatePhrase);
@@ -34,23 +43,30 @@ final class LwkEngine implements LiquidEngine {
     required LiquidScript script,
     required String esploraUrl,
     required List<String> state,
-  }) async => _LwkChain(
-    await _guardAsync(
-      () => core.LiquidWallet.open(
-        phrase: phrase,
-        network: switch (network) {
-          ChainNetwork.liquid => core.LiquidNetwork.mainnet,
-          ChainNetwork.liquidTestnet => core.LiquidNetwork.testnet,
-        },
-        script: switch (script) {
-          LiquidScript.nativeSegwit => core.ScriptKind.nativeSegwit,
-          LiquidScript.nestedSegwit => core.ScriptKind.nestedSegwit,
-        },
-        esploraUrl: esploraUrl,
-        state: state,
+  }) async {
+    try {
+      await init();
+    } catch (e) {
+      throw LiquidChainException(LiquidChainError.other, '$e');
+    }
+    return _LwkChain(
+      await _guardAsync(
+        () => core.LiquidWallet.open(
+          phrase: phrase,
+          network: switch (network) {
+            ChainNetwork.liquid => core.LiquidNetwork.mainnet,
+            ChainNetwork.liquidTestnet => core.LiquidNetwork.testnet,
+          },
+          script: switch (script) {
+            LiquidScript.nativeSegwit => core.ScriptKind.nativeSegwit,
+            LiquidScript.nestedSegwit => core.ScriptKind.nestedSegwit,
+          },
+          esploraUrl: esploraUrl,
+          state: state,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 final class _LwkChain implements LiquidChain {

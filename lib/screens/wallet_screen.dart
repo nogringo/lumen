@@ -153,16 +153,17 @@ class _WalletMenu extends StatelessWidget {
             ],
           ),
         ),
-        PopupMenuItem(
-          value: _Action.copyConnection,
-          child: Row(
-            children: [
-              const Icon(Icons.key_outlined, size: 18),
-              const SizedBox(width: 12),
-              Flexible(child: Text(l.copyConnection)),
-            ],
+        if (wallet.kind == WalletKind.lightning)
+          PopupMenuItem(
+            value: _Action.copyConnection,
+            child: Row(
+              children: [
+                const Icon(Icons.key_outlined, size: 18),
+                const SizedBox(width: 12),
+                Flexible(child: Text(l.copyConnection)),
+              ],
+            ),
           ),
-        ),
         PopupMenuItem(
           value: _Action.remove,
           child: Row(

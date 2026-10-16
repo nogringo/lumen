@@ -73,6 +73,8 @@ final class SecureWalletCache implements WalletCache {
     'sats': t.sats,
     'at': t.at.millisecondsSinceEpoch,
     'description': t.description,
+    'txid': t.txid,
+    'confirmations': t.confirmations,
   };
 
   static Transaction _decode(Map<String, dynamic> json) => Transaction(
@@ -83,6 +85,8 @@ final class SecureWalletCache implements WalletCache {
     sats: json['sats'] as int,
     at: DateTime.fromMillisecondsSinceEpoch(json['at'] as int),
     description: json['description'] as String?,
+    txid: json['txid'] as String?,
+    confirmations: json['confirmations'] as int?,
   );
 }
 

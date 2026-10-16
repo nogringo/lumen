@@ -34,6 +34,23 @@ void main() {
     expect((coffee.isIncoming, coffee.description), (false, null));
   });
 
+  test('a chain payment stays pending when read back', () async {
+    final cache = SecureWalletCache();
+    await cache.writeActivity('a', [
+      Transaction(
+        id: 'tx1',
+        direction: TransactionDirection.incoming,
+        sats: 5000,
+        at: DateTime.fromMillisecondsSinceEpoch(1760000000000),
+        txid: 'tx1',
+        confirmations: 0,
+      ),
+    ]);
+
+    final [saved] = (await SecureWalletCache().readActivity('a'))!;
+    expect((saved.txid, saved.isPending), ('tx1', true));
+  });
+
   test('unreadable activity counts as none saved', () async {
     FlutterSecureStorage.setMockInitialValues({'lumen.activity.a': '{bad'});
 

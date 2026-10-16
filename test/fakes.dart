@@ -19,6 +19,7 @@ import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
+import 'package:lumen_wallets/liquid_engine.dart';
 import 'package:ndk/data_layer/repositories/wallets/mem_wallets_repo.dart';
 import 'package:ndk/ndk.dart' show Bip340EventVerifier;
 
@@ -198,13 +199,83 @@ class FakeSource implements WalletSource {
   Future<List<Wallet>> load() async => wallets;
 }
 
-/// Real sources over an in-memory store, for screens that need them.
-WalletSources memorySources({http.Client? httpClient, MemWalletsRepo? repo}) =>
-    WalletSources.create(
-      repo: repo ?? MemWalletsRepo(),
-      eventVerifier: Bip340EventVerifier(),
-      httpClient: httpClient,
-    );
+/// One Liquid chain for every wallet, read from memory.
+final class FakeLiquidChain implements LiquidChain {
+  int balanceSats = 0;
+  int tip = 100;
+
+  /// Newest first.
+  List<ChainTx> txs = [];
+  int syncs = 0;
+
+  @override
+  Future<bool> sync() async {
+    syncs++;
+    return true;
+  }
+
+  @override
+  Future<List<String>> state() async => ['sync $syncs'];
+
+  @override
+  Future<int> balance() async => balanceSats;
+
+  @override
+  Future<int> tipHeight() async => tip;
+
+  @override
+  Future<String> nextAddress() async => 'lq1fake';
+
+  @override
+  Future<List<ChainTx>> transactions() async => txs;
+
+  @override
+  Future<LiquidDraft> prepareSend(String address, int sats) =>
+      throw UnimplementedError();
+
+  @override
+  Future<LiquidSigned> sign(LiquidDraft draft) => throw UnimplementedError();
+
+  @override
+  Future<void> broadcast(LiquidSigned signed) => throw UnimplementedError();
+}
+
+final class FakeLiquidEngine implements LiquidEngine {
+  final chain = FakeLiquidChain();
+
+  @override
+  String generatePhrase() => liquidPhrase;
+
+  @override
+  PhraseProblem? phraseProblem(String phrase) =>
+      phrase.split(' ').length == 12 ? null : PhraseProblem.wordCount;
+
+  @override
+  Future<LiquidChain> open({
+    required String phrase,
+    required ChainNetwork network,
+    required LiquidScript script,
+    required String esploraUrl,
+    required List<String> state,
+  }) async => chain;
+}
+
+const liquidPhrase =
+    'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+/// Real sources over in-memory stores, for screens that need them.
+WalletSources memorySources({
+  http.Client? httpClient,
+  MemWalletsRepo? repo,
+  LiquidEngine? liquidEngine,
+}) => WalletSources.create(
+  repo: repo ?? MemWalletsRepo(),
+  eventVerifier: Bip340EventVerifier(),
+  liquidSecrets: MemoryKeyValueStore(),
+  liquidChainState: MemoryKeyValueStore(),
+  liquidEngine: liquidEngine ?? FakeLiquidEngine(),
+  httpClient: httpClient,
+);
 
 /// A BOLT11 invoice that decodes like a real one, with a blank signature.
 /// Without [sats], it leaves the amount to the payer.
@@ -289,7 +360,7 @@ const desktopSize = Size(1440, 900);
 Future<WalletsController> pumpLumen(
   WidgetTester tester,
   WalletSources sources, {
-  required List<FakeWallet> wallets,
+  required List<Wallet> wallets,
   Size size = phoneSize,
   Brightness brightness = Brightness.light,
   double textScale = 1,
