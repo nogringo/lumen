@@ -404,6 +404,12 @@ final class _NwcWallet implements Wallet {
   final String? lightningAddress;
 
   @override
+  Set<WalletCapability> get capabilities => const {
+    WalletCapability.receiveInvoice,
+    WalletCapability.payInvoice,
+  };
+
+  @override
   Future<String> connectionString() async => (await _source._saved(id)).nwcUrl;
 
   @override
@@ -413,12 +419,28 @@ final class _NwcWallet implements Wallet {
   Future<Invoice> createInvoice(int sats) => _source._createInvoice(id, sats);
 
   @override
-  Stream<void> watchPayment(Invoice invoice) =>
-      _source._watchPayment(id, invoice);
+  Future<ChainAddress> nextAddress() =>
+      throw UnsupportedError('NWC wallets have no address');
 
   @override
-  Future<Payment> payInvoice(Invoice invoice) =>
-      _source._payInvoice(id, invoice);
+  Stream<void> watchPayment(PaymentRequest request) => switch (request) {
+    Invoice() => _source._watchPayment(id, request),
+    ChainAddress() => throw UnsupportedError('NWC wallets have no address'),
+  };
+
+  /// NWC quotes no fee, so this only checks the request.
+  @override
+  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async =>
+      switch (request) {
+        Invoice() => SendQuote(request: request, sats: request.sats),
+        ChainAddress() => throw UnsupportedError('NWC pays invoices only'),
+      };
+
+  @override
+  Future<Payment> confirmSend(SendQuote quote) => switch (quote.request) {
+    final Invoice invoice => _source._payInvoice(id, invoice),
+    ChainAddress() => throw UnsupportedError('NWC pays invoices only'),
+  };
 
   @override
   Future<TransactionPage> fetchTransactions({int limit = 10, int offset = 0}) =>

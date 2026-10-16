@@ -488,6 +488,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get chooseWalletThatPays => 'Scegli il portafoglio che paga';
 
   @override
+  String get amountSetByLink => 'Importo fissato dal link';
+
+  @override
   String get amountSetByInvoice => 'Importo fissato dalla fattura';
 
   @override
@@ -550,6 +553,9 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Indirizzo Liquid';
+
+  @override
   String get lightningInvoice => 'Fattura Lightning';
 
   @override
@@ -587,6 +593,22 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get errorInvoiceNoAmount =>
       'Questa fattura lascia l\'importo libero, e Lumen non può ancora pagarla. Chiedi al destinatario una fattura con un importo.';
+
+  @override
+  String get errorWrongNetwork =>
+      'Questo è un indirizzo della testnet Liquid. Chiedi al destinatario un indirizzo della rete Liquid principale.';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'Questa richiesta riguarda un asset Liquid diverso da L-BTC, che Lumen non può ancora inviare. Chiedi al destinatario un indirizzo per L-BTC.';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Nessuno dei tuoi portafogli può pagare un indirizzo Liquid. Chiedi invece al destinatario una fattura o un indirizzo Lightning.';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Nessuno dei tuoi portafogli può pagare una fattura o un indirizzo Lightning. Chiedi invece al destinatario un indirizzo Liquid.';
 
   @override
   String get errorInvoiceExpired =>

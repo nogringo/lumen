@@ -487,6 +487,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get chooseWalletThatPays => 'Valitse maksava lompakko';
 
   @override
+  String get amountSetByLink => 'Linkin määräämä summa';
+
+  @override
   String get amountSetByInvoice => 'Laskun määräämä summa';
 
   @override
@@ -549,6 +552,9 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Liquid-osoite';
+
+  @override
   String get lightningInvoice => 'Lightning-lasku';
 
   @override
@@ -585,6 +591,22 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get errorInvoiceNoAmount =>
       'Tässä laskussa ei ole summaa, eikä Lumen osaa vielä maksaa sellaista. Pyydä vastaanottajalta lasku, jossa on summa.';
+
+  @override
+  String get errorWrongNetwork =>
+      'Tämä on Liquid-testiverkon osoite. Pyydä vastaanottajalta osoite Liquidin pääverkkoon.';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'Tämä pyyntö koskee muuta Liquid-omaisuuserää kuin L-BTC:tä, eikä Lumen osaa vielä lähettää sitä. Pyydä vastaanottajalta osoite L-BTC:lle.';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Mikään lompakoistasi ei voi maksaa Liquid-osoitteeseen. Pyydä vastaanottajalta mieluummin Lightning-lasku tai Lightning-osoite.';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Mikään lompakoistasi ei voi maksaa Lightning-laskua tai Lightning-osoitetta. Pyydä vastaanottajalta mieluummin Liquid-osoite.';
 
   @override
   String get errorInvoiceExpired =>

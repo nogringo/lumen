@@ -207,8 +207,14 @@ void main() {
         'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';
     final wallet = await sources.nwc.add(uri: uri, name: 'Phone');
 
+    final quote = await wallet.prepareSend(
+      const Invoice(request: 'lnbc1', sats: 1),
+    );
+    expect(quote.sats, 1);
+    expect(quote.feeSats, isNull);
+
     await expectLater(
-      wallet.payInvoice(const Invoice(request: 'lnbc1', sats: 1)),
+      wallet.confirmSend(quote),
       throwsA(
         isA<SendException>().having(
           (e) => e.error,

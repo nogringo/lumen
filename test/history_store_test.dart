@@ -77,6 +77,25 @@ void main() {
     expect((await reopened.readSync('a')).offset, 25);
   });
 
+  test('a chain payment keeps its txid and confirmations', () async {
+    final history = await HistoryStore.memory();
+    addTearDown(history.close);
+    await history.save('liquid', [
+      Transaction(
+        id: 'tx1',
+        direction: TransactionDirection.incoming,
+        sats: 25000,
+        at: DateTime(2026, 10, 16, 14),
+        txid: 'tx1',
+        confirmations: 0,
+      ),
+    ]);
+
+    final saved = (await history.find('liquid', 'tx1'))!;
+    expect((saved.txid, saved.confirmations), ('tx1', 0));
+    expect(saved.isPending, isTrue);
+  });
+
   test('a history its key no longer opens starts again empty', () async {
     final history = await open();
     await history.save('a', [tx('hash1')]);

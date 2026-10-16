@@ -496,6 +496,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chooseWalletThatPays => 'Выберите кошелёк для оплаты';
 
   @override
+  String get amountSetByLink => 'Сумма указана в ссылке';
+
+  @override
   String get amountSetByInvoice => 'Сумма указана в счёте';
 
   @override
@@ -558,6 +561,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Адрес Liquid';
+
+  @override
   String get lightningInvoice => 'Счёт Lightning';
 
   @override
@@ -594,6 +600,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get errorInvoiceNoAmount =>
       'В этом счёте не указана сумма, а такие счета Lumen пока не умеет оплачивать. Попросите получателя выставить счёт с суммой.';
+
+  @override
+  String get errorWrongNetwork =>
+      'Это адрес тестовой сети Liquid. Попросите получателя дать адрес основной сети Liquid.';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'Этот запрос на актив Liquid, отличный от L-BTC, а такие Lumen пока не умеет отправлять. Попросите получателя дать адрес для L-BTC.';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Ни один из ваших кошельков не может платить на адрес Liquid. Попросите получателя дать счёт или адрес Lightning.';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Ни один из ваших кошельков не может оплатить счёт или адрес Lightning. Попросите получателя дать адрес Liquid.';
 
   @override
   String get errorInvoiceExpired =>

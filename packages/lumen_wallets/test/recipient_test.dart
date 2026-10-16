@@ -3,6 +3,13 @@ import 'package:test/test.dart';
 
 import 'invoices.dart';
 
+const _liquid =
+    'lq1qqvp9g33gw9y05xava3dvcpq8pnkv82yj3tdnzp547eyp9yrztz2lkyxrhscd55ev4p7lj2n72jtkn5u4xnj4v577c42jhf3ww';
+const _testnet =
+    'tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m';
+const _lbtc =
+    '6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d';
+
 Matcher _fails(RecipientError error) =>
     throwsA(isA<RecipientException>().having((e) => e.error, 'error', error));
 
@@ -95,6 +102,102 @@ void main() {
 
   test('anything else is not recognized', () {
     for (final input in ['', 'hello', 'barista@', '@example.com', 'lnbc1']) {
+      expect(
+        () => parseRecipient(input),
+        _fails(RecipientError.unrecognized),
+        reason: input,
+      );
+    }
+  });
+
+  test('a Liquid address is paid on chain, for the amount the payer picks', () {
+    final recipient = parseRecipient(' $_liquid ') as AddressRecipient;
+
+    expect(recipient.address.address, _liquid);
+    expect(recipient.address.network, ChainNetwork.liquid);
+    expect(recipient.address.sats, isNull);
+  });
+
+  test('a liquidnetwork: link or its QR code in upper case is an address', () {
+    for (final input in [
+      'liquidnetwork:$_liquid',
+      'LIQUIDNETWORK:${_liquid.toUpperCase()}',
+    ]) {
+      final recipient = parseRecipient(input) as AddressRecipient;
+      expect(recipient.address.address, _liquid, reason: input);
+    }
+  });
+
+  test('a liquidnetwork: link sets the amount in L-BTC', () {
+    for (final (amount, sats) in [
+      ('0.00025', 25000),
+      ('1', 100000000),
+      ('21.00000001', 2100000001),
+      ('0', null),
+    ]) {
+      final recipient = parseRecipient(
+        'liquidnetwork:$_liquid?amount=$amount&assetid=$_lbtc&label=Shop',
+      ) as AddressRecipient;
+      expect(recipient.address.sats, sats, reason: amount);
+    }
+  });
+
+  test('a liquidnetwork: link with a malformed amount cannot be paid', () {
+    for (final amount in ['0.000000001', '-1', '1,5', '1e3', 'abc']) {
+      expect(
+        () => parseRecipient('liquidnetwork:$_liquid?amount=$amount'),
+        _fails(RecipientError.unrecognized),
+        reason: amount,
+      );
+    }
+  });
+
+  test('a request for another Liquid asset cannot be paid', () {
+    const usdt =
+        'ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2';
+
+    expect(
+      () => parseRecipient('liquidnetwork:$_liquid?amount=10&assetid=$usdt'),
+      _fails(RecipientError.unsupportedAsset),
+    );
+  });
+
+  test('a required parameter Lumen does not know makes a link unpayable', () {
+    expect(
+      () => parseRecipient('liquidnetwork:$_liquid?req-somethingnew=1'),
+      _fails(RecipientError.unrecognized),
+    );
+  });
+
+  test('a testnet address is refused unless testnet is allowed', () {
+    for (final input in [_testnet, 'liquidtestnet:${_testnet.toUpperCase()}']) {
+      expect(
+        () => parseRecipient(input),
+        _fails(RecipientError.wrongNetwork),
+        reason: input,
+      );
+      final recipient = parseRecipient(
+        input,
+        networks: const {ChainNetwork.liquidTestnet},
+      ) as AddressRecipient;
+      expect(recipient.address.network, ChainNetwork.liquidTestnet);
+    }
+  });
+
+  test('a testnet link for testnet L-BTC is accepted on testnet', () {
+    const testnetLbtc =
+        '144c654344aa716d6f3abcc1ca90e5641e4e2a7f633bc09fe3baf64585819a49';
+    final recipient = parseRecipient(
+      'liquidtestnet:$_testnet?amount=0.001&assetid=$testnetLbtc',
+      networks: const {ChainNetwork.liquidTestnet},
+    ) as AddressRecipient;
+
+    expect(recipient.address.sats, 100000);
+  });
+
+  test('a mistyped Liquid address is not recognized', () {
+    final typo = '${_liquid.substring(0, 30)}x${_liquid.substring(31)}';
+    for (final input in [typo, 'liquidnetwork:$typo', 'liquidnetwork:']) {
       expect(
         () => parseRecipient(input),
         _fails(RecipientError.unrecognized),

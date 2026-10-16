@@ -106,23 +106,54 @@ class _SendFlowState extends State<_SendFlow> {
     super.dispose();
   }
 
-  Invoice? get _typedInvoice => switch (_typed) {
-    InvoiceRecipient(:final invoice) => invoice,
+  /// The amount set by the typed invoice or link, which the user cannot
+  /// change.
+  int? get _fixedSats => switch (_typed) {
+    InvoiceRecipient(:final invoice) => invoice.sats,
+    AddressRecipient(:final address) => address.sats,
     _ => null,
   };
 
-  int get _typedSats => _typedInvoice?.sats ?? int.tryParse(_amount.text) ?? 0;
+  int get _typedSats => _fixedSats ?? int.tryParse(_amount.text) ?? 0;
 
-  /// The chosen wallet, or the first whose known balance covers the amount,
-  /// or the one with the most sats.
+  /// The wallets that can pay [recipient], or all of them when none can, so
+  /// that the picker still shows one while the error says why.
+  List<Wallet> _payersOf(Recipient? recipient, WalletsController wallets) {
+    final needed = _neededFor(recipient);
+    if (needed == null) return wallets.wallets;
+    final payers = [
+      for (final wallet in wallets.wallets)
+        if (wallet.capabilities.contains(needed)) wallet,
+    ];
+    return payers.isEmpty ? wallets.wallets : payers;
+  }
+
+  /// Among the wallets that can pay what is typed: the chosen one, or the
+  /// first whose known balance covers the amount, or the one with the most
+  /// sats.
   Wallet? _walletIn(WalletsController wallets) {
-    if (wallets.walletById(_walletId ?? '') case final chosen?) return chosen;
-    final all = wallets.wallets;
-    if (all.isEmpty) return null;
+    final payers = _payersOf(_typed, wallets);
+    if (payers.isEmpty) return null;
+    if (payers.where((w) => w.id == _walletId).firstOrNull case final chosen?) {
+      return chosen;
+    }
     int known(Wallet wallet) => wallets.balanceOf(wallet).sats ?? -1;
     final sats = _typedSats;
-    return all.where((wallet) => known(wallet) >= sats).firstOrNull ??
-        all.reduce((a, b) => known(b) > known(a) ? b : a);
+    return payers.where((wallet) => known(wallet) >= sats).firstOrNull ??
+        payers.reduce((a, b) => known(b) > known(a) ? b : a);
+  }
+
+  /// Why no wallet can pay [recipient], or null when one can.
+  String? _unpayable(Recipient recipient, AppLocalizations l) {
+    final needed = _neededFor(recipient)!;
+    final wallets = LumenScope.readWallets(context).wallets;
+    if (wallets.any((wallet) => wallet.capabilities.contains(needed))) {
+      return null;
+    }
+    return switch (needed) {
+      WalletCapability.payAddress => l.errorNoWalletPaysAddress,
+      _ => l.errorNoWalletPaysInvoice,
+    };
   }
 
   void _onToChanged(String text) {
@@ -156,16 +187,21 @@ class _SendFlowState extends State<_SendFlow> {
     _to.text = text;
     _onToChanged(text);
     final l = AppLocalizations.of(context);
-    if (_typedInvoice case final invoice?) {
-      _announce(
-        '${l.lightningInvoice}, ${l.amountSats(formatSats(context, invoice.sats))}',
-      );
-    } else if (scanned && _typed == null) {
+    final typed = _typed;
+    final unpayable = typed == null ? null : _unpayable(typed, l);
+    if (_fixedSats case final sats?) {
+      final kind = typed is AddressRecipient
+          ? l.liquidAddress
+          : l.lightningInvoice;
+      _announce('$kind, ${l.amountSats(formatSats(context, sats))}');
+    } else if (scanned && typed == null) {
       try {
         parseRecipient(text);
       } on RecipientException catch (e) {
         _fieldError(to: _recipientMessage(l, e.error, ''));
       }
+    } else if (scanned && unpayable != null) {
+      _fieldError(to: unpayable);
     } else {
       _amountFocus.requestFocus();
     }
@@ -183,6 +219,9 @@ class _SendFlowState extends State<_SendFlow> {
     } on RecipientException catch (e) {
       return _fieldError(to: _recipientMessage(l, e.error, ''));
     }
+    if (_unpayable(recipient, l) case final error?) {
+      return _fieldError(to: error);
+    }
     final int sats;
     switch (recipient) {
       case InvoiceRecipient(:final invoice):
@@ -192,6 +231,9 @@ class _SendFlowState extends State<_SendFlow> {
         sats = invoice.sats;
       case LnurlRecipient():
         sats = int.tryParse(_amount.text) ?? 0;
+        if (sats <= 0) return _fieldError(amount: l.errorAmountEmpty);
+      case AddressRecipient(:final address):
+        sats = address.sats ?? int.tryParse(_amount.text) ?? 0;
         if (sats <= 0) return _fieldError(amount: l.errorAmountEmpty);
     }
 
@@ -258,16 +300,18 @@ class _SendFlowState extends State<_SendFlow> {
     String? error;
     var attempted = false;
     try {
-      final invoice = switch (recipient) {
+      final PaymentRequest request = switch (recipient) {
         InvoiceRecipient(:final invoice) => invoice,
         LnurlRecipient() => await lnurlPay.invoice(_terms!, _sats),
+        AddressRecipient(:final address) => address,
       };
-      if (invoice.isExpiredAt(DateTime.now())) {
+      if (request is Invoice && request.isExpiredAt(DateTime.now())) {
         error = l.errorInvoiceExpired;
       } else {
+        final quote = await wallet.prepareSend(request, sats: _sats);
         attempted = true;
-        _payment = await wallet.payInvoice(invoice);
-        _paid = invoice;
+        _payment = await wallet.confirmSend(quote);
+        _paid = request is Invoice ? request : null;
         _sentAt = DateTime.now();
       }
     } on RecipientException catch (e) {
@@ -304,7 +348,7 @@ class _SendFlowState extends State<_SendFlow> {
       _step = _Step.form;
       _error = null;
     });
-    final field = _typedInvoice == null ? _amountFocus : _toFocus;
+    final field = _fixedSats == null ? _amountFocus : _toFocus;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) field.requestFocus();
     });
@@ -378,7 +422,7 @@ class _SendFlowState extends State<_SendFlow> {
 
   List<Widget> _form(WalletsController wallets, Wallet wallet) {
     final l = AppLocalizations.of(context);
-    final invoice = _typedInvoice;
+    final fixedSats = _fixedSats;
     return [
       LabeledField(
         label: l.sendTo,
@@ -388,12 +432,12 @@ class _SendFlowState extends State<_SendFlow> {
           keyboardType: TextInputType.url,
           autocorrect: false,
           enableSuggestions: false,
-          textInputAction: invoice == null
+          textInputAction: fixedSats == null
               ? TextInputAction.next
               : TextInputAction.done,
           onChanged: _onToChanged,
           onSubmitted: (_) =>
-              invoice == null ? _amountFocus.requestFocus() : _review(),
+              fixedSats == null ? _amountFocus.requestFocus() : _review(),
           decoration: InputDecoration(
             helperText: l.sendToHint,
             helperMaxLines: 2,
@@ -422,14 +466,25 @@ class _SendFlowState extends State<_SendFlow> {
         ),
       ),
       const SizedBox(height: 12),
-      if (invoice != null) _InvoiceAmount(invoice) else _amountField(l),
+      switch (_typed) {
+        InvoiceRecipient(:final invoice) => _FixedAmount(
+          label: l.amountSetByInvoice,
+          sats: invoice.sats,
+          description: invoice.description,
+        ),
+        AddressRecipient(address: ChainAddress(:final sats?)) => _FixedAmount(
+          label: l.amountSetByLink,
+          sats: sats,
+        ),
+        _ => _amountField(l),
+      },
       const SizedBox(height: 20),
       WalletPicker(
         label: l.payFrom,
         hint: l.chooseWalletThatPays,
         showBalance: true,
         selected: wallet,
-        wallets: wallets.wallets,
+        wallets: _payersOf(_typed, wallets),
         enabled: !_busy,
         onChanged: (id) => setState(() {
           _walletId = id;
@@ -499,7 +554,7 @@ class _SendFlowState extends State<_SendFlow> {
     final c = LumenColors.of(context);
     final note = switch (recipient) {
       InvoiceRecipient(:final invoice) => invoice.description,
-      LnurlRecipient() => null,
+      LnurlRecipient() || AddressRecipient() => null,
     };
     return [
       const SizedBox(height: 8),
@@ -527,7 +582,10 @@ class _SendFlowState extends State<_SendFlow> {
         (l.detailTo, _RecipientText(recipient)),
         if (note != null) (l.detailNote, Text(note)),
         (l.detailFrom, Text(wallet.name)),
-        (l.detailNetwork, Text(l.kindLightning)),
+        (
+          l.detailNetwork,
+          Text(recipient is AddressRecipient ? l.kindLiquid : l.kindLightning),
+        ),
       ]),
       if (_error case final error?) ...[
         const SizedBox(height: 16),
@@ -558,6 +616,7 @@ class _SendFlowState extends State<_SendFlow> {
     final subtitle = switch (recipient) {
       LnurlRecipient(:final label) => l.sentTo(label),
       InvoiceRecipient(:final invoice) => invoice.description,
+      AddressRecipient() => null,
     };
     return [
       const SizedBox(height: 16),
@@ -619,6 +678,7 @@ class _SendFlowState extends State<_SendFlow> {
     final to = switch (recipient) {
       LnurlRecipient(:final label) => l.sentTo(label),
       InvoiceRecipient(:final invoice) => invoice.description,
+      AddressRecipient() => null,
     };
     return [
       l.paymentSent,
@@ -639,9 +699,16 @@ class _SendFlowState extends State<_SendFlow> {
   }
 }
 
+/// What a wallet must do to pay [recipient], or null before one is typed.
+WalletCapability? _neededFor(Recipient? recipient) => switch (recipient) {
+  null => null,
+  AddressRecipient() => WalletCapability.payAddress,
+  InvoiceRecipient() || LnurlRecipient() => WalletCapability.payInvoice,
+};
+
 String _label(Recipient recipient) => switch (recipient) {
   LnurlRecipient(:final label) => label,
-  InvoiceRecipient() => '',
+  InvoiceRecipient() || AddressRecipient() => '',
 };
 
 String _recipientMessage(
@@ -654,6 +721,8 @@ String _recipientMessage(
   RecipientError.unreachable => l.recipientUnreachable(label),
   RecipientError.refused => l.recipientRefused(label),
   RecipientError.wrongInvoice => l.recipientWrongInvoice(label),
+  RecipientError.wrongNetwork => l.errorWrongNetwork,
+  RecipientError.unsupportedAsset => l.errorUnsupportedAsset,
 };
 
 String _sendMessage(AppLocalizations l, SendError error, String name) =>
@@ -666,26 +735,28 @@ String _sendMessage(AppLocalizations l, SendError error, String name) =>
       SendError.unconfirmed => l.sendUnconfirmed(name),
     };
 
-/// The fixed amount of a pasted invoice, in place of the amount field.
-class _InvoiceAmount extends StatelessWidget {
-  const _InvoiceAmount(this.invoice);
+/// The amount set by a pasted invoice or link, in place of the amount field.
+class _FixedAmount extends StatelessWidget {
+  const _FixedAmount({
+    required this.label,
+    required this.sats,
+    this.description,
+  });
 
-  final Invoice invoice;
+  final String label;
+  final int sats;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final description = invoice.description;
+    final description = this.description;
     return MergeSemantics(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l.amountSetByInvoice,
-            style: Theme.of(context).textTheme.labelMedium,
-          ),
+          Text(label, style: Theme.of(context).textTheme.labelMedium),
           const SizedBox(height: 8),
-          AmountText(invoice.sats, fontSize: 32),
+          AmountText(sats, fontSize: 32),
           if (description != null) ...[
             const SizedBox(height: 4),
             Text(
@@ -714,6 +785,11 @@ class _RecipientText extends StatelessWidget {
       InvoiceRecipient(:final invoice) => Text(
         shortInvoice(invoice.request),
         semanticsLabel: AppLocalizations.of(context).lightningInvoice,
+        style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
+      ),
+      AddressRecipient(:final address) => Text(
+        shortInvoice(address.address),
+        semanticsLabel: AppLocalizations.of(context).liquidAddress,
         style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
       ),
     };

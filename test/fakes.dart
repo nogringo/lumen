@@ -29,6 +29,10 @@ class FakeWallet implements Wallet {
     this.balance = 0,
     this.error,
     this.lightningAddress,
+    this.capabilities = const {
+      WalletCapability.receiveInvoice,
+      WalletCapability.payInvoice,
+    },
   });
 
   @override
@@ -38,10 +42,15 @@ class FakeWallet implements Wallet {
   String name;
 
   @override
-  WalletKind get kind => WalletKind.lightning;
+  WalletKind get kind => capabilities.contains(WalletCapability.payAddress)
+      ? WalletKind.liquid
+      : WalletKind.lightning;
 
   @override
   final String? lightningAddress;
+
+  @override
+  final Set<WalletCapability> capabilities;
 
   String? connection = 'nostr+walletconnect://wallet?secret=fake';
 
@@ -88,7 +97,10 @@ class FakeWallet implements Wallet {
   }
 
   @override
-  Stream<void> watchPayment(Invoice invoice) {
+  Future<ChainAddress> nextAddress() => throw UnsupportedError('No address');
+
+  @override
+  Stream<void> watchPayment(PaymentRequest request) {
     _payment = StreamController<void>();
     return _payment!.stream;
   }
@@ -100,18 +112,22 @@ class FakeWallet implements Wallet {
 
   SendError? sendError;
   int feeSats = 0;
-  final List<Invoice> paid = [];
+  final List<SendQuote> paid = [];
 
   /// When set, payments wait for it to complete.
   Completer<void>? paymentGate;
 
   @override
-  Future<Payment> payInvoice(Invoice invoice) async {
+  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async =>
+      SendQuote(request: request, sats: request.sats ?? sats!);
+
+  @override
+  Future<Payment> confirmSend(SendQuote quote) async {
     await Future<void>.delayed(Duration.zero);
     await paymentGate?.future;
     if (sendError case final error?) throw SendException(error);
-    paid.add(invoice);
-    balance -= invoice.sats + feeSats;
+    paid.add(quote);
+    balance -= quote.sats + feeSats;
     return Payment(feeSats: feeSats, preimage: 'preimage');
   }
 

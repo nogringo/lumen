@@ -13,6 +13,9 @@ import 'fakes.dart';
 /// Barista's Lightning address accepts up to [_maxSats].
 const _maxSats = 1000000;
 
+const _liquid =
+    'lq1qqvp9g33gw9y05xava3dvcpq8pnkv82yj3tdnzp547eyp9yrztz2lkyxrhscd55ev4p7lj2n72jtkn5u4xnj4v577c42jhf3ww';
+
 void main() {
   late WalletSources sources;
   final asked = <int>[];
@@ -255,6 +258,94 @@ void main() {
     await review(tester);
     expect(find.text('Enter an amount of at least 1 sat.'), findsOneWidget);
     expect(find.text('You are sending'), findsNothing);
+  });
+
+  testWidgets('a Liquid address says which wallets can pay it', (tester) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: [FakeWallet('home', 'Home node', balance: 1000)],
+    );
+    await openSend(tester);
+
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.00001');
+    await review(tester);
+    expect(
+      find.text(
+        'None of your wallets can pay a Liquid address. Ask the recipient for a Lightning invoice or address instead.',
+      ),
+      findsOneWidget,
+    );
+
+    await fillTo(
+      tester,
+      'tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m',
+    );
+    await review(tester);
+    expect(
+      find.text(
+        'This is a Liquid testnet address. Ask the recipient for a Liquid mainnet address.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('You are sending'), findsNothing);
+  });
+
+  testWidgets('a link that sets the amount is paid from a wallet that can', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final home = FakeWallet('home', 'Home node', balance: 100000);
+    final savings = FakeWallet(
+      'savings',
+      'Savings',
+      balance: 50000,
+      capabilities: const {
+        WalletCapability.receiveAddress,
+        WalletCapability.payAddress,
+      },
+    );
+    await pumpLumen(tester, sources, wallets: [home, savings]);
+    await openSend(tester);
+
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0002');
+    expect(find.text('Amount set by the link'), findsOneWidget);
+    expect(find.text('Amount in sats'), findsNothing);
+
+    await review(tester);
+    expect(find.text('Savings'), findsOneWidget);
+    expect(find.text('Liquid'), findsOneWidget);
+    expect(find.bySemanticsLabel('To\nLiquid address'), findsOneWidget);
+
+    await tester.tap(find.text('Send 20,000 sats'));
+    await tester.pumpAndSettle();
+    final request = savings.paid.single.request as ChainAddress;
+    expect((request.address, request.sats), (_liquid, 20000));
+    expect(home.paid, isEmpty);
+    handle.dispose();
+  });
+
+  testWidgets('an invoice is not paid from a wallet that only pays addresses', (
+    tester,
+  ) async {
+    final savings = FakeWallet(
+      'savings',
+      'Savings',
+      balance: 50000,
+      capabilities: const {WalletCapability.payAddress},
+    );
+    final home = FakeWallet('home', 'Home node', balance: 10000);
+    await pumpLumen(tester, sources, wallets: [savings, home]);
+    await openSend(tester);
+
+    await fillTo(tester, fakeBolt11(5400));
+    await review(tester);
+    expect(find.text('Home node'), findsOneWidget);
+
+    await tester.tap(find.text('Send 5,400 sats'));
+    await tester.pumpAndSettle();
+    expect(home.paid.single.sats, 5400);
+    expect(savings.paid, isEmpty);
   });
 
   testWidgets('a wallet that holds too little is caught before review', (

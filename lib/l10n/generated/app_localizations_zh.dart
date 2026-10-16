@@ -468,6 +468,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chooseWalletThatPays => '选择付款钱包';
 
   @override
+  String get amountSetByLink => '金额由链接指定';
+
+  @override
   String get amountSetByInvoice => '金额由发票指定';
 
   @override
@@ -530,6 +533,9 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Liquid 地址';
+
+  @override
   String get lightningInvoice => 'Lightning 发票';
 
   @override
@@ -565,6 +571,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorInvoiceNoAmount => '此发票未指定金额，Lumen 暂不支持支付。请向收款方索取带金额的发票。';
+
+  @override
+  String get errorWrongNetwork => '这是 Liquid 测试网地址。请向收款方索取 Liquid 主网地址。';
+
+  @override
+  String get errorUnsupportedAsset =>
+      '此请求针对 L-BTC 以外的 Liquid 资产，Lumen 暂不支持发送。请向收款方索取 L-BTC 地址。';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      '你的钱包都无法向 Liquid 地址付款。请改为向收款方索取 Lightning 发票或地址。';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      '你的钱包都无法支付 Lightning 发票或地址。请改为向收款方索取 Liquid 地址。';
 
   @override
   String get errorInvoiceExpired => '此发票已过期。请向收款方索取新发票。';

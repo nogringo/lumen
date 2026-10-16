@@ -1,6 +1,7 @@
 export 'src/lightning/lnurl_pay.dart';
 export 'src/lightning/recipient.dart'
     show
+        AddressRecipient,
         InvoiceRecipient,
         LnurlRecipient,
         Recipient,

@@ -638,6 +638,10 @@
   "@chooseWalletThatPays": {
     "description": "Accessibility hint of the wallet picker on the send screen."
   },
+  "amountSetByLink": "Amount set by the link",
+  "@amountSetByLink": {
+    "description": "Label above the amount set by a liquidnetwork: link, which cannot be changed."
+  },
   "amountSetByInvoice": "Amount set by the invoice",
   "@amountSetByInvoice": {
     "description": "Label above the amount of a pasted invoice, which cannot be changed."
@@ -726,6 +730,10 @@
       }
     }
   },
+  "liquidAddress": "Liquid address",
+  "@liquidAddress": {
+    "description": "Read by screen readers instead of a shortened Liquid address."
+  },
   "lightningInvoice": "Lightning invoice",
   "@lightningInvoice": {
     "description": "Read by screen readers instead of a shortened invoice."
@@ -783,6 +791,22 @@
   "errorInvoiceNoAmount": "This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.",
   "@errorInvoiceNoAmount": {
     "description": "Error for an invoice without amount."
+  },
+  "errorWrongNetwork": "This is a Liquid testnet address. Ask the recipient for a Liquid mainnet address.",
+  "@errorWrongNetwork": {
+    "description": "Error for an address from another Liquid network, such as testnet."
+  },
+  "errorUnsupportedAsset": "This request is for a Liquid asset other than L-BTC, which Lumen cannot send yet. Ask the recipient for an L-BTC address.",
+  "@errorUnsupportedAsset": {
+    "description": "Error for a Liquid payment request in an asset other than L-BTC. Keep L-BTC as is."
+  },
+  "errorNoWalletPaysAddress": "None of your wallets can pay a Liquid address. Ask the recipient for a Lightning invoice or address instead.",
+  "@errorNoWalletPaysAddress": {
+    "description": "Error when the To field holds a Liquid address but no wallet can pay one."
+  },
+  "errorNoWalletPaysInvoice": "None of your wallets can pay a Lightning invoice or address. Ask the recipient for a Liquid address instead.",
+  "@errorNoWalletPaysInvoice": {
+    "description": "Error when the To field holds a Lightning invoice or address but no wallet can pay one."
   },
   "errorInvoiceExpired": "This invoice expired. Ask the recipient for a new one.",
   "@errorInvoiceExpired": {

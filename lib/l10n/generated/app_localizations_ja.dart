@@ -478,6 +478,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get chooseWalletThatPays => '支払うウォレットを選択';
 
   @override
+  String get amountSetByLink => 'リンクで指定された金額';
+
+  @override
   String get amountSetByInvoice => 'インボイスで指定された金額';
 
   @override
@@ -540,6 +543,9 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Liquid アドレス';
+
+  @override
   String get lightningInvoice => 'Lightning インボイス';
 
   @override
@@ -576,6 +582,22 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String get errorInvoiceNoAmount =>
       'このインボイスは金額が指定されていないため、Lumen ではまだ支払えません。金額入りのインボイスを受取人に依頼してください。';
+
+  @override
+  String get errorWrongNetwork =>
+      'これは Liquid テストネットのアドレスです。Liquid メインネットのアドレスを受取人に依頼してください。';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'このリクエストは L-BTC 以外の Liquid アセットを求めており、Lumen ではまだ送れません。L-BTC 用のアドレスを受取人に依頼してください。';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Liquid アドレスに支払えるウォレットがありません。代わりに Lightning インボイスかアドレスを受取人に依頼してください。';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Lightning インボイスやアドレスに支払えるウォレットがありません。代わりに Liquid アドレスを受取人に依頼してください。';
 
   @override
   String get errorInvoiceExpired => 'このインボイスは期限切れです。受取人に新しいインボイスを依頼してください。';

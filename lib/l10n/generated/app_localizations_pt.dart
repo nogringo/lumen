@@ -489,6 +489,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get chooseWalletThatPays => 'Escolher a carteira que paga';
 
   @override
+  String get amountSetByLink => 'Montante definido pela ligação';
+
+  @override
   String get amountSetByInvoice => 'Montante definido pela fatura';
 
   @override
@@ -551,6 +554,9 @@ class AppLocalizationsPt extends AppLocalizations {
   }
 
   @override
+  String get liquidAddress => 'Endereço Liquid';
+
+  @override
   String get lightningInvoice => 'Fatura Lightning';
 
   @override
@@ -588,6 +594,22 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get errorInvoiceNoAmount =>
       'Esta fatura deixa o montante em aberto, o que o Lumen ainda não consegue pagar. Peça ao destinatário uma fatura com montante.';
+
+  @override
+  String get errorWrongNetwork =>
+      'Este é um endereço da testnet Liquid. Peça ao destinatário um endereço da rede Liquid principal.';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'Este pedido é de um ativo Liquid diferente de L-BTC, que o Lumen ainda não consegue enviar. Peça ao destinatário um endereço para L-BTC.';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Nenhuma das suas carteiras consegue pagar a um endereço Liquid. Peça antes ao destinatário uma fatura ou um endereço Lightning.';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Nenhuma das suas carteiras consegue pagar uma fatura ou um endereço Lightning. Peça antes ao destinatário um endereço Liquid.';
 
   @override
   String get errorInvoiceExpired =>
@@ -1300,6 +1322,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get chooseWalletThatPays => 'Escolha a carteira que paga';
 
   @override
+  String get amountSetByLink => 'Valor definido pelo link';
+
+  @override
   String get amountSetByInvoice => 'Valor definido pela fatura';
 
   @override
@@ -1362,6 +1387,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   }
 
   @override
+  String get liquidAddress => 'Endereço Liquid';
+
+  @override
   String get lightningInvoice => 'Fatura Lightning';
 
   @override
@@ -1399,6 +1427,22 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get errorInvoiceNoAmount =>
       'Esta fatura deixa o valor em aberto, e o Lumen ainda não consegue pagá-la. Peça ao destinatário uma fatura com valor.';
+
+  @override
+  String get errorWrongNetwork =>
+      'Este é um endereço da testnet Liquid. Peça ao destinatário um endereço da rede Liquid principal.';
+
+  @override
+  String get errorUnsupportedAsset =>
+      'Esta solicitação é de um ativo Liquid diferente de L-BTC, que o Lumen ainda não consegue enviar. Peça ao destinatário um endereço para L-BTC.';
+
+  @override
+  String get errorNoWalletPaysAddress =>
+      'Nenhuma das suas carteiras consegue pagar um endereço Liquid. Peça ao destinatário uma fatura ou um endereço Lightning.';
+
+  @override
+  String get errorNoWalletPaysInvoice =>
+      'Nenhuma das suas carteiras consegue pagar uma fatura ou um endereço Lightning. Peça ao destinatário um endereço Liquid.';
 
   @override
   String get errorInvoiceExpired =>

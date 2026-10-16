@@ -160,6 +160,8 @@ class HistoryStore {
     'feeSats': t.feeSats,
     'preimage': t.preimage,
     'invoice': t.invoice,
+    'txid': t.txid,
+    'confirmations': t.confirmations,
   };
 
   static SavedTransaction _decode(Map<String, Object?> json) => (
@@ -176,6 +178,8 @@ class HistoryStore {
       feeSats: json['feeSats'] as int?,
       preimage: json['preimage'] as String?,
       invoice: json['invoice'] as String?,
+      txid: json['txid'] as String?,
+      confirmations: json['confirmations'] as int?,
     ),
   );
 }

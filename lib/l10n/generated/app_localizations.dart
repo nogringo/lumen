@@ -883,6 +883,12 @@ abstract class AppLocalizations {
   /// **'Choose the wallet that pays'**
   String get chooseWalletThatPays;
 
+  /// Label above the amount set by a liquidnetwork: link, which cannot be changed.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount set by the link'**
+  String get amountSetByLink;
+
   /// Label above the amount of a pasted invoice, which cannot be changed.
   ///
   /// In en, this message translates to:
@@ -1003,6 +1009,12 @@ abstract class AppLocalizations {
   /// **'{label}: {value}'**
   String receiptLine(String label, String value);
 
+  /// Read by screen readers instead of a shortened Liquid address.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid address'**
+  String get liquidAddress;
+
   /// Read by screen readers instead of a shortened invoice.
   ///
   /// In en, this message translates to:
@@ -1062,6 +1074,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.'**
   String get errorInvoiceNoAmount;
+
+  /// Error for an address from another Liquid network, such as testnet.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a Liquid testnet address. Ask the recipient for a Liquid mainnet address.'**
+  String get errorWrongNetwork;
+
+  /// Error for a Liquid payment request in an asset other than L-BTC. Keep L-BTC as is.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is for a Liquid asset other than L-BTC, which Lumen cannot send yet. Ask the recipient for an L-BTC address.'**
+  String get errorUnsupportedAsset;
+
+  /// Error when the To field holds a Liquid address but no wallet can pay one.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your wallets can pay a Liquid address. Ask the recipient for a Lightning invoice or address instead.'**
+  String get errorNoWalletPaysAddress;
+
+  /// Error when the To field holds a Lightning invoice or address but no wallet can pay one.
+  ///
+  /// In en, this message translates to:
+  /// **'None of your wallets can pay a Lightning invoice or address. Ask the recipient for a Liquid address instead.'**
+  String get errorNoWalletPaysInvoice;
 
   /// Error for an expired invoice.
   ///

@@ -2,11 +2,12 @@ import 'dart:convert';
 
 import 'package:bech32/bech32.dart';
 
+import '../liquid/liquid_address.dart';
 import '../wallet.dart';
 import 'bolt11.dart';
 
 enum RecipientError {
-  /// Not a Lightning invoice, Lightning address or LNURL.
+  /// Not a Lightning invoice, Lightning address, LNURL or Liquid address.
   unrecognized,
 
   /// An invoice that leaves the amount to the payer, which NWC cannot pay.
@@ -20,6 +21,12 @@ enum RecipientError {
 
   /// The service sent an invoice for another amount than the one asked.
   wrongInvoice,
+
+  /// An address from a network Lumen does not pay on here, such as testnet.
+  wrongNetwork,
+
+  /// A request for a Liquid asset other than L-BTC.
+  unsupportedAsset,
 }
 
 class RecipientException implements Exception {
@@ -56,15 +63,30 @@ final class LnurlRecipient extends Recipient {
   String get label => address ?? url.host;
 }
 
+/// A Liquid address that receives L-BTC, alone or in a `liquidnetwork:` URI
+/// that may set the amount.
+final class AddressRecipient extends Recipient {
+  const AddressRecipient(this.address);
+
+  final ChainAddress address;
+}
+
 final _address = RegExp(
   r'^([a-z0-9\-_.+]+)@([a-z0-9\-]+(\.[a-z0-9\-]+)*\.[a-z]{2,})$',
 );
 
 /// Reads [input]. Throws a [RecipientException] when it is not something
-/// Lumen can pay.
-Recipient parseRecipient(String input) {
+/// Lumen can pay, or is an address on another network than [networks].
+Recipient parseRecipient(
+  String input, {
+  Set<ChainNetwork> networks = const {ChainNetwork.liquid},
+}) {
   var value = input.trim();
   final lower = value.toLowerCase();
+  if (lower.startsWith('liquidnetwork:') ||
+      lower.startsWith('liquidtestnet:')) {
+    return _liquidUri(value, networks);
+  }
   if (lower.startsWith('lightning:')) {
     value = value.substring('lightning:'.length).replaceFirst('//', '');
   } else if (lower.startsWith('bitcoin:')) {
@@ -109,7 +131,70 @@ Recipient parseRecipient(String input) {
       return InvoiceRecipient(invoiceFrom(bolt11, msats));
     }
   }
+  if (liquidAddress(value) case final address?) {
+    _checkNetwork(address, networks);
+    return AddressRecipient(address);
+  }
   throw const RecipientException(RecipientError.unrecognized);
+}
+
+void _checkNetwork(ChainAddress address, Set<ChainNetwork> networks) {
+  if (!networks.contains(address.network)) {
+    throw const RecipientException(RecipientError.wrongNetwork);
+  }
+}
+
+/// A BIP-21 style URI, as the Blockstream app and Aqua make them. Its amount
+/// is in L-BTC, as in BTC for `bitcoin:`.
+AddressRecipient _liquidUri(String uri, Set<ChainNetwork> networks) {
+  final body = uri.substring(uri.indexOf(':') + 1);
+  final query = body.indexOf('?');
+  final address = liquidAddress(query < 0 ? body : body.substring(0, query));
+  if (address == null) {
+    throw const RecipientException(RecipientError.unrecognized);
+  }
+  final Map<String, String> params;
+  try {
+    params = {
+      for (final MapEntry(:key, :value) in Uri.splitQueryString(
+        query < 0 ? '' : body.substring(query + 1),
+      ).entries)
+        key.toLowerCase(): value,
+    };
+  } on ArgumentError {
+    throw const RecipientException(RecipientError.unrecognized);
+  }
+  // BIP-21: a required parameter Lumen does not know makes it unpayable.
+  if (params.keys.any((key) => key.startsWith('req-'))) {
+    throw const RecipientException(RecipientError.unrecognized);
+  }
+
+  _checkNetwork(address, networks);
+  final asset = params['assetid']?.toLowerCase();
+  if (asset != null && asset != lbtcAssetIds[address.network]) {
+    throw const RecipientException(RecipientError.unsupportedAsset);
+  }
+  final amount = params['amount'] ?? '';
+  final sats = amount.isEmpty
+      ? null
+      : _sats(amount) ??
+            (throw const RecipientException(RecipientError.unrecognized));
+  return AddressRecipient(
+    ChainAddress(
+      address.address,
+      network: address.network,
+      sats: sats == 0 ? null : sats,
+    ),
+  );
+}
+
+/// An amount in BTC units as sats, or null when it is not a valid one.
+int? _sats(String amount) {
+  final match = RegExp(r'^(\d{1,8})(?:\.(\d{0,8}))?$').firstMatch(amount);
+  if (match == null) return null;
+  final whole = int.parse(match.group(1)!);
+  final fraction = int.parse((match.group(2) ?? '').padRight(8, '0'));
+  return whole * 100000000 + fraction;
 }
 
 Invoice invoiceFrom(Bolt11 bolt11, int msats) {
