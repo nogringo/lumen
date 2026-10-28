@@ -307,7 +307,13 @@ How the web build came out:
 - The Pages workflow installs wasm-pack 0.15.0 (`taiki-e/install-action`), caches the Rust build, and runs the script before `flutter build web`.
 - Locally the wasm builds in about a minute and weighs 5.1 MB, as in the spike. Served under `/lumen/` as on Pages, in headless Chrome, a testnet wallet loads LWK, gives an address and syncs through Waterfalls in about 0.2 s.
 - `flutter run -d chrome` needs the script first too.
-- Not run on GitHub yet: the first Pages run will tell how long the wasm build takes there.
+- On GitHub, the first Pages run built the wasm in 2 min 24 s, with no cache, and the whole deploy took 5 min.
+
+How the desktop builds came out:
+
+- `integration_test/lwk_test.dart` runs the LWK the app bundles, offline: it checks phrases, derives the known address of the "abandon ... about" phrase, and gets a sync to `127.0.0.1:9` reported as unreachable. It needs a build of the app, so `flutter test` leaves it out.
+- CI runs it on Linux (under `xvfb-run`, with GTK, libsecret and ninja installed) and on Windows, in a `desktop` job next to `check` and `rust`. Cargokit builds the crate in Flutter's build folder (`build/<platform>/.../plugins/lumen_core/cargokit_build`), so `Swatinem/rust-cache` is pointed there.
+- On macOS it passes in about 30 s. Linux and Windows are only run by CI: the first run will tell whether they pass and how long they take, and the second whether the cache paths are right.
 
 ## Later
 

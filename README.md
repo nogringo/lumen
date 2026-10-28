@@ -59,6 +59,7 @@ flutter run
 flutter test                                  # app, including accessibility guidelines
 (cd packages/lumen_wallets && dart test)      # wallet logic
 (cd packages/lumen_core/rust && cargo test)   # Rust core, offline
+flutter test integration_test -d macos        # the Rust core as the app bundles it
 ```
 
 ## Screenshots
