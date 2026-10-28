@@ -74,7 +74,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         if (hasSidebar(context))
                           PageTitle(l.paymentTitle, trailing: share)
                         else
-                          TopBar(title: l.paymentTitle, trailing: share),
+                          TopBar(title: l.paymentTitle, actions: [?share]),
                         const SizedBox(height: 24),
                         if (snapshot.connectionState != ConnectionState.done)
                           ActivityLoading(label: l.activityLoading)

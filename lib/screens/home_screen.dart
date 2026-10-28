@@ -22,6 +22,11 @@ class HomeScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final wallets = LumenScope.walletsOf(context);
     final sidebar = hasSidebar(context);
+    final refresh = RefreshButton(
+      label: l.refreshBalances,
+      loading: wallets.isRefreshing,
+      onPressed: wallets.refreshAll,
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -31,13 +36,14 @@ class HomeScreen extends StatelessWidget {
             padding: LayoutSize.of(context).screenPadding,
             children: [
               if (sidebar)
-                PageTitle(l.overview)
+                PageTitle(l.overview, trailing: refresh)
               else
                 Row(
                   children: [
                     const Expanded(
                       child: SizedBox(height: 48, child: Brand.title()),
                     ),
+                    if (isDesktopPlatform(context)) refresh,
                     IconButton(
                       tooltip: l.settings,
                       icon: const Icon(Icons.tune),

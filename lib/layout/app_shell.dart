@@ -59,10 +59,7 @@ class _Sidebar extends StatelessWidget {
     final l = AppLocalizations.of(context);
     final wallets = LumenScope.walletsOf(context);
     final gate = GateScope.of(context);
-    final lockKeys = switch (Theme.of(context).platform) {
-      TargetPlatform.macOS || TargetPlatform.iOS => '⌘L',
-      _ => 'Ctrl+L',
-    };
+    final lockKeys = shortcutKeys(context, 'L');
     return SafeArea(
       right: false,
       child: FillScroll(

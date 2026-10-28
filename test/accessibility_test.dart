@@ -629,6 +629,77 @@ void main() {
     handle.dispose();
   }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
 
+  testWidgets('desktop pages refresh from a button that names its shortcut', (
+    tester,
+  ) async {
+    final wallets = twoWallets();
+    final [home, offline] = wallets;
+    await pumpLumen(tester, sources, wallets: wallets, size: desktopSize);
+    final (homeBefore, offlineBefore) = (home.fetchCount, offline.fetchCount);
+    Future<void> settle() async {
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pumpAndSettle();
+    }
+
+    (int, int) fetched() =>
+        (home.fetchCount - homeBefore, offline.fetchCount - offlineBefore);
+
+    await tester.tap(find.byTooltip('Refresh balances (⌘R)'));
+    await settle();
+    expect(fetched(), (1, 1));
+
+    await tester.tap(find.text('Home node').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Refresh balance (⌘R)'));
+    await settle();
+    expect(fetched(), (2, 1));
+
+    await tester.sendKeyDownEvent(LogicalKeyboardKey.metaLeft);
+    await tester.sendKeyEvent(LogicalKeyboardKey.keyR);
+    await tester.sendKeyUpEvent(LogicalKeyboardKey.metaLeft);
+    await settle();
+    expect(fetched(), (3, 2));
+  }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+
+  for (final textScale in [1.0, 2.0]) {
+    testWidgets('a narrow desktop window keeps the refresh buttons, '
+        '${textScale}x text', (tester) async {
+      final handle = tester.ensureSemantics();
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: twoWallets(),
+        textScale: textScale,
+      );
+      expect(find.byTooltip('Refresh balances (⌘R)'), findsOneWidget);
+      await expectGuidelines(tester);
+
+      await tester.ensureVisible(find.text('Home node').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home node').first);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(find.byTooltip('Refresh balance (⌘R)'), findsOneWidget);
+      final back = tester.getCenter(find.byTooltip('Back'));
+      final title = tester.getCenter(find.bySemanticsLabel('Home node').last);
+      final menu = tester.getCenter(find.byTooltip('Home node options'));
+      expect(title.dx - back.dx, closeTo(menu.dx - title.dx, 1));
+      await expectGuidelines(tester);
+      handle.dispose();
+    }, variant: TargetPlatformVariant.only(TargetPlatform.macOS));
+  }
+
+  testWidgets('a phone pulls to refresh, with no refresh button', (
+    tester,
+  ) async {
+    await pumpLumen(tester, sources, wallets: twoWallets());
+    expect(find.byTooltip('Refresh balances (Ctrl+R)'), findsNothing);
+
+    await tester.tap(find.text('Home node').first);
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Refresh balance (Ctrl+R)'), findsNothing);
+  });
+
   testWidgets('a desktop row highlights and takes focus as a whole', (
     tester,
   ) async {

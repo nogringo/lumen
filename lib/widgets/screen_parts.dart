@@ -23,18 +23,28 @@ class LumenBackButton extends StatelessWidget {
   }
 }
 
-/// Phone and tablet header: back button, centered title, optional action.
+/// Phone and tablet header: back button, centered title, optional actions.
 class TopBar extends StatelessWidget {
-  const TopBar({super.key, required this.title, this.trailing});
+  const TopBar({super.key, required this.title, this.actions = const []});
 
   final String title;
-  final Widget? trailing;
+
+  /// Icon buttons, 48 wide each.
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
+    // As wide on both sides, so the title stays centered.
+    final side = 48.0 * max(1, actions.length);
     return Row(
       children: [
-        const LumenBackButton(),
+        SizedBox(
+          width: side,
+          child: const Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: LumenBackButton(),
+          ),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: ScreenTitle(
@@ -46,7 +56,13 @@ class TopBar extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        SizedBox(width: 48, child: trailing),
+        SizedBox(
+          width: side,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: actions,
+          ),
+        ),
       ],
     );
   }
@@ -73,6 +89,92 @@ class PageTitle extends StatelessWidget {
         ),
         ?trailing,
       ],
+    );
+  }
+}
+
+/// A shortcut on [key] as the platform writes it, like ⌘R or Ctrl+R.
+String shortcutKeys(BuildContext context, String key) =>
+    switch (Theme.of(context).platform) {
+      TargetPlatform.macOS || TargetPlatform.iOS => '⌘$key',
+      _ => 'Ctrl+$key',
+    };
+
+/// Whether the platform is driven by a mouse, which cannot pull to refresh.
+bool isDesktopPlatform(BuildContext context) =>
+    switch (Theme.of(context).platform) {
+      TargetPlatform.macOS ||
+      TargetPlatform.windows ||
+      TargetPlatform.linux => true,
+      _ => false,
+    };
+
+/// Desktop stand-in for pull to refresh, which a mouse cannot do. Its icon
+/// spins while [loading], unless animations are turned off.
+class RefreshButton extends StatefulWidget {
+  const RefreshButton({
+    super.key,
+    required this.label,
+    required this.loading,
+    required this.onPressed,
+  });
+
+  final String label;
+  final bool loading;
+  final VoidCallback onPressed;
+
+  @override
+  State<RefreshButton> createState() => _RefreshButtonState();
+}
+
+class _RefreshButtonState extends State<RefreshButton>
+    with SingleTickerProviderStateMixin {
+  late final _turns = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 1),
+  );
+  var _spinning = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _spin();
+  }
+
+  @override
+  void didUpdateWidget(RefreshButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _spin();
+  }
+
+  void _spin() {
+    final still = MediaQuery.disableAnimationsOf(context);
+    final spinning = widget.loading && !still;
+    if (spinning == _spinning) return;
+    _spinning = spinning;
+    if (spinning) {
+      _turns.repeat();
+    } else if (still) {
+      _turns.reset();
+    } else {
+      // Ends the turn rather than stopping askew.
+      _turns.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _turns.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Stays enabled while loading, so it keeps keyboard focus.
+    return IconButton(
+      tooltip: '${widget.label} (${shortcutKeys(context, 'R')})',
+      onPressed: widget.onPressed,
+      icon: RotationTransition(turns: _turns, child: const Icon(Icons.refresh)),
     );
   }
 }

@@ -32,6 +32,11 @@ class WalletScreen extends StatelessWidget {
     if (wallet == null) return const Scaffold();
     final menu = _WalletMenu(wallet);
     final balance = wallets.balanceOf(wallet);
+    final refresh = RefreshButton(
+      label: l.refreshBalance,
+      loading: balance.loading,
+      onPressed: () => wallets.refresh(wallet),
+    );
 
     return Scaffold(
       body: SafeArea(
@@ -41,9 +46,18 @@ class WalletScreen extends StatelessWidget {
             padding: LayoutSize.of(context).screenPadding,
             children: [
               if (hasSidebar(context))
-                PageTitle(wallet.name, trailing: menu)
+                PageTitle(
+                  wallet.name,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [refresh, menu],
+                  ),
+                )
               else
-                TopBar(title: wallet.name, trailing: menu),
+                TopBar(
+                  title: wallet.name,
+                  actions: [if (isDesktopPlatform(context)) refresh, menu],
+                ),
               const SizedBox(height: 24),
               MergeSemantics(
                 child: Semantics(
