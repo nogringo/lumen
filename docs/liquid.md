@@ -117,7 +117,7 @@ How it came out:
 - A pending transaction is dated from when Lumen first saw it, kept with the chain state.
 - A payment to oneself shows as outgoing, 0 sats, with its fee. Worth a "to yourself" label in step 7.
 - `tool/liquid_testnet.dart` syncs and sends on testnet (about 2 s for a full scan, 33 sats of fee).
-- The crate's own tests (`cargo test`, including the known-phrase vectors) do not run in CI until step 9 installs Rust.
+- The crate's own tests (`cargo test`, including the known-phrase vectors) run in CI since step 9.
 - "Send everything" (LWK's `drain_lbtc_wallet`) came with step 6.
 
 ### 3. Wire Liquid into the app (done)
@@ -290,6 +290,13 @@ How the servers came out:
 - Update the README feature list and screenshots, and `zapstore.yaml` if its description lists wallet kinds.
 
 Done when: CI is green and a tagged release produces a working Android build with Liquid.
+
+How the Rust checks came out:
+
+- CI has a `rust` job next to `check`: `cargo fmt --check`, `cargo clippy --all-targets -D warnings` and `cargo test`, on the stable toolchain Cargokit builds with, and with `Swatinem/rust-cache` keeping the compiled dependencies between runs. Releases wait for it too, through `workflow_call`.
+- The tests need no network: the servers they open point at `127.0.0.1:9`, which refuses at once.
+- The crate went through `rustfmt` for the first time, and lost three `clone()` calls on `Network`, which is `Copy`.
+- Stable moves every six weeks, so a new clippy lint can turn the job red without a change here.
 
 ## Later
 

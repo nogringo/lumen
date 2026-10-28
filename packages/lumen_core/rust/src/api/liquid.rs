@@ -10,9 +10,7 @@ use lwk_wollet::asyncr::{
 };
 use lwk_wollet::elements::pset::PartiallySignedTransaction;
 use lwk_wollet::elements::{Address, Transaction, Txid};
-use lwk_wollet::{
-    Chain, MemoryStore, Network, Update, Wollet, WolletBuilder, WolletDescriptor,
-};
+use lwk_wollet::{Chain, MemoryStore, Network, Update, Wollet, WolletBuilder, WolletDescriptor};
 use tokio::sync::Mutex;
 
 pub enum LiquidNetwork {
@@ -214,7 +212,7 @@ impl LiquidWallet {
             LiquidNetwork::Mainnet => Network::Liquid,
             LiquidNetwork::Testnet => Network::TestnetLiquid,
         };
-        let mut wollet = WolletBuilder::new(network.clone(), descriptor.clone())
+        let mut wollet = WolletBuilder::new(network, descriptor.clone())
             .with_stores(Arc::new(MemoryStore::new()))?
             .build()?;
         for saved in state {
@@ -224,13 +222,13 @@ impl LiquidWallet {
         // More than 4 requests at a time gets rate limited.
         let waterfalls = match waterfalls_url {
             Some(url) => Some(Mutex::new(
-                WaterfallsClientBuilder::new(&url, network.clone())
+                WaterfallsClientBuilder::new(&url, network)
                     .concurrency(4)
                     .build()?,
             )),
             None => None,
         };
-        let esplora = EsploraClientBuilder::new(&esplora_url, network.clone())
+        let esplora = EsploraClientBuilder::new(&esplora_url, network)
             .concurrency(4)
             .build()?;
         Ok(LiquidWallet {
@@ -334,7 +332,9 @@ impl LiquidWallet {
     ) -> Result<Option<String>, LiquidError> {
         let txid = Txid::from_str(&txid).map_err(other)?;
         let wollet = self.wollet.lock().await;
-        Ok(wollet.transaction(&txid)?.map(|tx| tx.unblinded_url(&explorer)))
+        Ok(wollet
+            .transaction(&txid)?
+            .map(|tx| tx.unblinded_url(&explorer)))
     }
 
     /// Builds a payment of [sats] L-BTC to [address] and quotes its fee,
@@ -373,7 +373,12 @@ impl LiquidWallet {
         let policy = wollet.policy_asset();
         let fee = details.fees_in(&policy);
         // The wallet's net change, fee included.
-        let spent = details.balances().as_ref().get(&policy).copied().unwrap_or(0);
+        let spent = details
+            .balances()
+            .as_ref()
+            .get(&policy)
+            .copied()
+            .unwrap_or(0);
         Ok(LiquidDraft {
             pset,
             sats: spent.unsigned_abs().saturating_sub(fee),
@@ -423,8 +428,8 @@ impl LiquidWallet {
 fn accepted(result: Result<Txid, lwk_wollet::Error>) -> Result<(), LiquidError> {
     let Err(error) = result else { return Ok(()) };
     let error = LiquidError::from(error);
-    let known = error.kind == LiquidErrorKind::Rejected
-        && error.message.to_lowercase().contains("already");
+    let known =
+        error.kind == LiquidErrorKind::Rejected && error.message.to_lowercase().contains("already");
     if known {
         Ok(())
     } else {
@@ -461,9 +466,16 @@ mod tests {
             descriptor(ABANDON.into(), LiquidNetwork::Testnet, ScriptKind::NativeSegwit).unwrap(),
             "ct(slip77(9c8e4f05c7711a98c838be228bcb84924d4570ca53f35fa1c793e58841d47023),elwpkh([73c5da0a/84h/1h/0h]tpubDC8msFGeGuwnKG9Upg7DM2b4DaRqg3CUZa5g8v2SRQ6K4NSkxUgd7HsL2XVWbVm39yBA4LAxysQAm397zwQSQoQgewGiYZqrA9DsP4zbQ1M/<0;1>/*))#xte2lx9x",
         );
-        let nested =
-            descriptor(ABANDON.into(), LiquidNetwork::Mainnet, ScriptKind::NestedSegwit).unwrap();
-        assert!(nested.contains(",elsh(wpkh([73c5da0a/49'/1776'/0']"), "{nested}");
+        let nested = descriptor(
+            ABANDON.into(),
+            LiquidNetwork::Mainnet,
+            ScriptKind::NestedSegwit,
+        )
+        .unwrap();
+        assert!(
+            nested.contains(",elsh(wpkh([73c5da0a/49'/1776'/0']"),
+            "{nested}"
+        );
     }
 
     #[tokio::test]
@@ -484,7 +496,9 @@ mod tests {
         assert_eq!(wallet.balance().await.unwrap(), 0);
         assert!(wallet.transactions().await.unwrap().is_empty());
         let unknown = "c6e3187f028942973ad27224ca79baa8382e90ad686e927fc29896e8a2edf3f3";
-        let url = wallet.explorer_url(unknown.into(), "https://liquid.network/".into()).await;
+        let url = wallet
+            .explorer_url(unknown.into(), "https://liquid.network/".into())
+            .await;
         assert!(url.unwrap().is_none());
     }
 
@@ -522,9 +536,16 @@ mod tests {
             phrase_problem(format!("{ABANDON} {ABANDON} abandon")),
             Some(PhraseProblem::WordCount)
         ));
-        let native =
-            descriptor(ABANDON_24.into(), LiquidNetwork::Mainnet, ScriptKind::NativeSegwit).unwrap();
-        assert!(native.contains(",elwpkh([5436d724/84'/1776'/0']"), "{native}");
+        let native = descriptor(
+            ABANDON_24.into(),
+            LiquidNetwork::Mainnet,
+            ScriptKind::NativeSegwit,
+        )
+        .unwrap();
+        assert!(
+            native.contains(",elwpkh([5436d724/84'/1776'/0']"),
+            "{native}"
+        );
     }
 
     #[tokio::test]
@@ -540,10 +561,18 @@ mod tests {
         .await
         .unwrap();
         let testnet = "tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m";
-        let error = wallet.prepare_send(testnet.into(), 1000).await.err().unwrap();
+        let error = wallet
+            .prepare_send(testnet.into(), 1000)
+            .await
+            .err()
+            .unwrap();
         assert_eq!(error.kind, LiquidErrorKind::WrongNetwork);
 
-        let error = wallet.prepare_send("lq1nope".into(), 1000).await.err().unwrap();
+        let error = wallet
+            .prepare_send("lq1nope".into(), 1000)
+            .await
+            .err()
+            .unwrap();
         assert_eq!(error.kind, LiquidErrorKind::InvalidAddress);
 
         let own = wallet.address(Some(3)).await.unwrap().address;

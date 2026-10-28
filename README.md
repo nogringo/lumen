@@ -36,6 +36,7 @@ This repository is a [pub workspace](https://dart.dev/tools/pub/workspaces):
 
 - `lib/`: the Flutter app (screens, routing, theme, app lock, local history, translations).
 - `packages/lumen_wallets/`: pure Dart wallet logic behind a `Wallet` interface. The app never imports `ndk` directly.
+- `packages/lumen_core/`: the Rust crate behind Liquid wallets (LWK), bridged to Dart with flutter_rust_bridge. Only `lumen_wallets` imports it.
 - `test/`: widget and accessibility tests, with fake wallets in `test/fakes.dart`.
 - `mockups/`: the HTML design mockups and the accessibility requirements.
 - `tool/`: scripts for the app icons and the screenshots above.
@@ -49,12 +50,14 @@ flutter run
 
 - macOS and iOS store wallets in the Keychain, so pick your development team in Xcode (Runner target, Signing & Capabilities) before the first run.
 - Linux needs `libsecret-1-dev` to build.
+- Building needs Rust through [rustup](https://rustup.rs): the build compiles `lumen_core` on the stable toolchain and adds the targets it needs.
 
 ## Test
 
 ```sh
 flutter test                                  # app, including accessibility guidelines
 (cd packages/lumen_wallets && dart test)      # wallet logic
+(cd packages/lumen_core/rust && cargo test)   # Rust core, offline
 ```
 
 ## Screenshots

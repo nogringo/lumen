@@ -38,3 +38,28 @@ jobs:
       - name: Test lumen_wallets
         working-directory: packages/lumen_wallets
         run: dart test
+
+  rust:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/lumen_core/rust
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/lumen_core/rust
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets -- -D warnings
+
+      - name: Test lumen_core
+        run: cargo test --locked
