@@ -12,6 +12,7 @@ class Tappable extends StatefulWidget {
     this.selected = false,
     this.toggled,
     this.checked,
+    this.ticked,
     this.focusNode,
     this.decorated = true,
     this.onFocusChange,
@@ -27,6 +28,9 @@ class Tappable extends StatefulWidget {
 
   /// Makes the row one choice of several for screen readers, picked or not.
   final bool? checked;
+
+  /// Makes the row a checkbox for screen readers, ticked or not.
+  final bool? ticked;
   final FocusNode? focusNode;
 
   /// False leaves the fill and focus ring to a parent that draws them over a
@@ -45,11 +49,14 @@ class _TappableState extends State<Tappable> {
   Widget build(BuildContext context) {
     final c = LumenColors.of(context);
     final radius = BorderRadius.circular(widget.borderRadius);
-    final plain = widget.toggled == null && widget.checked == null;
+    final plain =
+        widget.toggled == null &&
+        widget.checked == null &&
+        widget.ticked == null;
     return Semantics(
       button: plain,
       toggled: widget.toggled,
-      checked: widget.checked,
+      checked: widget.checked ?? widget.ticked,
       inMutuallyExclusiveGroup: widget.checked == null ? null : true,
       selected: plain ? widget.selected : null,
       child: Material(

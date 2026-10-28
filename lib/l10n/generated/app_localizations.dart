@@ -1932,6 +1932,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'These words restore {name} in Lumen or another Liquid app. Keep them on paper, in this order.'**
   String savedPhraseLead(String name);
+
+  /// Body of the remove confirmation dialog for a wallet whose recovery phrase lives in Lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen deletes this wallet\'s recovery phrase from this device. Without your own copy of the words, its funds are lost for good.'**
+  String get removeLiquidBody;
+
+  /// Checkbox in the remove dialog of a wallet whose recovery phrase lives in Lumen. Removing needs it checked.
+  ///
+  /// In en, this message translates to:
+  /// **'I have my own copy of the recovery phrase'**
+  String get phraseSavedCheck;
+
+  /// Error under the checkbox when Remove is pressed without it.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this box once you have your own copy of the recovery phrase.'**
+  String get errorPhraseNotSaved;
 }
 
 class _AppLocalizationsDelegate

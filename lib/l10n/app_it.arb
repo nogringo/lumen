@@ -302,5 +302,8 @@
   "showPhraseTitle": "Mostrare la frase di recupero?",
   "showPhraseBody": "Chiunque veda o senta queste parole può spendere i fondi di questo portafoglio. Controlla che nessuno possa vedere il tuo schermo o sentire il tuo lettore di schermo.",
   "show": "Mostra",
-  "savedPhraseLead": "Queste parole ripristinano {name} in Lumen o in un'altra app Liquid. Conservale su carta, in questo ordine."
+  "savedPhraseLead": "Queste parole ripristinano {name} in Lumen o in un'altra app Liquid. Conservale su carta, in questo ordine.",
+  "removeLiquidBody": "Lumen cancella da questo dispositivo la frase di recupero di questo portafoglio. Senza una tua copia delle parole, i suoi fondi sono persi per sempre.",
+  "phraseSavedCheck": "Ho una mia copia della frase di recupero",
+  "errorPhraseNotSaved": "Seleziona questa casella quando hai una tua copia della frase di recupero."
 }

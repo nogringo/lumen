@@ -13,6 +13,7 @@ import '../wallets/wallets_controller.dart';
 import '../widgets/activity.dart';
 import '../widgets/address_card.dart';
 import '../widgets/amount.dart';
+import '../widgets/check_row.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/passphrase_field.dart';
 import '../widgets/phrase_words.dart';
@@ -240,31 +241,116 @@ class _WalletMenu extends StatelessWidget {
     );
   }
 
+  /// Comes back to the dialog after the phrase is shown from it.
   Future<void> _remove(BuildContext context) async {
+    final answer = await showDialog<_RemoveAnswer>(
+      context: context,
+      builder: (_) => _RemoveDialog(wallet),
+    );
+    if (!context.mounted) return;
+    switch (answer) {
+      case _RemoveAnswer.showPhrase:
+        await _showPhrase(context);
+        if (context.mounted) await _remove(context);
+      case _RemoveAnswer.remove:
+        final wallets = LumenScope.readWallets(context);
+        context.go('/');
+        await wallets.remove(wallet);
+      case null:
+    }
+  }
+}
+
+enum _RemoveAnswer { remove, showPhrase }
+
+/// Asks before Lumen forgets [wallet]. A Liquid wallet takes its funds with
+/// it, so removing one also needs its owner to say the phrase is saved.
+class _RemoveDialog extends StatefulWidget {
+  const _RemoveDialog(this.wallet);
+
+  final Wallet wallet;
+
+  @override
+  State<_RemoveDialog> createState() => _RemoveDialogState();
+}
+
+class _RemoveDialogState extends State<_RemoveDialog> {
+  final _savedFocus = FocusNode();
+  var _saved = false;
+  var _notSaved = false;
+
+  bool get _keysInLumen => widget.wallet.kind == WalletKind.liquid;
+
+  @override
+  void dispose() {
+    _savedFocus.dispose();
+    super.dispose();
+  }
+
+  void _remove() {
+    if (_keysInLumen && !_saved) {
+      setState(() => _notSaved = true);
+      return reportFieldError(
+        context,
+        AppLocalizations.of(context).errorPhraseNotSaved,
+        _savedFocus,
+      );
+    }
+    Navigator.pop(context, _RemoveAnswer.remove);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final c = LumenColors.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l.removeTitle(wallet.name)),
-        content: Text(l.removeBody),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: TextButton.styleFrom(foregroundColor: c.danger),
-            child: Text(l.remove),
-          ),
-        ],
-      ),
+    return AlertDialog(
+      scrollable: true,
+      title: Text(l.removeTitle(widget.wallet.name)),
+      content: _keysInLumen
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l.removeLiquidBody),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: TextButton(
+                    onPressed: () =>
+                        Navigator.pop(context, _RemoveAnswer.showPhrase),
+                    child: Text(l.showRecoveryPhrase),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                CheckRow(
+                  label: l.phraseSavedCheck,
+                  value: _saved,
+                  error: _notSaved,
+                  focusNode: _savedFocus,
+                  onChanged: () => setState(() {
+                    _saved = !_saved;
+                    _notSaved = false;
+                  }),
+                ),
+                if (_notSaved) ...[
+                  const SizedBox(height: 8),
+                  ErrorNote(l.errorPhraseNotSaved),
+                ],
+              ],
+            )
+          : Text(l.removeBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l.cancel),
+        ),
+        TextButton(
+          onPressed: _remove,
+          style: TextButton.styleFrom(foregroundColor: c.danger),
+          child: Text(l.remove),
+        ),
+      ],
     );
-    if (confirmed != true || !context.mounted) return;
-    final wallets = LumenScope.readWallets(context);
-    context.go('/');
-    await wallets.remove(wallet);
   }
 }
 

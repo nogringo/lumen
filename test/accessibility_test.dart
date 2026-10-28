@@ -628,6 +628,73 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  Future<void> openRemoveDialog(WidgetTester tester) async {
+    await tester.tap(find.text('Savings').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Savings options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+  }
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets('removing a Liquid wallet meets the guidelines, $name, '
+          '${brightness.name}', (tester) async {
+        final handle = tester.ensureSemantics();
+        await pumpLumen(
+          tester,
+          sources,
+          wallets: [FakeWallet.liquid('savings', 'Savings')],
+          size: size,
+          brightness: brightness,
+        );
+        await openRemoveDialog(tester);
+        await expectGuidelines(tester);
+        await tester.tap(find.text('Remove'));
+        await tester.pumpAndSettle();
+        expect(
+          find.text(
+            'Check this box once you have your own copy of the recovery '
+            'phrase.',
+          ),
+          findsOneWidget,
+        );
+        await expectGuidelines(tester);
+        handle.dispose();
+      }, variant: _platformFor(size));
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('removing a Liquid wallet lays out at 200% text, $name', (
+      tester,
+    ) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: [FakeWallet.liquid('savings', 'Savings')],
+        size: size,
+        textScale: 2,
+      );
+      await openRemoveDialog(tester);
+      await tester.ensureVisible(find.text('Remove'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remove'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+      expect(
+        find.text(
+          'Check this box once you have your own copy of the recovery phrase.',
+        ),
+        findsOneWidget,
+      );
+    }, variant: _platformFor(size));
+  }
+
   testWidgets('the review reads the amount with its heading', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpLumen(tester, sources, wallets: twoWallets());

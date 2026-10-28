@@ -1153,6 +1153,18 @@ class AppLocalizationsPt extends AppLocalizations {
   String savedPhraseLead(String name) {
     return 'Estas palavras restauram $name no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem.';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'O Lumen apaga deste dispositivo a frase de recuperação desta carteira. Sem a sua própria cópia das palavras, os fundos perdem-se para sempre.';
+
+  @override
+  String get phraseSavedCheck =>
+      'Tenho a minha própria cópia da frase de recuperação';
+
+  @override
+  String get errorPhraseNotSaved =>
+      'Marque esta caixa quando tiver a sua própria cópia da frase de recuperação.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2300,4 +2312,16 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String savedPhraseLead(String name) {
     return 'Estas palavras restauram $name no Lumen ou em outro app Liquid. Guarde-as no papel, nesta ordem.';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'O Lumen apaga deste dispositivo a frase de recuperação desta carteira. Sem sua própria cópia das palavras, os fundos se perdem para sempre.';
+
+  @override
+  String get phraseSavedCheck =>
+      'Tenho minha própria cópia da frase de recuperação';
+
+  @override
+  String get errorPhraseNotSaved =>
+      'Marque esta caixa quando tiver sua própria cópia da frase de recuperação.';
 }

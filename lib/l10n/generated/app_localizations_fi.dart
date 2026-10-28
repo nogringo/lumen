@@ -1149,4 +1149,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String savedPhraseLead(String name) {
     return 'Näillä sanoilla voit palauttaa lompakon $name Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä.';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'Lumen poistaa tämän lompakon palautuslauseen tältä laitteelta. Ilman omaa kopiotasi sanoista sen varat menetetään lopullisesti.';
+
+  @override
+  String get phraseSavedCheck => 'Minulla on oma kopio palautuslauseesta';
+
+  @override
+  String get errorPhraseNotSaved =>
+      'Valitse tämä ruutu, kun sinulla on oma kopio palautuslauseesta.';
 }

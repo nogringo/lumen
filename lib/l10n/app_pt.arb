@@ -302,5 +302,8 @@
   "showPhraseTitle": "Mostrar a frase de recuperação?",
   "showPhraseBody": "Quem vir ou ouvir estas palavras pode gastar os fundos desta carteira. Confirme que ninguém consegue ver o seu ecrã nem ouvir o seu leitor de ecrã.",
   "show": "Mostrar",
-  "savedPhraseLead": "Estas palavras restauram {name} no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem."
+  "savedPhraseLead": "Estas palavras restauram {name} no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem.",
+  "removeLiquidBody": "O Lumen apaga deste dispositivo a frase de recuperação desta carteira. Sem a sua própria cópia das palavras, os fundos perdem-se para sempre.",
+  "phraseSavedCheck": "Tenho a minha própria cópia da frase de recuperação",
+  "errorPhraseNotSaved": "Marque esta caixa quando tiver a sua própria cópia da frase de recuperação."
 }

@@ -1085,4 +1085,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String savedPhraseLead(String name) {
     return '这些单词可在 Lumen 或其他 Liquid 应用中恢复 $name。请按此顺序写在纸上保存。';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'Lumen 会从此设备删除这个钱包的恢复短语。如果您没有自己保存的单词副本，其中的资金将永久丢失。';
+
+  @override
+  String get phraseSavedCheck => '我已自己保存了恢复短语';
+
+  @override
+  String get errorPhraseNotSaved => '保存好恢复短语后，请勾选此框。';
 }

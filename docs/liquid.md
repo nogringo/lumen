@@ -262,6 +262,14 @@ How showing the phrase came out:
 - The copy connection dialog and this one share their passphrase check.
 - Not tried in the running app yet.
 
+How the removal warning came out:
+
+- Removing a Liquid wallet says that Lumen deletes its recovery phrase from the device, and that its funds are lost without the owner's own copy. Remove only goes through once "I have my own copy of the recovery phrase" is checked. Pressed without it, an error under the box says so, is announced, and the box takes focus.
+- The dialog has "Show recovery phrase", which goes through the same warning and passphrase as the menu, then comes back to the dialog.
+- The box is a `CheckRow`, which screen readers read as a checkbox (`Tappable.ticked`), not as one choice of several.
+- NWC wallets keep the dialog they had.
+- Not tried in the running app yet.
+
 ### 9. Build, CI and release
 
 - Install Rust and the needed targets in [ci.yml](../.github/workflows/ci.yml), [release.yml](../.github/workflows/release.yml) and the Pages workflow, with caching so builds stay fast. The Pages build needs nightly and the single-threaded wasm build.

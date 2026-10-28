@@ -1506,5 +1506,17 @@
         "type": "String"
       }
     }
+  },
+  "removeLiquidBody": "Lumen deletes this wallet's recovery phrase from this device. Without your own copy of the words, its funds are lost for good.",
+  "@removeLiquidBody": {
+    "description": "Body of the remove confirmation dialog for a wallet whose recovery phrase lives in Lumen."
+  },
+  "phraseSavedCheck": "I have my own copy of the recovery phrase",
+  "@phraseSavedCheck": {
+    "description": "Checkbox in the remove dialog of a wallet whose recovery phrase lives in Lumen. Removing needs it checked."
+  },
+  "errorPhraseNotSaved": "Check this box once you have your own copy of the recovery phrase.",
+  "@errorPhraseNotSaved": {
+    "description": "Error under the checkbox when Remove is pressed without it."
   }
 }

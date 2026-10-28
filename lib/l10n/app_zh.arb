@@ -302,5 +302,8 @@
   "showPhraseTitle": "显示恢复短语？",
   "showPhraseBody": "任何看到或听到这些单词的人都能花掉这个钱包里的资金。请确认没有人能看到您的屏幕或听到您的屏幕阅读器。",
   "show": "显示",
-  "savedPhraseLead": "这些单词可在 Lumen 或其他 Liquid 应用中恢复 {name}。请按此顺序写在纸上保存。"
+  "savedPhraseLead": "这些单词可在 Lumen 或其他 Liquid 应用中恢复 {name}。请按此顺序写在纸上保存。",
+  "removeLiquidBody": "Lumen 会从此设备删除这个钱包的恢复短语。如果您没有自己保存的单词副本，其中的资金将永久丢失。",
+  "phraseSavedCheck": "我已自己保存了恢复短语",
+  "errorPhraseNotSaved": "保存好恢复短语后，请勾选此框。"
 }

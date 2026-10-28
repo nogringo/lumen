@@ -302,5 +302,8 @@
   "showPhraseTitle": "Näytetäänkö palautuslause?",
   "showPhraseBody": "Kuka tahansa, joka näkee tai kuulee nämä sanat, voi käyttää tämän lompakon varat. Varmista, ettei kukaan näe näyttöäsi tai kuule ruudunlukuohjelmaasi.",
   "show": "Näytä",
-  "savedPhraseLead": "Näillä sanoilla voit palauttaa lompakon {name} Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä."
+  "savedPhraseLead": "Näillä sanoilla voit palauttaa lompakon {name} Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä.",
+  "removeLiquidBody": "Lumen poistaa tämän lompakon palautuslauseen tältä laitteelta. Ilman omaa kopiotasi sanoista sen varat menetetään lopullisesti.",
+  "phraseSavedCheck": "Minulla on oma kopio palautuslauseesta",
+  "errorPhraseNotSaved": "Valitse tämä ruutu, kun sinulla on oma kopio palautuslauseesta."
 }

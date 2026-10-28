@@ -1174,4 +1174,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String savedPhraseLead(String name) {
     return 'Эти слова восстанавливают кошелёк $name в Lumen или другом приложении Liquid. Храните их на бумаге в этом порядке.';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'Lumen удалит с этого устройства фразу восстановления этого кошелька. Без вашей собственной копии слов его средства будут потеряны навсегда.';
+
+  @override
+  String get phraseSavedCheck => 'У меня есть своя копия фразы восстановления';
+
+  @override
+  String get errorPhraseNotSaved =>
+      'Отметьте этот флажок, когда у вас будет своя копия фразы восстановления.';
 }

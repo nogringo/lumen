@@ -302,5 +302,8 @@
   "showPhraseTitle": "¿Mostrar la frase de recuperación?",
   "showPhraseBody": "Quien vea u oiga estas palabras puede gastar los fondos de esta billetera. Comprueba que nadie pueda ver tu pantalla ni oír tu lector de pantalla.",
   "show": "Mostrar",
-  "savedPhraseLead": "Estas palabras restauran {name} en Lumen o en otra app de Liquid. Guárdalas en papel, en este orden."
+  "savedPhraseLead": "Estas palabras restauran {name} en Lumen o en otra app de Liquid. Guárdalas en papel, en este orden.",
+  "removeLiquidBody": "Lumen borra de este dispositivo la frase de recuperación de esta billetera. Sin tu propia copia de las palabras, sus fondos se pierden para siempre.",
+  "phraseSavedCheck": "Tengo mi propia copia de la frase de recuperación",
+  "errorPhraseNotSaved": "Marca esta casilla cuando tengas tu propia copia de la frase de recuperación."
 }

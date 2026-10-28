@@ -209,4 +209,122 @@ void main() {
     expect(find.bySemanticsLabel('Word 24 of 24, art'), findsOneWidget);
     handle.dispose();
   });
+
+  const savedCheck = 'I have my own copy of the recovery phrase';
+  const notSaved =
+      'Check this box once you have your own copy of the recovery phrase.';
+
+  Future<void> openRemove(WidgetTester tester, String name) async {
+    await openMenu(tester, name);
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove $name?'), findsOneWidget);
+  }
+
+  testWidgets('removing a Liquid wallet needs its phrase said to be saved', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final wallet = await tester.runAsync(
+      () => sources.liquid.add(phrase: liquidPhrase, name: 'Savings'),
+    );
+    await pumpLumen(tester, sources, wallets: [wallet!]);
+    await openRemove(tester, 'Savings');
+    expect(
+      find.text(
+        "Lumen deletes this wallet's recovery phrase from this device. "
+        'Without your own copy of the words, its funds are lost for good.',
+      ),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    expect(find.text(notSaved), findsOneWidget);
+    expect(
+      tester.getSemantics(find.text(savedCheck)),
+      matchesSemantics(
+        label: savedCheck,
+        hasCheckedState: true,
+        isChecked: false,
+        isFocusable: true,
+        isFocused: true,
+        hasTapAction: true,
+        hasFocusAction: true,
+      ),
+    );
+    expect(await tester.runAsync(sources.liquid.load), hasLength(1));
+
+    await tester.tap(find.text(savedCheck));
+    await tester.pumpAndSettle();
+    expect(find.text(notSaved), findsNothing);
+    expect(
+      tester.getSemantics(find.text(savedCheck)),
+      matchesSemantics(
+        label: savedCheck,
+        hasCheckedState: true,
+        isChecked: true,
+        isFocusable: true,
+        isFocused: true,
+        hasTapAction: true,
+        hasFocusAction: true,
+      ),
+    );
+
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pumpAndSettle();
+    expect(await tester.runAsync(sources.liquid.load), isEmpty);
+    expect(find.text('Remove Savings?'), findsNothing);
+    handle.dispose();
+  });
+
+  testWidgets('the remove dialog shows the phrase, then comes back', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final wallet = await tester.runAsync(
+      () => sources.liquid.add(phrase: liquidPhrase, name: 'Savings'),
+    );
+    await pumpLumen(tester, sources, wallets: [wallet!]);
+    await openRemove(tester, 'Savings');
+
+    await tester.tap(find.text('Show recovery phrase'));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove Savings?'), findsNothing);
+    await tester.tap(find.text('Show'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsLabel('Word 1 of 12, abandon'), findsOneWidget);
+
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Recovery phrase'), findsNothing);
+    expect(find.text('Remove Savings?'), findsOneWidget);
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Remove Savings?'), findsNothing);
+    expect(await tester.runAsync(sources.liquid.load), hasLength(1));
+    handle.dispose();
+  });
+
+  testWidgets('removing a Lightning wallet asks for no phrase', (tester) async {
+    final wallet = FakeWallet('home', 'Home');
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openRemove(tester, 'Home');
+    expect(
+      find.text(
+        'Lumen forgets this connection. The wallet and its funds are not '
+        'affected, and you can connect it again later.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text(savedCheck), findsNothing);
+    expect(find.text('Show recovery phrase'), findsNothing);
+
+    await tester.tap(find.text('Remove'));
+    await tester.pumpAndSettle();
+    expect(wallet.removed, isTrue);
+  });
 }

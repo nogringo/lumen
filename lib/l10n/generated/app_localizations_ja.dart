@@ -1112,4 +1112,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String savedPhraseLead(String name) {
     return 'これらの単語で、Lumen または他の Liquid アプリで $name を復元できます。この順番どおりに紙に書いて保管してください。';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'Lumen はこのデバイスからこのウォレットのリカバリーフレーズを削除します。単語の控えがなければ、資金は永久に失われます。';
+
+  @override
+  String get phraseSavedCheck => 'リカバリーフレーズの控えを自分で持っています';
+
+  @override
+  String get errorPhraseNotSaved => 'リカバリーフレーズの控えを用意できたら、このボックスにチェックを入れてください。';
 }

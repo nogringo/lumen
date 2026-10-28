@@ -1152,4 +1152,16 @@ class AppLocalizationsEs extends AppLocalizations {
   String savedPhraseLead(String name) {
     return 'Estas palabras restauran $name en Lumen o en otra app de Liquid. Guárdalas en papel, en este orden.';
   }
+
+  @override
+  String get removeLiquidBody =>
+      'Lumen borra de este dispositivo la frase de recuperación de esta billetera. Sin tu propia copia de las palabras, sus fondos se pierden para siempre.';
+
+  @override
+  String get phraseSavedCheck =>
+      'Tengo mi propia copia de la frase de recuperación';
+
+  @override
+  String get errorPhraseNotSaved =>
+      'Marca esta casilla cuando tengas tu propia copia de la frase de recuperación.';
 }

@@ -302,5 +302,8 @@
   "showPhraseTitle": "Wiederherstellungsphrase anzeigen?",
   "showPhraseBody": "Wer diese Wörter sieht oder hört, kann das Guthaben dieser Wallet ausgeben. Achte darauf, dass niemand deinen Bildschirm sieht oder deinen Screenreader hört.",
   "show": "Anzeigen",
-  "savedPhraseLead": "Diese Wörter stellen {name} in Lumen oder einer anderen Liquid-App wieder her. Bewahre sie auf Papier auf, in dieser Reihenfolge."
+  "savedPhraseLead": "Diese Wörter stellen {name} in Lumen oder einer anderen Liquid-App wieder her. Bewahre sie auf Papier auf, in dieser Reihenfolge.",
+  "removeLiquidBody": "Lumen löscht die Wiederherstellungsphrase dieser Wallet von diesem Gerät. Ohne deine eigene Kopie der Wörter ist das Guthaben für immer verloren.",
+  "phraseSavedCheck": "Ich habe meine eigene Kopie der Wiederherstellungsphrase",
+  "errorPhraseNotSaved": "Setze das Häkchen, sobald du deine eigene Kopie der Wiederherstellungsphrase hast."
 }
