@@ -1024,4 +1024,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => '支払いが承認されました';
+
+  @override
+  String get transactionPending => '承認待ち';
 }

@@ -1788,6 +1788,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment confirmed'**
   String get paymentConfirmedAnnouncement;
+
+  /// Under the amount of a payment that waits in the mempool until a block confirms it.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get transactionPending;
 }
 
 class _AppLocalizationsDelegate

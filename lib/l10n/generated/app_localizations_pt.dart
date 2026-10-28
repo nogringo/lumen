@@ -1064,6 +1064,9 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => 'Pagamento confirmado';
+
+  @override
+  String get transactionPending => 'Pendente';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2122,4 +2125,7 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get paymentConfirmedAnnouncement => 'Pagamento confirmado';
+
+  @override
+  String get transactionPending => 'Pendente';
 }

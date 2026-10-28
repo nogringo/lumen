@@ -278,5 +278,6 @@
   "waitingForConfirmation": "Ожидание подтверждения",
   "confirmsSoon": "Обычно в течение 2 минут",
   "paymentConfirmed": "Подтверждено",
-  "paymentConfirmedAnnouncement": "Платёж подтверждён"
+  "paymentConfirmedAnnouncement": "Платёж подтверждён",
+  "transactionPending": "В ожидании"
 }

@@ -278,5 +278,6 @@
   "waitingForConfirmation": "承認を待っています",
   "confirmsSoon": "通常 2 分以内",
   "paymentConfirmed": "承認済み",
-  "paymentConfirmedAnnouncement": "支払いが承認されました"
+  "paymentConfirmedAnnouncement": "支払いが承認されました",
+  "transactionPending": "承認待ち"
 }

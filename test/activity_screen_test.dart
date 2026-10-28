@@ -107,4 +107,73 @@ void main() {
     expect(rows('Zap'), findsNWidgets(4));
     expect(rows('Payment'), findsNothing);
   });
+
+  testWidgets('a pending payment says so until it confirms', (tester) async {
+    final handle = tester.ensureSemantics();
+    final wallet = FakeWallet.liquid('savings', 'Savings')
+      ..transactions = [
+        tx('in', sats: 21000, incoming: true, confirmations: 0),
+        tx('out', sats: 500, days: 1, confirmations: 3),
+      ];
+    final controller = await pumpLumen(tester, sources, wallets: [wallet]);
+
+    expect(find.text('Pending'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(RegExp(r'received 21,000 sats\nPending$')),
+      findsOneWidget,
+    );
+
+    wallet.transactions = [
+      tx('in', sats: 21000, incoming: true, confirmations: 1),
+      ...wallet.transactions.skip(1),
+    ];
+    await tester.runAsync(() => controller.refresh(wallet));
+    await tester.pumpAndSettle();
+    expect(find.text('Pending'), findsNothing);
+    handle.dispose();
+  });
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets(
+        'a pending payment meets the guidelines, $name, ${brightness.name}',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          final wallet = FakeWallet.liquid('savings', 'Savings')
+            ..transactions = [
+              tx('in', sats: 21000, incoming: true, confirmations: 0),
+              tx('out', sats: 500, confirmations: 0),
+            ];
+          await pumpLumen(
+            tester,
+            sources,
+            wallets: [wallet],
+            size: size,
+            brightness: brightness,
+          );
+
+          expect(find.text('Pending'), findsNWidgets(2));
+          await expectGuidelines(tester);
+          handle.dispose();
+        },
+        variant: size == desktopSize
+            ? TargetPlatformVariant.only(TargetPlatform.macOS)
+            : const DefaultTestVariant(),
+      );
+    }
+  }
+
+  testWidgets('a pending payment lays out at 200% text', (tester) async {
+    final wallet = FakeWallet.liquid('savings', 'Savings')
+      ..transactions = [
+        tx('in', sats: 2100000, incoming: true, confirmations: 0),
+      ];
+    await pumpLumen(tester, sources, wallets: [wallet], textScale: 2);
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Pending'), findsOneWidget);
+  });
 }

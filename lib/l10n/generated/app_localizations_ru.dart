@@ -1085,4 +1085,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => 'Платёж подтверждён';
+
+  @override
+  String get transactionPending => 'В ожидании';
 }

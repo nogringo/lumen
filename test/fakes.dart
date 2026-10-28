@@ -209,6 +209,9 @@ Transaction tx(
   int? feeSats,
   String? preimage,
   String? invoice,
+
+  /// Makes it a chain payment, pending at zero.
+  int? confirmations,
 }) => Transaction(
   id: id,
   direction: incoming
@@ -217,10 +220,12 @@ Transaction tx(
   sats: sats,
   at: clock.now().subtract(Duration(days: days, minutes: minutesAgo)),
   description: description,
-  paymentHash: id,
+  paymentHash: confirmations == null ? id : null,
   feeSats: feeSats,
   preimage: preimage,
   invoice: invoice,
+  txid: confirmations == null ? null : id,
+  confirmations: confirmations,
 );
 
 /// Keeps tests fast: Argon2 has its own test.

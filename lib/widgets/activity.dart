@@ -525,7 +525,8 @@ String _title(AppLocalizations l, Transaction transaction) =>
     transaction.description ??
     (transaction.isIncoming ? l.transactionReceived : l.transactionSent);
 
-/// "+40,000" or "-5,400" on screen, "received 40,000 sats" when read aloud.
+/// "+40,000" or "-5,400" on screen, "received 40,000 sats" when read aloud,
+/// with "Pending" under it until a chain payment confirms.
 class _SignedAmount extends StatelessWidget {
   const _SignedAmount(this.transaction);
 
@@ -537,7 +538,7 @@ class _SignedAmount extends StatelessWidget {
     final c = LumenColors.of(context);
     final amount = formatSats(context, transaction.sats);
     final incoming = transaction.isIncoming;
-    return Semantics(
+    final signed = Semantics(
       label: incoming ? l.amountReceived(amount) : l.amountSent(amount),
       excludeSemantics: true,
       child: Text(
@@ -549,6 +550,26 @@ class _SignedAmount extends StatelessWidget {
           fontFeatures: const [FontFeature.tabularFigures()],
         ),
       ),
+    );
+    if (!transaction.isPending) return signed;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        signed,
+        const SizedBox(height: 2),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.schedule, size: 14, color: c.text2),
+            const SizedBox(width: 4),
+            Text(
+              l.transactionPending,
+              style: TextStyle(fontSize: 13, color: c.text2),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

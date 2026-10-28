@@ -181,7 +181,7 @@ How the screen privacy came out:
 - The phrase never reaches the clipboard: there is no copy button, and pasting into the restore fields only reads it.
 - Not tried in the running app yet, like the rest of step 4.
 
-### 5. Receive
+### 5. Receive (done)
 
 - A fresh address for each request, shown as text and QR. An optional amount turns it into a `liquidnetwork:` URI.
 - Copy and share, as for invoices.
@@ -199,7 +199,7 @@ How receiving came out:
 - Once paid, the screen says "Waiting for confirmation, usually within 2 minutes", then "Confirmed", announced. The wallet is refreshed both times, so Home shows the payment right away.
 - The widget tests use `FakeWallet.liquid`. The real wallet's futures start in `runAsync` during `pumpLumen`, so a real `LiquidWallet` would need the real event loop at each step. The package tests cover the real watch.
 - Not tried in the running app on testnet yet.
-- Still to do: activity rows mark pending payments.
+- Activity rows, on Home and in Activity, show "Pending" with a clock under the amount of a payment still in the mempool, read after the amount ("received 21,000 sats, Pending").
 
 ### 6. Send
 

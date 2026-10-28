@@ -278,5 +278,6 @@
   "waitingForConfirmation": "等待确认",
   "confirmsSoon": "通常在 2 分钟内",
   "paymentConfirmed": "已确认",
-  "paymentConfirmedAnnouncement": "付款已确认"
+  "paymentConfirmedAnnouncement": "付款已确认",
+  "transactionPending": "待确认"
 }

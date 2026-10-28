@@ -278,5 +278,6 @@
   "waitingForConfirmation": "Odotetaan vahvistusta",
   "confirmsSoon": "Yleensä 2 minuutin kuluessa",
   "paymentConfirmed": "Vahvistettu",
-  "paymentConfirmedAnnouncement": "Maksu vahvistettu"
+  "paymentConfirmedAnnouncement": "Maksu vahvistettu",
+  "transactionPending": "Vahvistamaton"
 }

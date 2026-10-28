@@ -278,5 +278,6 @@
   "waitingForConfirmation": "Aguardando confirmação",
   "confirmsSoon": "Normalmente em até 2 minutos",
   "paymentConfirmed": "Confirmado",
-  "paymentConfirmedAnnouncement": "Pagamento confirmado"
+  "paymentConfirmedAnnouncement": "Pagamento confirmado",
+  "transactionPending": "Pendente"
 }

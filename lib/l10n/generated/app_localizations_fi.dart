@@ -1060,4 +1060,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => 'Maksu vahvistettu';
+
+  @override
+  String get transactionPending => 'Vahvistamaton';
 }

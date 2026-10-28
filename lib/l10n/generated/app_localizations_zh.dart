@@ -1000,4 +1000,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => '付款已确认';
+
+  @override
+  String get transactionPending => '待确认';
 }

@@ -1385,5 +1385,9 @@
   "paymentConfirmedAnnouncement": "Payment confirmed",
   "@paymentConfirmedAnnouncement": {
     "description": "Announced to screen readers when the payment received confirms."
+  },
+  "transactionPending": "Pending",
+  "@transactionPending": {
+    "description": "Under the amount of a payment that waits in the mempool until a block confirms it."
   }
 }

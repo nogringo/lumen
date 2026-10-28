@@ -1061,4 +1061,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get paymentConfirmedAnnouncement => 'Pagamento confermato';
+
+  @override
+  String get transactionPending => 'In attesa';
 }
