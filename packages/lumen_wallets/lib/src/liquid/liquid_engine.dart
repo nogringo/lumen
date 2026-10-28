@@ -26,6 +26,10 @@ enum LiquidChainError {
   /// The chain server did not answer, or not usefully. Nothing was sent.
   unreachable,
 
+  /// The chain server kept asking to slow down, after LWK had already
+  /// waited about a minute for it.
+  rateLimited,
+
   /// The chain server refused the transaction.
   rejected,
   insufficientFunds,

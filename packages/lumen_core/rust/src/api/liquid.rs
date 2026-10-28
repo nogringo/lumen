@@ -35,6 +35,9 @@ pub enum LiquidErrorKind {
     /// The chain server did not answer, or answered an error it may not give
     /// next time. Nothing was sent.
     Unreachable,
+    /// The chain server kept asking to slow down while LWK waited for it,
+    /// about a minute.
+    RateLimited,
     /// The chain server refused the transaction.
     Rejected,
     InsufficientFunds,
@@ -53,10 +56,11 @@ impl From<lwk_wollet::Error> for LiquidError {
     fn from(error: lwk_wollet::Error) -> Self {
         use lwk_wollet::Error as E;
         let kind = match &error {
-            E::Reqwest(_) | E::RateLimited => LiquidErrorKind::Unreachable,
-            E::EsploraHttpError { status, .. } if *status == 429 || *status >= 500 => {
-                LiquidErrorKind::Unreachable
+            E::Reqwest(_) => LiquidErrorKind::Unreachable,
+            E::RateLimited | E::EsploraHttpError { status: 429, .. } => {
+                LiquidErrorKind::RateLimited
             }
+            E::EsploraHttpError { status, .. } if *status >= 500 => LiquidErrorKind::Unreachable,
             E::EsploraHttpError { .. } => LiquidErrorKind::Rejected,
             E::InsufficientFunds { .. } => LiquidErrorKind::InsufficientFunds,
             E::InvalidNetwork => LiquidErrorKind::WrongNetwork,
@@ -499,6 +503,12 @@ mod tests {
         let own = wallet.address(Some(3)).await.unwrap().address;
         let error = wallet.prepare_send(own, 1000).await.err().unwrap();
         assert_eq!(error.kind, LiquidErrorKind::InsufficientFunds);
+    }
+
+    #[test]
+    fn a_rate_limit_is_told_apart_from_an_unreachable_server() {
+        let error = LiquidError::from(lwk_wollet::Error::RateLimited);
+        assert_eq!(error.kind, LiquidErrorKind::RateLimited);
     }
 
     #[tokio::test]

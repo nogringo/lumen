@@ -1046,11 +1046,12 @@ impl SseDecode for crate::api::liquid::LiquidErrorKind {
         let mut inner = <i32>::sse_decode(deserializer);
         return match inner {
             0 => crate::api::liquid::LiquidErrorKind::Unreachable,
-            1 => crate::api::liquid::LiquidErrorKind::Rejected,
-            2 => crate::api::liquid::LiquidErrorKind::InsufficientFunds,
-            3 => crate::api::liquid::LiquidErrorKind::InvalidAddress,
-            4 => crate::api::liquid::LiquidErrorKind::WrongNetwork,
-            5 => crate::api::liquid::LiquidErrorKind::Other,
+            1 => crate::api::liquid::LiquidErrorKind::RateLimited,
+            2 => crate::api::liquid::LiquidErrorKind::Rejected,
+            3 => crate::api::liquid::LiquidErrorKind::InsufficientFunds,
+            4 => crate::api::liquid::LiquidErrorKind::InvalidAddress,
+            5 => crate::api::liquid::LiquidErrorKind::WrongNetwork,
+            6 => crate::api::liquid::LiquidErrorKind::Other,
             _ => unreachable!("Invalid variant for LiquidErrorKind: {}", inner),
         };
     }
@@ -1370,11 +1371,12 @@ impl flutter_rust_bridge::IntoDart for crate::api::liquid::LiquidErrorKind {
     fn into_dart(self) -> flutter_rust_bridge::for_generated::DartAbi {
         match self {
             Self::Unreachable => 0.into_dart(),
-            Self::Rejected => 1.into_dart(),
-            Self::InsufficientFunds => 2.into_dart(),
-            Self::InvalidAddress => 3.into_dart(),
-            Self::WrongNetwork => 4.into_dart(),
-            Self::Other => 5.into_dart(),
+            Self::RateLimited => 1.into_dart(),
+            Self::Rejected => 2.into_dart(),
+            Self::InsufficientFunds => 3.into_dart(),
+            Self::InvalidAddress => 4.into_dart(),
+            Self::WrongNetwork => 5.into_dart(),
+            Self::Other => 6.into_dart(),
             _ => unreachable!(),
         }
     }
@@ -1581,11 +1583,12 @@ impl SseEncode for crate::api::liquid::LiquidErrorKind {
         <i32>::sse_encode(
             match self {
                 crate::api::liquid::LiquidErrorKind::Unreachable => 0,
-                crate::api::liquid::LiquidErrorKind::Rejected => 1,
-                crate::api::liquid::LiquidErrorKind::InsufficientFunds => 2,
-                crate::api::liquid::LiquidErrorKind::InvalidAddress => 3,
-                crate::api::liquid::LiquidErrorKind::WrongNetwork => 4,
-                crate::api::liquid::LiquidErrorKind::Other => 5,
+                crate::api::liquid::LiquidErrorKind::RateLimited => 1,
+                crate::api::liquid::LiquidErrorKind::Rejected => 2,
+                crate::api::liquid::LiquidErrorKind::InsufficientFunds => 3,
+                crate::api::liquid::LiquidErrorKind::InvalidAddress => 4,
+                crate::api::liquid::LiquidErrorKind::WrongNetwork => 5,
+                crate::api::liquid::LiquidErrorKind::Other => 6,
                 _ => {
                     unimplemented!("");
                 }

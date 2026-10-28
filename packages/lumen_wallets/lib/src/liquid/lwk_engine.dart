@@ -164,6 +164,7 @@ Future<T> _guardAsync<T>(Future<T> Function() call) async {
 LiquidChainException _exception(core.LiquidError error) =>
     LiquidChainException(switch (error.kind) {
       core.LiquidErrorKind.unreachable => LiquidChainError.unreachable,
+      core.LiquidErrorKind.rateLimited => LiquidChainError.rateLimited,
       core.LiquidErrorKind.rejected => LiquidChainError.rejected,
       core.LiquidErrorKind.insufficientFunds =>
         LiquidChainError.insufficientFunds,

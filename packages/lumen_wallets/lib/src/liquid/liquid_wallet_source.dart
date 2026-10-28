@@ -75,6 +75,9 @@ final class LiquidWalletSource implements WalletSource {
   /// transactions are read one after the other.
   static const _fresh = Duration(seconds: 15);
 
+  /// How long a wallet sends no sync after a server rate limited it.
+  static const _rateLimitPause = Duration(minutes: 1);
+
   /// Throws a [LiquidChainException] when the engine cannot start, as on a
   /// web build without its wasm.
   Future<String> newPhrase() async {
@@ -383,6 +386,7 @@ final class LiquidWallet implements Wallet {
   Map<String, int> _seen = {};
   Future<void>? _syncing;
   DateTime? _syncedAt;
+  DateTime? _pausedUntil;
 
   @override
   String get id => _record.id;
@@ -430,7 +434,18 @@ final class LiquidWallet implements Wallet {
   }
 
   Future<void> _syncOnce(LiquidChain chain) async {
-    final changed = await _source._retrying(chain.sync);
+    if (_pausedUntil case final until? when _source._now().isBefore(until)) {
+      throw const LiquidChainException(LiquidChainError.rateLimited);
+    }
+    final bool changed;
+    try {
+      changed = await _source._retrying(chain.sync);
+    } on LiquidChainException catch (e) {
+      if (e.error == LiquidChainError.rateLimited) {
+        _pausedUntil = _source._now().add(LiquidWalletSource._rateLimitPause);
+      }
+      rethrow;
+    }
     _syncedAt = _source._now();
     if (changed) await _save(chain);
   }
@@ -552,7 +567,8 @@ final class LiquidWallet implements Wallet {
       );
     } on LiquidChainException catch (e) {
       throw SendException(switch (e.error) {
-        LiquidChainError.unreachable => SendError.unreachable,
+        LiquidChainError.unreachable ||
+        LiquidChainError.rateLimited => SendError.unreachable,
         LiquidChainError.insufficientFunds => SendError.insufficientBalance,
         LiquidChainError.wrongNetwork => SendError.wrongNetwork,
         _ => SendError.failed,
@@ -563,7 +579,8 @@ final class LiquidWallet implements Wallet {
   /// A broadcast left without an answer may have reached the server, so it
   /// is reported as [SendError.unconfirmed], and the next send syncs first:
   /// without the sent transaction in the wallet, it could spend other coins
-  /// and pay twice.
+  /// and pay twice. A rate limit counts as no answer, since the fallback
+  /// server may be the one that refused, after the first one went silent.
   @override
   Future<Payment> confirmSend(SendQuote quote) async {
     if (quote is! _LiquidQuote || !identical(quote._wallet, this)) {
@@ -579,7 +596,8 @@ final class LiquidWallet implements Wallet {
     try {
       await _source._retrying(() => chain.broadcast(signed));
     } on LiquidChainException catch (e) {
-      if (e.error != LiquidChainError.unreachable) {
+      if (e.error != LiquidChainError.unreachable &&
+          e.error != LiquidChainError.rateLimited) {
         throw const SendException(SendError.failed);
       }
       _syncedAt = null;

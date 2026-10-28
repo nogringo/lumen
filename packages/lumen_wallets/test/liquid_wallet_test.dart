@@ -280,6 +280,34 @@ void main() {
       );
     });
 
+    test('a rate limit is not retried, and pauses syncing', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.syncErrors.add(_fails(LiquidChainError.rateLimited));
+
+      await expectLater(
+        wallet.fetchBalance(),
+        throwsA(isA<BalanceException>()),
+      );
+      expect(chain.syncs, 1);
+
+      now = now.add(const Duration(seconds: 30));
+      await expectLater(
+        wallet.prepareSend(_elsewhere, sats: 100),
+        throwsA(
+          isA<SendException>().having(
+            (e) => e.error,
+            'error',
+            SendError.unreachable,
+          ),
+        ),
+      );
+      expect(chain.syncs, 1);
+
+      now = now.add(const Duration(minutes: 1));
+      await wallet.fetchBalance();
+      expect(chain.syncs, 2);
+    });
+
     test('a saved state that no longer opens is dropped', () async {
       final wallet = await source().add(phrase: _phrase, name: 'Savings');
       chainState.values['lumen.liquid.${wallet.id}.state'] = 'not json';
@@ -462,6 +490,23 @@ void main() {
       expect(chain.syncs, 2);
     });
 
+    test('a rate-limited broadcast is not retried', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.broadcastErrors.add(_fails(LiquidChainError.rateLimited));
+
+      await expectLater(
+        wallet.confirmSend(await wallet.prepareSend(_elsewhere, sats: 100)),
+        throwsA(
+          isA<SendException>().having(
+            (e) => e.error,
+            'error',
+            SendError.unconfirmed,
+          ),
+        ),
+      );
+      expect(chain.broadcasts, 1);
+    });
+
     test('a refused transaction failed', () async {
       final wallet = await source().add(phrase: _phrase, name: 'Savings');
       chain.broadcastErrors.add(_fails(LiquidChainError.rejected));
@@ -495,6 +540,23 @@ void main() {
         const ChainTx(txid: 'in', balance: 1000, fee: 26, received: [_address]),
       ];
       expect(await paid.timeout(const Duration(seconds: 5)), hasLength(1));
+    });
+
+    test('the watch waits out a rate limit', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final address = await wallet.nextAddress();
+      chain.syncErrors.add(_fails(LiquidChainError.rateLimited));
+
+      final paid = wallet.watchPayment(address).toList();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(chain.syncs, 2);
+
+      now = now.add(const Duration(minutes: 1));
+      chain.txs = [
+        const ChainTx(txid: 'in', balance: 1000, fee: 26, received: [_address]),
+      ];
+      expect(await paid.timeout(const Duration(seconds: 5)), hasLength(1));
+      expect(chain.syncs, 3);
     });
 
     test('an address is still given while the server is silent', () async {

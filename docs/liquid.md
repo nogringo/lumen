@@ -111,6 +111,7 @@ How it came out:
 - The app gives `LiquidWalletSource` two `KeyValueStore`s in step 3: one for the phrases and the wallet list (sealed secure storage), one for the chain state (the history database or a file). Testnet is enabled by passing it in `networks`.
 - A sync less than 15 s old is not repeated, so a refresh that reads the balance and then the activity syncs once.
 - Retries: sync and broadcast are tried 3 times on a dropped connection. A broadcast left without an answer is reported as unconfirmed, since it may have reached the server, and the next send syncs first so it cannot spend other coins and pay twice.
+- Rate limits: LWK already retries each request on a 429, for about a minute. When the server still refuses, the scan is not started again, which would send every request once more, and the wallet sends no sync for a minute, the Receive watch included. A rate-limited broadcast counts as unconfirmed, since it may have gone through Waterfalls before Esplora refused it.
 - Restoring: `discover` returns the derivation and the chain state it scanned, which `add` takes back, so nothing about a dropped restore stays in the source.
 - iOS and macOS now build with CocoaPods, since Cargokit only ships a podspec. Flutter warns that plugins without Swift Package Manager support will become an error in a future version (see step 9).
 - A pending transaction is dated from when Lumen first saw it, kept with the chain state.

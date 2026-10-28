@@ -134,6 +134,10 @@ enum LiquidErrorKind {
   /// next time. Nothing was sent.
   unreachable,
 
+  /// The chain server kept asking to slow down while LWK waited for it,
+  /// about a minute.
+  rateLimited,
+
   /// The chain server refused the transaction.
   rejected,
   insufficientFunds,
