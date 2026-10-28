@@ -305,5 +305,21 @@
   "savedPhraseLead": "Näillä sanoilla voit palauttaa lompakon {name} Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä.",
   "removeLiquidBody": "Lumen poistaa tämän lompakon palautuslauseen tältä laitteelta. Ilman omaa kopiotasi sanoista sen varat menetetään lopullisesti.",
   "phraseSavedCheck": "Minulla on oma kopio palautuslauseesta",
-  "errorPhraseNotSaved": "Valitse tämä ruutu, kun sinulla on oma kopio palautuslauseesta."
+  "errorPhraseNotSaved": "Valitse tämä ruutu, kun sinulla on oma kopio palautuslauseesta.",
+  "servers": "Palvelimet",
+  "testnetServers": "Testnet-palvelimet",
+  "serversDefault": "Oletus",
+  "serversCustom": "Mukautetut",
+  "liquidServersTitle": "Liquid-palvelimet",
+  "liquidTestnetServersTitle": "Liquid-testnet-palvelimet",
+  "serversLead": "Liquid-lompakkosi synkronoivat ja lähettävät maksunsa näiden palvelimien kautta, ensin Waterfallsin. Se synkronoi lompakon yhdellä pyynnöllä, mutta sen palvelin näkee jokaisen maksun, jonka lompakko lähettää tai vastaanottaa.",
+  "waterfallsLabel": "Waterfalls-URL",
+  "waterfallsHint": "Jätä tyhjäksi, jos haluat käyttää vain Esploraa, joka on hitaampi.",
+  "esploraLabel": "Esplora-URL",
+  "esploraHint": "Käytetään, kun Waterfalls on tyhjä tai ei vastaa.",
+  "errorServerUrl": "Anna täydellinen URL, esimerkiksi https://liquid.network/api",
+  "errorEsploraEmpty": "Anna Esplora-URL, esimerkiksi https://liquid.network/api",
+  "useDefaultServers": "Käytä oletuspalvelimia",
+  "defaultServersFilled": "Oletuspalvelimet täytetty",
+  "errorServersSave": "Lumen ei voinut tallentaa palvelimia. Yritä uudelleen."
 }

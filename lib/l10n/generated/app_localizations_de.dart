@@ -1164,4 +1164,58 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get errorPhraseNotSaved =>
       'Setze das Häkchen, sobald du deine eigene Kopie der Wiederherstellungsphrase hast.';
+
+  @override
+  String get servers => 'Server';
+
+  @override
+  String get testnetServers => 'Testnet-Server';
+
+  @override
+  String get serversDefault => 'Standard';
+
+  @override
+  String get serversCustom => 'Eigene';
+
+  @override
+  String get liquidServersTitle => 'Liquid-Server';
+
+  @override
+  String get liquidTestnetServersTitle => 'Liquid-Testnet-Server';
+
+  @override
+  String get serversLead =>
+      'Deine Liquid-Wallets synchronisieren und senden ihre Zahlungen über diese Server, zuerst über Waterfalls. Es synchronisiert eine Wallet mit einer einzigen Anfrage, aber sein Server sieht jede Zahlung, die die Wallet sendet oder empfängt.';
+
+  @override
+  String get waterfallsLabel => 'Waterfalls-URL';
+
+  @override
+  String get waterfallsHint =>
+      'Leer lassen, um nur Esplora zu nutzen. Das ist langsamer.';
+
+  @override
+  String get esploraLabel => 'Esplora-URL';
+
+  @override
+  String get esploraHint =>
+      'Wird genutzt, wenn Waterfalls leer ist oder nicht antwortet.';
+
+  @override
+  String get errorServerUrl =>
+      'Gib eine vollständige URL ein, zum Beispiel https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Gib eine Esplora-URL ein, zum Beispiel https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Standardserver verwenden';
+
+  @override
+  String get defaultServersFilled => 'Standardserver eingetragen';
+
+  @override
+  String get errorServersSave =>
+      'Lumen konnte die Server nicht speichern. Versuch es noch einmal.';
 }

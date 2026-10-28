@@ -1122,4 +1122,55 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorPhraseNotSaved => 'リカバリーフレーズの控えを用意できたら、このボックスにチェックを入れてください。';
+
+  @override
+  String get servers => 'サーバー';
+
+  @override
+  String get testnetServers => 'テストネットのサーバー';
+
+  @override
+  String get serversDefault => 'デフォルト';
+
+  @override
+  String get serversCustom => 'カスタム';
+
+  @override
+  String get liquidServersTitle => 'Liquid サーバー';
+
+  @override
+  String get liquidTestnetServersTitle => 'Liquid テストネットのサーバー';
+
+  @override
+  String get serversLead =>
+      'Liquid ウォレットは、これらのサーバーを通じて同期し、支払いを送信します。最初に使うのは Waterfalls です。1 回のリクエストでウォレットを同期できますが、そのサーバーにはウォレットが送受信するすべての支払いが見えます。';
+
+  @override
+  String get waterfallsLabel => 'Waterfalls の URL';
+
+  @override
+  String get waterfallsHint => '空のままにすると Esplora だけを使います。こちらは時間がかかります。';
+
+  @override
+  String get esploraLabel => 'Esplora の URL';
+
+  @override
+  String get esploraHint => 'Waterfalls が空のとき、または応答しないときに使います。';
+
+  @override
+  String get errorServerUrl =>
+      'https://liquid.network/api のような完全な URL を入力してください';
+
+  @override
+  String get errorEsploraEmpty =>
+      'https://liquid.network/api のような Esplora の URL を入力してください';
+
+  @override
+  String get useDefaultServers => 'デフォルトのサーバーを使う';
+
+  @override
+  String get defaultServersFilled => 'デフォルトのサーバーを入力しました';
+
+  @override
+  String get errorServersSave => 'サーバーを保存できませんでした。もう一度お試しください。';
 }

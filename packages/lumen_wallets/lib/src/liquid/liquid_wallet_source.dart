@@ -74,7 +74,11 @@ final class LiquidWalletSource implements WalletSource {
 
   Future<void> _writing = Future.value();
 
+  /// Counts [setServers] calls, so open wallets know to open again.
+  var _serversChanges = 0;
+
   static const _walletsKey = 'lumen.liquid.wallets';
+  static const _serversKey = 'lumen.liquid.servers';
   static String _phraseKey(String id) => 'lumen.liquid.$id.phrase';
   static String _stateKey(String id) => 'lumen.liquid.$id.state';
 
@@ -105,6 +109,51 @@ final class LiquidWalletSource implements WalletSource {
     }
   }
 
+  /// What wallets on [network] sync and send through: the servers given to
+  /// [setServers], or the defaults.
+  Future<LiquidServers> servers(ChainNetwork network) async =>
+      (await _savedServers())[network] ?? _servers[network]!;
+
+  LiquidServers defaultServersFor(ChainNetwork network) => _servers[network]!;
+
+  /// Wallets on [network] use [servers] from their next sync. Null, like
+  /// the defaults, goes back to the defaults.
+  Future<void> setServers(ChainNetwork network, LiquidServers? servers) =>
+      _write(() async {
+        final saved = {...await _savedServers()}..remove(network);
+        if (servers != null && servers != _servers[network]) {
+          saved[network] = servers;
+        }
+        if (saved.isEmpty) {
+          await _secrets.delete(_serversKey);
+        } else {
+          await _secrets.write(
+            _serversKey,
+            jsonEncode({
+              for (final MapEntry(:key, :value) in saved.entries)
+                key.name: {
+                  'waterfalls': value.waterfalls,
+                  'esplora': value.esplora,
+                },
+            }),
+          );
+        }
+        _serversChanges++;
+      });
+
+  Future<Map<ChainNetwork, LiquidServers>> _savedServers() async {
+    final saved = await _secrets.read(_serversKey);
+    if (saved == null) return const {};
+    return {
+      for (final MapEntry(:key, :value)
+          in (jsonDecode(saved) as Map<String, Object?>).entries)
+        ChainNetwork.values.byName(key): LiquidServers(
+          waterfalls: (value as Map)['waterfalls'] as String?,
+          esplora: value['esplora'] as String,
+        ),
+    };
+  }
+
   /// Whether [phrase] is already saved on [network], so restoring it would
   /// only give the same wallet again.
   Future<bool> isSaved(
@@ -127,12 +176,13 @@ final class LiquidWalletSource implements WalletSource {
     if (await isSaved(normalized, network: network)) {
       throw const LiquidAddException(LiquidAddError.duplicate);
     }
+    final servers = await this.servers(network);
     Future<LiquidDiscovery?> scan(LiquidScript script) async {
       final chain = await _engine.open(
         phrase: normalized,
         network: network,
         script: script,
-        servers: _servers[network]!,
+        servers: servers,
         state: const [],
       );
       await _retrying(chain.sync);
@@ -264,11 +314,12 @@ final class LiquidWalletSource implements WalletSource {
     final phrase = await _secrets.read(_phraseKey(record.id));
     if (phrase == null) throw StateError('No phrase for ${record.id}');
     var (updates, seen) = await _readState(record.id);
+    final servers = await this.servers(record.network);
     Future<LiquidChain> open(List<String> state) => _engine.open(
       phrase: phrase,
       network: record.network,
       script: record.script,
-      servers: _servers[record.network]!,
+      servers: servers,
       state: state,
     );
     try {
@@ -388,6 +439,9 @@ final class LiquidWallet implements Wallet {
 
   Future<LiquidChain>? _chain;
 
+  /// The [LiquidWalletSource._serversChanges] count [_chain] opened at.
+  var _chainServers = 0;
+
   /// When each pending transaction was first seen, since the chain only
   /// dates confirmed ones. In milliseconds.
   Map<String, int> _seen = {};
@@ -424,15 +478,25 @@ final class LiquidWallet implements Wallet {
   Future<String?> recoveryPhrase() =>
       _source._secrets.read(LiquidWalletSource._phraseKey(id));
 
-  Future<LiquidChain> _opened() => _chain ??=
-      () async {
-        final (chain, seen) = await _source._open(_record);
-        _seen = seen;
-        return chain;
-      }().catchError((Object e) {
-        _chain = null;
-        throw e;
-      });
+  /// Opened again once the servers changed, which also forgets a rate limit
+  /// the old ones set.
+  Future<LiquidChain> _opened() {
+    if (_chainServers != _source._serversChanges) {
+      _chainServers = _source._serversChanges;
+      _chain = null;
+      _syncedAt = null;
+      _pausedUntil = null;
+    }
+    return _chain ??=
+        () async {
+          final (chain, seen) = await _source._open(_record);
+          _seen = seen;
+          return chain;
+        }().catchError((Object e) {
+          _chain = null;
+          throw e;
+        });
+  }
 
   /// The wallet, synced within [LiquidWalletSource._fresh] unless [force].
   Future<LiquidChain> _synced({bool force = false}) async {

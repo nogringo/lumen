@@ -1165,4 +1165,58 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get errorPhraseNotSaved =>
       'Cochez cette case une fois que vous avez votre propre copie de la phrase de récupération.';
+
+  @override
+  String get servers => 'Serveurs';
+
+  @override
+  String get testnetServers => 'Serveurs testnet';
+
+  @override
+  String get serversDefault => 'Par défaut';
+
+  @override
+  String get serversCustom => 'Personnalisés';
+
+  @override
+  String get liquidServersTitle => 'Serveurs Liquid';
+
+  @override
+  String get liquidTestnetServersTitle => 'Serveurs Liquid testnet';
+
+  @override
+  String get serversLead =>
+      'Vos portefeuilles Liquid se synchronisent et envoient leurs paiements par ces serveurs, Waterfalls en premier. Il synchronise un portefeuille en une seule requête, mais son serveur voit chaque paiement que le portefeuille envoie ou reçoit.';
+
+  @override
+  String get waterfallsLabel => 'URL Waterfalls';
+
+  @override
+  String get waterfallsHint =>
+      'Laissez vide pour n\'utiliser qu\'Esplora, plus lent.';
+
+  @override
+  String get esploraLabel => 'URL Esplora';
+
+  @override
+  String get esploraHint =>
+      'Utilisé quand Waterfalls est vide ou ne répond pas.';
+
+  @override
+  String get errorServerUrl =>
+      'Saisissez une URL complète, par exemple https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Saisissez une URL Esplora, par exemple https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Utiliser les serveurs par défaut';
+
+  @override
+  String get defaultServersFilled => 'Serveurs par défaut remplis';
+
+  @override
+  String get errorServersSave =>
+      'Lumen n\'a pas pu enregistrer les serveurs. Réessayez.';
 }

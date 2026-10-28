@@ -305,5 +305,21 @@
   "savedPhraseLead": "Diese Wörter stellen {name} in Lumen oder einer anderen Liquid-App wieder her. Bewahre sie auf Papier auf, in dieser Reihenfolge.",
   "removeLiquidBody": "Lumen löscht die Wiederherstellungsphrase dieser Wallet von diesem Gerät. Ohne deine eigene Kopie der Wörter ist das Guthaben für immer verloren.",
   "phraseSavedCheck": "Ich habe meine eigene Kopie der Wiederherstellungsphrase",
-  "errorPhraseNotSaved": "Setze das Häkchen, sobald du deine eigene Kopie der Wiederherstellungsphrase hast."
+  "errorPhraseNotSaved": "Setze das Häkchen, sobald du deine eigene Kopie der Wiederherstellungsphrase hast.",
+  "servers": "Server",
+  "testnetServers": "Testnet-Server",
+  "serversDefault": "Standard",
+  "serversCustom": "Eigene",
+  "liquidServersTitle": "Liquid-Server",
+  "liquidTestnetServersTitle": "Liquid-Testnet-Server",
+  "serversLead": "Deine Liquid-Wallets synchronisieren und senden ihre Zahlungen über diese Server, zuerst über Waterfalls. Es synchronisiert eine Wallet mit einer einzigen Anfrage, aber sein Server sieht jede Zahlung, die die Wallet sendet oder empfängt.",
+  "waterfallsLabel": "Waterfalls-URL",
+  "waterfallsHint": "Leer lassen, um nur Esplora zu nutzen. Das ist langsamer.",
+  "esploraLabel": "Esplora-URL",
+  "esploraHint": "Wird genutzt, wenn Waterfalls leer ist oder nicht antwortet.",
+  "errorServerUrl": "Gib eine vollständige URL ein, zum Beispiel https://liquid.network/api",
+  "errorEsploraEmpty": "Gib eine Esplora-URL ein, zum Beispiel https://liquid.network/api",
+  "useDefaultServers": "Standardserver verwenden",
+  "defaultServersFilled": "Standardserver eingetragen",
+  "errorServersSave": "Lumen konnte die Server nicht speichern. Versuch es noch einmal."
 }

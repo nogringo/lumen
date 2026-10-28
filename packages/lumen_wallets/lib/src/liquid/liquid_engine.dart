@@ -58,6 +58,15 @@ final class LiquidServers {
 
   /// Used when [waterfalls] is null or fails.
   final String esplora;
+
+  @override
+  bool operator ==(Object other) =>
+      other is LiquidServers &&
+      other.waterfalls == waterfalls &&
+      other.esplora == esplora;
+
+  @override
+  int get hashCode => Object.hash(waterfalls, esplora);
 }
 
 /// Creates and opens Liquid wallets: LWK in Lumen, a fake in tests.

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'layout/app_shell.dart';
@@ -8,6 +9,7 @@ import 'screens/add_liquid_screen.dart';
 import 'screens/add_wallet_screen.dart';
 import 'screens/connect_nwc_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/liquid_servers_screen.dart';
 import 'screens/payment_screen.dart';
 import 'screens/receive_screen.dart';
 import 'screens/send_screen.dart';
@@ -132,6 +134,19 @@ GoRouter createRouter(WalletsController wallets) {
             path: '/settings/passphrase',
             pageBuilder: (context, state) =>
                 _page(context, state, const ChangePassphraseScreen()),
+          ),
+          GoRoute(
+            path: '/settings/liquid',
+            pageBuilder: (context, state) => _page(
+              context,
+              state,
+              LiquidServersScreen(
+                network:
+                    ChainNetwork.values
+                        .asNameMap()[state.uri.queryParameters['network']] ??
+                    ChainNetwork.liquid,
+              ),
+            ),
           ),
           GoRoute(
             path: '/wallet/:id',

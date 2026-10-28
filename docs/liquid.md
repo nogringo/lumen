@@ -248,11 +248,13 @@ How it came out:
 - The screen reads the payment once. It does not follow a pending one until it confirms, as Send and Receive do.
 - Not tried in the running app yet. The link the testnet script prints, opened by hand, shows whether liquid.network unblinds the amounts.
 
-### 8. Wallet settings
+### 8. Wallet settings (done)
 
 - Show the recovery phrase again, behind the App lock passphrase when one is set.
 - Removing a Liquid wallet warns that the funds go with it unless the phrase is saved, and asks for confirmation.
 - The Waterfalls and Esplora URLs, with a reset to the defaults. Leaving Waterfalls empty syncs through Esplora only.
+
+Done in three commits: the phrase, the removal warning, then the servers.
 
 How showing the phrase came out:
 
@@ -268,6 +270,15 @@ How the removal warning came out:
 - The dialog has "Show recovery phrase", which goes through the same warning and passphrase as the menu, then comes back to the dialog.
 - The box is a `CheckRow`, which screen readers read as a checkbox (`Tappable.ticked`), not as one choice of several.
 - NWC wallets keep the dialog they had.
+- Not tried in the running app yet.
+
+How the servers came out:
+
+- They are set per network in Settings, under Liquid: "Servers", plus "Testnet servers" where testnet is enabled (debug builds). They apply to every Liquid wallet on that network, restores included, so once other servers are set no scan goes to the default Waterfalls. The row says whether the defaults are in use.
+- The screen shows both URLs filled in, "Use the default servers", which puts the defaults back in the fields, and Save. An empty Waterfalls syncs and sends through Esplora only. A URL needs http or https, a host, and no query or fragment, since LWK adds paths after it. A trailing slash is dropped.
+- `LiquidWalletSource.setServers` saves them in the sealed store, next to the wallet list, and only when they differ from the defaults.
+- An open wallet opens its chain again at its next sync, which also lifts a rate-limit pause the old servers caused. Saving refreshes the wallets on that network.
+- Saving does not check that the servers answer: a wrong URL shows as an unreachable balance, and the defaults are one button away.
 - Not tried in the running app yet.
 
 ### 9. Build, CI and release

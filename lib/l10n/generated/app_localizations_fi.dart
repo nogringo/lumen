@@ -1160,4 +1160,57 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get errorPhraseNotSaved =>
       'Valitse tämä ruutu, kun sinulla on oma kopio palautuslauseesta.';
+
+  @override
+  String get servers => 'Palvelimet';
+
+  @override
+  String get testnetServers => 'Testnet-palvelimet';
+
+  @override
+  String get serversDefault => 'Oletus';
+
+  @override
+  String get serversCustom => 'Mukautetut';
+
+  @override
+  String get liquidServersTitle => 'Liquid-palvelimet';
+
+  @override
+  String get liquidTestnetServersTitle => 'Liquid-testnet-palvelimet';
+
+  @override
+  String get serversLead =>
+      'Liquid-lompakkosi synkronoivat ja lähettävät maksunsa näiden palvelimien kautta, ensin Waterfallsin. Se synkronoi lompakon yhdellä pyynnöllä, mutta sen palvelin näkee jokaisen maksun, jonka lompakko lähettää tai vastaanottaa.';
+
+  @override
+  String get waterfallsLabel => 'Waterfalls-URL';
+
+  @override
+  String get waterfallsHint =>
+      'Jätä tyhjäksi, jos haluat käyttää vain Esploraa, joka on hitaampi.';
+
+  @override
+  String get esploraLabel => 'Esplora-URL';
+
+  @override
+  String get esploraHint => 'Käytetään, kun Waterfalls on tyhjä tai ei vastaa.';
+
+  @override
+  String get errorServerUrl =>
+      'Anna täydellinen URL, esimerkiksi https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Anna Esplora-URL, esimerkiksi https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Käytä oletuspalvelimia';
+
+  @override
+  String get defaultServersFilled => 'Oletuspalvelimet täytetty';
+
+  @override
+  String get errorServersSave =>
+      'Lumen ei voinut tallentaa palvelimia. Yritä uudelleen.';
 }

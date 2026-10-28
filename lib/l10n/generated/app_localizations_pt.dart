@@ -1165,6 +1165,60 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get errorPhraseNotSaved =>
       'Marque esta caixa quando tiver a sua própria cópia da frase de recuperação.';
+
+  @override
+  String get servers => 'Servidores';
+
+  @override
+  String get testnetServers => 'Servidores de testnet';
+
+  @override
+  String get serversDefault => 'Predefinidos';
+
+  @override
+  String get serversCustom => 'Personalizados';
+
+  @override
+  String get liquidServersTitle => 'Servidores Liquid';
+
+  @override
+  String get liquidTestnetServersTitle => 'Servidores Liquid testnet';
+
+  @override
+  String get serversLead =>
+      'As suas carteiras Liquid sincronizam e enviam os pagamentos através destes servidores, primeiro o Waterfalls. Sincroniza uma carteira num único pedido, mas o servidor vê cada pagamento que a carteira envia ou recebe.';
+
+  @override
+  String get waterfallsLabel => 'URL do Waterfalls';
+
+  @override
+  String get waterfallsHint =>
+      'Deixe vazio para usar apenas o Esplora, que é mais lento.';
+
+  @override
+  String get esploraLabel => 'URL do Esplora';
+
+  @override
+  String get esploraHint =>
+      'Usado quando o Waterfalls está vazio ou não responde.';
+
+  @override
+  String get errorServerUrl =>
+      'Introduza um URL completo, como https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Introduza um URL do Esplora, como https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Usar os servidores predefinidos';
+
+  @override
+  String get defaultServersFilled => 'Servidores predefinidos preenchidos';
+
+  @override
+  String get errorServersSave =>
+      'O Lumen não conseguiu guardar os servidores. Tente de novo.';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2324,4 +2378,58 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String get errorPhraseNotSaved =>
       'Marque esta caixa quando tiver sua própria cópia da frase de recuperação.';
+
+  @override
+  String get servers => 'Servidores';
+
+  @override
+  String get testnetServers => 'Servidores de testnet';
+
+  @override
+  String get serversDefault => 'Padrão';
+
+  @override
+  String get serversCustom => 'Personalizados';
+
+  @override
+  String get liquidServersTitle => 'Servidores Liquid';
+
+  @override
+  String get liquidTestnetServersTitle => 'Servidores Liquid testnet';
+
+  @override
+  String get serversLead =>
+      'Suas carteiras Liquid sincronizam e enviam os pagamentos por estes servidores, primeiro o Waterfalls. Ele sincroniza uma carteira em uma única solicitação, mas o servidor vê cada pagamento que a carteira envia ou recebe.';
+
+  @override
+  String get waterfallsLabel => 'URL do Waterfalls';
+
+  @override
+  String get waterfallsHint =>
+      'Deixe vazio para usar só o Esplora, que é mais lento.';
+
+  @override
+  String get esploraLabel => 'URL do Esplora';
+
+  @override
+  String get esploraHint =>
+      'Usado quando o Waterfalls está vazio ou não responde.';
+
+  @override
+  String get errorServerUrl =>
+      'Digite uma URL completa, como https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Digite uma URL do Esplora, como https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Usar os servidores padrão';
+
+  @override
+  String get defaultServersFilled => 'Servidores padrão preenchidos';
+
+  @override
+  String get errorServersSave =>
+      'O Lumen não conseguiu salvar os servidores. Tente de novo.';
 }

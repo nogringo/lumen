@@ -305,5 +305,21 @@
   "savedPhraseLead": "这些单词可在 Lumen 或其他 Liquid 应用中恢复 {name}。请按此顺序写在纸上保存。",
   "removeLiquidBody": "Lumen 会从此设备删除这个钱包的恢复短语。如果您没有自己保存的单词副本，其中的资金将永久丢失。",
   "phraseSavedCheck": "我已自己保存了恢复短语",
-  "errorPhraseNotSaved": "保存好恢复短语后，请勾选此框。"
+  "errorPhraseNotSaved": "保存好恢复短语后，请勾选此框。",
+  "servers": "服务器",
+  "testnetServers": "测试网服务器",
+  "serversDefault": "默认",
+  "serversCustom": "自定义",
+  "liquidServersTitle": "Liquid 服务器",
+  "liquidTestnetServersTitle": "Liquid 测试网服务器",
+  "serversLead": "您的 Liquid 钱包通过这些服务器同步并发送付款，优先使用 Waterfalls。它用一次请求即可同步钱包，但其服务器能看到钱包收发的每一笔付款。",
+  "waterfallsLabel": "Waterfalls 网址",
+  "waterfallsHint": "留空则只使用 Esplora，速度较慢。",
+  "esploraLabel": "Esplora 网址",
+  "esploraHint": "当 Waterfalls 为空或没有响应时使用。",
+  "errorServerUrl": "请输入完整网址，例如 https://liquid.network/api",
+  "errorEsploraEmpty": "请输入 Esplora 网址，例如 https://liquid.network/api",
+  "useDefaultServers": "使用默认服务器",
+  "defaultServersFilled": "已填入默认服务器",
+  "errorServersSave": "Lumen 无法保存服务器。请重试。"
 }

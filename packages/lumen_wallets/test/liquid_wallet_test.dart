@@ -106,6 +106,7 @@ final class _FakeEngine implements LiquidEngine {
     for (final script in LiquidScript.values) script: _FakeChain(),
   };
   final List<List<String>> openedWith = [];
+  final List<LiquidServers> openedServers = [];
 
   var started = false;
 
@@ -133,6 +134,7 @@ final class _FakeEngine implements LiquidEngine {
     required List<String> state,
   }) async {
     openedWith.add(state);
+    openedServers.add(servers);
     return chains[script]!..updates = state;
   }
 }
@@ -242,6 +244,74 @@ void main() {
       ).add(phrase: _phrase, name: 'Test', network: ChainNetwork.liquidTestnet);
       expect(await source(networks: both).load(), hasLength(1));
       expect(await source().load(), isEmpty);
+    });
+  });
+
+  group('servers', () {
+    final defaults = LiquidWalletSource.defaultServers[ChainNetwork.liquid]!;
+    const custom = LiquidServers(
+      waterfalls: 'https://waterfalls.example/api',
+      esplora: 'https://esplora.example/api',
+    );
+
+    test(
+      'servers set for a network are saved and used from the next sync',
+      () async {
+        final wallets = source();
+        final wallet = await wallets.add(phrase: _phrase, name: 'Savings');
+        await wallet.fetchBalance();
+        expect(engine.openedServers, [defaults]);
+
+        await wallets.setServers(ChainNetwork.liquid, custom);
+        expect(await source().servers(ChainNetwork.liquid), custom);
+        expect(
+          await wallets.servers(ChainNetwork.liquidTestnet),
+          LiquidWalletSource.defaultServers[ChainNetwork.liquidTestnet],
+        );
+
+        final syncs = chain.syncs;
+        await wallet.fetchBalance();
+        expect(engine.openedServers, [defaults, custom]);
+        expect(chain.syncs, syncs + 1);
+      },
+    );
+
+    test('new servers lift the pause a rate limit set', () async {
+      final wallets = source();
+      final wallet = await wallets.add(phrase: _phrase, name: 'Savings');
+      chain.syncErrors.add(_fails(LiquidChainError.rateLimited));
+      await expectLater(
+        wallet.fetchBalance(),
+        throwsA(isA<BalanceException>()),
+      );
+
+      await wallets.setServers(ChainNetwork.liquid, custom);
+      expect(await wallet.fetchBalance(), chain.balanceSats);
+    });
+
+    test('the defaults come back, and are not saved', () async {
+      final wallets = source();
+      await wallets.setServers(ChainNetwork.liquid, custom);
+      expect(secrets.values, isNotEmpty);
+
+      await wallets.setServers(ChainNetwork.liquid, null);
+      expect(await wallets.servers(ChainNetwork.liquid), defaults);
+      expect(secrets.values, isEmpty);
+
+      await wallets.setServers(ChainNetwork.liquid, defaults);
+      expect(secrets.values, isEmpty);
+      expect(wallets.defaultServersFor(ChainNetwork.liquid), defaults);
+    });
+
+    test('restoring scans through the servers set', () async {
+      const esploraOnly = LiquidServers(esplora: 'https://esplora.example/api');
+      final wallets = source();
+      await wallets.setServers(ChainNetwork.liquid, esploraOnly);
+
+      await wallets.discover(_phrase);
+
+      expect(engine.openedServers, isNotEmpty);
+      expect(engine.openedServers, everyElement(esploraOnly));
     });
   });
 

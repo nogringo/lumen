@@ -305,5 +305,21 @@
   "savedPhraseLead": "Эти слова восстанавливают кошелёк {name} в Lumen или другом приложении Liquid. Храните их на бумаге в этом порядке.",
   "removeLiquidBody": "Lumen удалит с этого устройства фразу восстановления этого кошелька. Без вашей собственной копии слов его средства будут потеряны навсегда.",
   "phraseSavedCheck": "У меня есть своя копия фразы восстановления",
-  "errorPhraseNotSaved": "Отметьте этот флажок, когда у вас будет своя копия фразы восстановления."
+  "errorPhraseNotSaved": "Отметьте этот флажок, когда у вас будет своя копия фразы восстановления.",
+  "servers": "Серверы",
+  "testnetServers": "Серверы testnet",
+  "serversDefault": "По умолчанию",
+  "serversCustom": "Свои",
+  "liquidServersTitle": "Серверы Liquid",
+  "liquidTestnetServersTitle": "Серверы Liquid testnet",
+  "serversLead": "Ваши кошельки Liquid синхронизируются и отправляют платежи через эти серверы, сначала через Waterfalls. Он синхронизирует кошелёк одним запросом, но его сервер видит каждый платёж, который кошелёк отправляет или получает.",
+  "waterfallsLabel": "URL Waterfalls",
+  "waterfallsHint": "Оставьте пустым, чтобы использовать только Esplora. Это медленнее.",
+  "esploraLabel": "URL Esplora",
+  "esploraHint": "Используется, когда Waterfalls пуст или не отвечает.",
+  "errorServerUrl": "Введите полный URL, например https://liquid.network/api",
+  "errorEsploraEmpty": "Введите URL Esplora, например https://liquid.network/api",
+  "useDefaultServers": "Использовать серверы по умолчанию",
+  "defaultServersFilled": "Серверы по умолчанию подставлены",
+  "errorServersSave": "Lumen не удалось сохранить серверы. Повторите попытку."
 }

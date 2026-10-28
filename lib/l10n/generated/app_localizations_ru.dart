@@ -1185,4 +1185,58 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get errorPhraseNotSaved =>
       'Отметьте этот флажок, когда у вас будет своя копия фразы восстановления.';
+
+  @override
+  String get servers => 'Серверы';
+
+  @override
+  String get testnetServers => 'Серверы testnet';
+
+  @override
+  String get serversDefault => 'По умолчанию';
+
+  @override
+  String get serversCustom => 'Свои';
+
+  @override
+  String get liquidServersTitle => 'Серверы Liquid';
+
+  @override
+  String get liquidTestnetServersTitle => 'Серверы Liquid testnet';
+
+  @override
+  String get serversLead =>
+      'Ваши кошельки Liquid синхронизируются и отправляют платежи через эти серверы, сначала через Waterfalls. Он синхронизирует кошелёк одним запросом, но его сервер видит каждый платёж, который кошелёк отправляет или получает.';
+
+  @override
+  String get waterfallsLabel => 'URL Waterfalls';
+
+  @override
+  String get waterfallsHint =>
+      'Оставьте пустым, чтобы использовать только Esplora. Это медленнее.';
+
+  @override
+  String get esploraLabel => 'URL Esplora';
+
+  @override
+  String get esploraHint =>
+      'Используется, когда Waterfalls пуст или не отвечает.';
+
+  @override
+  String get errorServerUrl =>
+      'Введите полный URL, например https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      'Введите URL Esplora, например https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => 'Использовать серверы по умолчанию';
+
+  @override
+  String get defaultServersFilled => 'Серверы по умолчанию подставлены';
+
+  @override
+  String get errorServersSave =>
+      'Lumen не удалось сохранить серверы. Повторите попытку.';
 }

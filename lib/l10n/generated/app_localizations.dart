@@ -1950,6 +1950,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check this box once you have your own copy of the recovery phrase.'**
   String get errorPhraseNotSaved;
+
+  /// Settings row that opens the Liquid servers.
+  ///
+  /// In en, this message translates to:
+  /// **'Servers'**
+  String get servers;
+
+  /// Settings row that opens the Liquid testnet servers, in debug builds only.
+  ///
+  /// In en, this message translates to:
+  /// **'Testnet servers'**
+  String get testnetServers;
+
+  /// Under the servers row, while Lumen uses its default servers.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get serversDefault;
+
+  /// Under the servers row, once other servers are set.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get serversCustom;
+
+  /// Title of the screen that sets the Liquid servers.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid servers'**
+  String get liquidServersTitle;
+
+  /// Title of the screen that sets the Liquid testnet servers.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid testnet servers'**
+  String get liquidTestnetServersTitle;
+
+  /// Lead text of the Liquid servers screen. Keep Waterfalls as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Liquid wallets sync and send their payments through these servers, Waterfalls first. It syncs a wallet in one request, but its server can see every payment the wallet makes or receives.'**
+  String get serversLead;
+
+  /// Label of the Waterfalls server field. Keep Waterfalls as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Waterfalls URL'**
+  String get waterfallsLabel;
+
+  /// Hint under the Waterfalls field. Keep Esplora as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave it empty to use Esplora only, which is slower.'**
+  String get waterfallsHint;
+
+  /// Label of the Esplora server field. Keep Esplora as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Esplora URL'**
+  String get esploraLabel;
+
+  /// Hint under the Esplora field. Keep Waterfalls as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Used when Waterfalls is empty or does not answer.'**
+  String get esploraHint;
+
+  /// Error under a server field when it is not a web address. Keep the URL as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a full URL, such as https://liquid.network/api'**
+  String get errorServerUrl;
+
+  /// Error under the Esplora field when it is empty. Keep Esplora and the URL as is.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an Esplora URL, such as https://liquid.network/api'**
+  String get errorEsploraEmpty;
+
+  /// Button that fills both server fields with Lumen's defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the default servers'**
+  String get useDefaultServers;
+
+  /// Announced to screen readers once the default servers fill the fields.
+  ///
+  /// In en, this message translates to:
+  /// **'Default servers filled in'**
+  String get defaultServersFilled;
+
+  /// Error when the servers could not be saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not save the servers. Try again.'**
+  String get errorServersSave;
 }
 
 class _AppLocalizationsDelegate

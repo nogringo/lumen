@@ -305,5 +305,21 @@
   "savedPhraseLead": "Estas palavras restauram {name} no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem.",
   "removeLiquidBody": "O Lumen apaga deste dispositivo a frase de recuperação desta carteira. Sem a sua própria cópia das palavras, os fundos perdem-se para sempre.",
   "phraseSavedCheck": "Tenho a minha própria cópia da frase de recuperação",
-  "errorPhraseNotSaved": "Marque esta caixa quando tiver a sua própria cópia da frase de recuperação."
+  "errorPhraseNotSaved": "Marque esta caixa quando tiver a sua própria cópia da frase de recuperação.",
+  "servers": "Servidores",
+  "testnetServers": "Servidores de testnet",
+  "serversDefault": "Predefinidos",
+  "serversCustom": "Personalizados",
+  "liquidServersTitle": "Servidores Liquid",
+  "liquidTestnetServersTitle": "Servidores Liquid testnet",
+  "serversLead": "As suas carteiras Liquid sincronizam e enviam os pagamentos através destes servidores, primeiro o Waterfalls. Sincroniza uma carteira num único pedido, mas o servidor vê cada pagamento que a carteira envia ou recebe.",
+  "waterfallsLabel": "URL do Waterfalls",
+  "waterfallsHint": "Deixe vazio para usar apenas o Esplora, que é mais lento.",
+  "esploraLabel": "URL do Esplora",
+  "esploraHint": "Usado quando o Waterfalls está vazio ou não responde.",
+  "errorServerUrl": "Introduza um URL completo, como https://liquid.network/api",
+  "errorEsploraEmpty": "Introduza um URL do Esplora, como https://liquid.network/api",
+  "useDefaultServers": "Usar os servidores predefinidos",
+  "defaultServersFilled": "Servidores predefinidos preenchidos",
+  "errorServersSave": "O Lumen não conseguiu guardar os servidores. Tente de novo."
 }

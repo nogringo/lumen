@@ -1,4 +1,5 @@
 import 'package:flutter/semantics.dart';
+import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../l10n/generated/app_localizations.dart';
@@ -7,11 +8,13 @@ import '../lock/app_lock.dart';
 import '../lock/gate_scope.dart';
 import '../settings/language.dart';
 import '../theme/lumen_colors.dart';
+import '../wallets/lumen_scope.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/passphrase_field.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/switch_row.dart';
 import '../widgets/tappable.dart';
+import 'liquid_servers_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -79,6 +82,16 @@ class SettingsScreen extends StatelessWidget {
                           ],
                         );
                       },
+                    ),
+                    const SizedBox(height: 24),
+                    _Group(
+                      title: l.kindLiquid,
+                      children: [
+                        for (final network in ChainNetwork.values)
+                          if (LumenScope.sourcesOf(context).liquid.networks
+                              .contains(network))
+                            _ServersRow(network),
+                      ],
                     ),
                   ],
                 ),
@@ -253,6 +266,58 @@ class _LinkRow extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Opens the servers of [network], and says whether they are the defaults.
+class _ServersRow extends StatefulWidget {
+  const _ServersRow(this.network);
+
+  final ChainNetwork network;
+
+  @override
+  State<_ServersRow> createState() => _ServersRowState();
+}
+
+class _ServersRowState extends State<_ServersRow> {
+  bool? _custom;
+
+  @override
+  void initState() {
+    super.initState();
+    _check();
+  }
+
+  Future<void> _check() async {
+    final liquid = LumenScope.sourcesOf(context).liquid;
+    final servers = await liquid.servers(widget.network);
+    if (!mounted) return;
+    setState(
+      () => _custom = servers != liquid.defaultServersFor(widget.network),
+    );
+  }
+
+  Future<void> _open() async {
+    await openLiquidServers(context, widget.network);
+    if (mounted) await _check();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return _LinkRow(
+      icon: Icons.dns_outlined,
+      title: switch (widget.network) {
+        ChainNetwork.liquid => l.servers,
+        ChainNetwork.liquidTestnet => l.testnetServers,
+      },
+      value: switch (_custom) {
+        null => null,
+        true => TextSpan(text: l.serversCustom),
+        false => TextSpan(text: l.serversDefault),
+      },
+      onTap: _open,
     );
   }
 }

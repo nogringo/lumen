@@ -1518,5 +1518,69 @@
   "errorPhraseNotSaved": "Check this box once you have your own copy of the recovery phrase.",
   "@errorPhraseNotSaved": {
     "description": "Error under the checkbox when Remove is pressed without it."
+  },
+  "servers": "Servers",
+  "@servers": {
+    "description": "Settings row that opens the Liquid servers."
+  },
+  "testnetServers": "Testnet servers",
+  "@testnetServers": {
+    "description": "Settings row that opens the Liquid testnet servers, in debug builds only."
+  },
+  "serversDefault": "Default",
+  "@serversDefault": {
+    "description": "Under the servers row, while Lumen uses its default servers."
+  },
+  "serversCustom": "Custom",
+  "@serversCustom": {
+    "description": "Under the servers row, once other servers are set."
+  },
+  "liquidServersTitle": "Liquid servers",
+  "@liquidServersTitle": {
+    "description": "Title of the screen that sets the Liquid servers."
+  },
+  "liquidTestnetServersTitle": "Liquid testnet servers",
+  "@liquidTestnetServersTitle": {
+    "description": "Title of the screen that sets the Liquid testnet servers."
+  },
+  "serversLead": "Your Liquid wallets sync and send their payments through these servers, Waterfalls first. It syncs a wallet in one request, but its server can see every payment the wallet makes or receives.",
+  "@serversLead": {
+    "description": "Lead text of the Liquid servers screen. Keep Waterfalls as is."
+  },
+  "waterfallsLabel": "Waterfalls URL",
+  "@waterfallsLabel": {
+    "description": "Label of the Waterfalls server field. Keep Waterfalls as is."
+  },
+  "waterfallsHint": "Leave it empty to use Esplora only, which is slower.",
+  "@waterfallsHint": {
+    "description": "Hint under the Waterfalls field. Keep Esplora as is."
+  },
+  "esploraLabel": "Esplora URL",
+  "@esploraLabel": {
+    "description": "Label of the Esplora server field. Keep Esplora as is."
+  },
+  "esploraHint": "Used when Waterfalls is empty or does not answer.",
+  "@esploraHint": {
+    "description": "Hint under the Esplora field. Keep Waterfalls as is."
+  },
+  "errorServerUrl": "Enter a full URL, such as https://liquid.network/api",
+  "@errorServerUrl": {
+    "description": "Error under a server field when it is not a web address. Keep the URL as is."
+  },
+  "errorEsploraEmpty": "Enter an Esplora URL, such as https://liquid.network/api",
+  "@errorEsploraEmpty": {
+    "description": "Error under the Esplora field when it is empty. Keep Esplora and the URL as is."
+  },
+  "useDefaultServers": "Use the default servers",
+  "@useDefaultServers": {
+    "description": "Button that fills both server fields with Lumen's defaults."
+  },
+  "defaultServersFilled": "Default servers filled in",
+  "@defaultServersFilled": {
+    "description": "Announced to screen readers once the default servers fill the fields."
+  },
+  "errorServersSave": "Lumen could not save the servers. Try again.",
+  "@errorServersSave": {
+    "description": "Error when the servers could not be saved."
   }
 }

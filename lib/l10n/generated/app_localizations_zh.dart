@@ -1095,4 +1095,54 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get errorPhraseNotSaved => '保存好恢复短语后，请勾选此框。';
+
+  @override
+  String get servers => '服务器';
+
+  @override
+  String get testnetServers => '测试网服务器';
+
+  @override
+  String get serversDefault => '默认';
+
+  @override
+  String get serversCustom => '自定义';
+
+  @override
+  String get liquidServersTitle => 'Liquid 服务器';
+
+  @override
+  String get liquidTestnetServersTitle => 'Liquid 测试网服务器';
+
+  @override
+  String get serversLead =>
+      '您的 Liquid 钱包通过这些服务器同步并发送付款，优先使用 Waterfalls。它用一次请求即可同步钱包，但其服务器能看到钱包收发的每一笔付款。';
+
+  @override
+  String get waterfallsLabel => 'Waterfalls 网址';
+
+  @override
+  String get waterfallsHint => '留空则只使用 Esplora，速度较慢。';
+
+  @override
+  String get esploraLabel => 'Esplora 网址';
+
+  @override
+  String get esploraHint => '当 Waterfalls 为空或没有响应时使用。';
+
+  @override
+  String get errorServerUrl => '请输入完整网址，例如 https://liquid.network/api';
+
+  @override
+  String get errorEsploraEmpty =>
+      '请输入 Esplora 网址，例如 https://liquid.network/api';
+
+  @override
+  String get useDefaultServers => '使用默认服务器';
+
+  @override
+  String get defaultServersFilled => '已填入默认服务器';
+
+  @override
+  String get errorServersSave => 'Lumen 无法保存服务器。请重试。';
 }

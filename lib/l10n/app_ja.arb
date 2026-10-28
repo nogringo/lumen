@@ -305,5 +305,21 @@
   "savedPhraseLead": "これらの単語で、Lumen または他の Liquid アプリで {name} を復元できます。この順番どおりに紙に書いて保管してください。",
   "removeLiquidBody": "Lumen はこのデバイスからこのウォレットのリカバリーフレーズを削除します。単語の控えがなければ、資金は永久に失われます。",
   "phraseSavedCheck": "リカバリーフレーズの控えを自分で持っています",
-  "errorPhraseNotSaved": "リカバリーフレーズの控えを用意できたら、このボックスにチェックを入れてください。"
+  "errorPhraseNotSaved": "リカバリーフレーズの控えを用意できたら、このボックスにチェックを入れてください。",
+  "servers": "サーバー",
+  "testnetServers": "テストネットのサーバー",
+  "serversDefault": "デフォルト",
+  "serversCustom": "カスタム",
+  "liquidServersTitle": "Liquid サーバー",
+  "liquidTestnetServersTitle": "Liquid テストネットのサーバー",
+  "serversLead": "Liquid ウォレットは、これらのサーバーを通じて同期し、支払いを送信します。最初に使うのは Waterfalls です。1 回のリクエストでウォレットを同期できますが、そのサーバーにはウォレットが送受信するすべての支払いが見えます。",
+  "waterfallsLabel": "Waterfalls の URL",
+  "waterfallsHint": "空のままにすると Esplora だけを使います。こちらは時間がかかります。",
+  "esploraLabel": "Esplora の URL",
+  "esploraHint": "Waterfalls が空のとき、または応答しないときに使います。",
+  "errorServerUrl": "https://liquid.network/api のような完全な URL を入力してください",
+  "errorEsploraEmpty": "https://liquid.network/api のような Esplora の URL を入力してください",
+  "useDefaultServers": "デフォルトのサーバーを使う",
+  "defaultServersFilled": "デフォルトのサーバーを入力しました",
+  "errorServersSave": "サーバーを保存できませんでした。もう一度お試しください。"
 }
