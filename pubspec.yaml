@@ -2,7 +2,7 @@ name: lumen
 description: "Every way you hold bitcoin, in one place."
 publish_to: 'none'
 
-version: 0.1.1+2
+version: 0.2.0+3
 
 environment:
   sdk: ^3.13.5
