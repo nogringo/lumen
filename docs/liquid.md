@@ -313,7 +313,18 @@ How the desktop builds came out:
 
 - `integration_test/lwk_test.dart` runs the LWK the app bundles, offline: it checks phrases, derives the known address of the "abandon ... about" phrase, and gets a sync to `127.0.0.1:9` reported as unreachable. It needs a build of the app, so `flutter test` leaves it out.
 - CI runs it on Linux (under `xvfb-run`, with GTK, libsecret and ninja installed) and on Windows, in a `desktop` job next to `check` and `rust`. Cargokit builds the crate in Flutter's build folder (`build/<platform>/.../plugins/lumen_core/cargokit_build`), so `Swatinem/rust-cache` is pointed there.
-- On macOS it passes in about 30 s. Linux and Windows are only run by CI: the first run will tell whether they pass and how long they take, and the second whether the cache paths are right.
+- On macOS it passes in about 30 s. On GitHub's first run, Linux took 2.5 min and Windows 13 min, most of it setting up and saving the Flutter cache. rust-cache found and saved both `cargokit_build` folders.
+
+How the Android release came out:
+
+- `release.yml` needs no change. The Ubuntu runner has rustup and stable Rust, and Cargokit adds the Android targets itself.
+- It has no Rust cache either: a cache saved by a tag's run can only be restored by that tag, and `main` never builds Android, so it would never be hit.
+- With the workflow's commands, locally: the universal APK builds in 3 min (three ABIs with LTO), then the arm64 one in 45 s.
+- `liblumen_core.so` weighs 9.2 MB on arm64, 6.7 MB on armv7 and 10.3 MB on x86_64, already stripped by the Android build. Against v0.1.1, the universal APK went from 72.5 to 100.3 MB and the arm64 one from 25.6 to 35.3 MB. In the arm64 library, code takes 3.4 MB, constants 3.2 MB and unwind tables 1.3 MB, which flutter_rust_bridge needs to catch Rust panics.
+- `integration_test/lwk_test.dart` passes on the Pixel 9a emulator (arm64) in profile mode, which Cargokit builds as Rust release, like the APK: `flutter drive --profile` with the usual three-line `test_driver/integration_test.dart`, not kept in the repository.
+- GitHub Pages serves the wasm gzipped: 3.2 MB on the wire, downloaded once a Liquid wallet opens. Pages does not use brotli, which would bring it to 1.8 MB.
+- On macOS, `flutter build macos --release` puts a 63.7 MB `lumen_core` in the app, for x86_64 and arm64, with its symbols (`strip -x` takes 6.4 MB off). An ARM-only build, which Xcode 27 now allows (`flutter config --enable-macos-arm64-only`), would halve it. iOS was not measured.
+- Not tried yet: a tagged release on GitHub.
 
 ## Later
 
@@ -324,5 +335,5 @@ How the desktop builds came out:
 
 ## Open questions
 
-- Can the wasm get smaller than 1.8 MB compressed, for example with `wasm-opt` or by loading it only once a Liquid wallet exists?
+- Can LWK get smaller? The wasm is 5.1 MB, 3.2 MB as GitHub Pages serves it, and the Android library 9.2 MB per ABI. It already loads only once a Liquid wallet opens, and wasm-pack already runs `wasm-opt`.
 - Restoring checks BIP84 then BIP49 (see [Which descriptor](#which-descriptor)). Still to try by hand: a phrase from the Blockstream app and one from Aqua, restored in Lumen, show the same funds.

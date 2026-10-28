@@ -65,6 +65,7 @@ jobs:
         run: cargo test --locked
 
   desktop:
+    name: desktop (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
