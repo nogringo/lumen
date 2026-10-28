@@ -7,14 +7,15 @@ metadata_sources:
 name: Lumen
 summary: Every way you hold bitcoin, in one place.
 description: |
-  Lumen connects your Lightning wallets over Nostr Wallet Connect (NIP-47), shows their balances and activity together, and sends and receives Lightning payments with them.
+  Lumen connects your Lightning wallets over Nostr Wallet Connect (NIP-47), holds Liquid wallets of its own, shows their balances and activity together, and sends and receives with them.
 
-  - Every wallet at once: connect several NWC wallets and see one total balance and one activity feed. Before saving a connection, Lumen shows what it can and cannot do.
-  - Send and receive: pay a Lightning invoice or address, scan a QR code with the camera, create an invoice with a QR code, and get told the moment it is paid.
-  - Payment details: each payment keeps its date, fee, payment hash, preimage and invoice, and can be shared as a receipt.
+  - Every wallet at once: connect several NWC wallets, add Liquid wallets, and see one total balance and one activity feed. Before saving a connection, Lumen shows what it can and cannot do.
+  - Liquid wallets: create one from a new 12-word recovery phrase, which Lumen asks you to type back before the wallet exists, or restore one from 12 or 24 words. The phrase never reaches the clipboard or a screenshot, and it can be shown again later. Lumen syncs through Waterfalls, falls back to Esplora, and lets you pick other servers in Settings.
+  - Send and receive: pay a Lightning invoice or address, or a Liquid address with its fee shown before you confirm, and send everything a Liquid wallet holds. Scan a QR code with the camera, create an invoice or show a Liquid address with a QR code, and get told the moment it is paid.
+  - Payment details: Lightning payments keep their date, fee, payment hash, preimage and invoice. Liquid payments keep their confirmations, fee and transaction ID, with a liquid.network link that carries what the explorer needs to unblind the amounts. Each can be shared as a receipt.
   - History that stays: every transaction Lumen sees is saved on the device, encrypted with AES-256-GCM, so it remains readable offline.
-  - App lock: an optional passphrase, stretched with Argon2id, seals the wallets and the history.
-tags: [bitcoin, lightning, wallet, nostr, nwc]
+  - App lock: an optional passphrase, stretched with Argon2id, seals the wallets, recovery phrases included, and the history.
+tags: [bitcoin, lightning, liquid, wallet, nostr, nwc]
 website: https://nogringo.github.io/lumen/
 supported_nips: ["47"]
 images:

@@ -62,6 +62,23 @@ void main() {
         tx('books', sats: 12500, days: 2, description: 'Bookshop'),
         tx('refund', sats: 3000, incoming: true, days: 3),
       ],
+    FakeWallet.liquid('savings', 'Savings', balance: 250000)
+      ..transactions = [
+        tx(
+          '5f1d9c2b7a4e8f3061c5d2a9b8e7f4031a6c9d2e5b8f1a4c7d0e3b6a9f2c5d8e',
+          sats: 150000,
+          incoming: true,
+          minutesAgo: 9,
+          confirmations: 0,
+        ),
+        tx(
+          'a7c3e9b1d5f2084c6e1a3b9d7f5c2e8a0b4d6f1c3e5a7b9d2f4c6e8a1b3d5f7c',
+          sats: 100000,
+          days: 4,
+          feeSats: 33,
+          confirmations: 512,
+        ),
+      ],
   ];
 
   Future<void> shoot(WidgetTester tester, String name, Size size) async {

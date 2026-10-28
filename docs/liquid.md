@@ -326,6 +326,11 @@ How the Android release came out:
 - On macOS, `flutter build macos --release` puts a 63.7 MB `lumen_core` in the app, for x86_64 and arm64, with its symbols (`strip -x` takes 6.4 MB off). An ARM-only build, which Xcode 27 now allows (`flutter config --enable-macos-arm64-only`), would halve it. iOS was not measured.
 - Not tried yet: a tagged release on GitHub.
 
+How the README came out:
+
+- Its introduction and features, and the Zapstore description, now cover Liquid wallets. Only Android and macOS keep the phrase out of screenshots, so the README says so, and Zapstore, which only ships Android, says it plainly.
+- The screenshots' demo data has a Liquid wallet, "Savings", with a payment still in the mempool, which Home and the desktop table mark as pending. The payment screenshot gains the Network row from step 7.
+
 ## Later
 
 - **Lightning from Liquid.** Paying invoices and receiving over Lightning with Liquid funds needs a swap service. Boltz suspended its non-custodial swaps in August 2026, and Blockstream announced its own Blockstream Swaps, in beta. LWK has a `lwk_boltz` crate. Put swaps behind an interface and pick a provider once one is generally available.
