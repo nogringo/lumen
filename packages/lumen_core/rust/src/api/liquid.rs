@@ -324,6 +324,19 @@ impl LiquidWallet {
         Ok(list)
     }
 
+    /// The page of [txid] on [explorer], a URL ending with `/`. Its fragment
+    /// holds what the explorer needs to unblind the wallet's own inputs and
+    /// outputs. None when the wallet does not know the transaction.
+    pub async fn explorer_url(
+        &self,
+        txid: String,
+        explorer: String,
+    ) -> Result<Option<String>, LiquidError> {
+        let txid = Txid::from_str(&txid).map_err(other)?;
+        let wollet = self.wollet.lock().await;
+        Ok(wollet.transaction(&txid)?.map(|tx| tx.unblinded_url(&explorer)))
+    }
+
     /// Builds a payment of [sats] L-BTC to [address] and quotes its fee,
     /// without signing or sending it.
     pub async fn prepare_send(
@@ -470,6 +483,9 @@ mod tests {
         assert_eq!(first.address, FIRST_MAINNET_ADDRESS);
         assert_eq!(wallet.balance().await.unwrap(), 0);
         assert!(wallet.transactions().await.unwrap().is_empty());
+        let unknown = "c6e3187f028942973ad27224ca79baa8382e90ad686e927fc29896e8a2edf3f3";
+        let url = wallet.explorer_url(unknown.into(), "https://liquid.network/".into()).await;
+        assert!(url.unwrap().is_none());
     }
 
     // Recorded from this code, to catch a change in how addresses derive.

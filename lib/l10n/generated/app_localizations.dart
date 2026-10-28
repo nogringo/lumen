@@ -1884,6 +1884,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get transactionPending;
+
+  /// Row label: how many blocks confirm a chain payment, zero while it waits in the mempool.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmations'**
+  String get detailConfirmations;
+
+  /// Button that opens the payment on a block explorer website.
+  ///
+  /// In en, this message translates to:
+  /// **'View on {site}'**
+  String viewOnExplorer(String site);
+
+  /// Shown and announced when the block explorer link does not open.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not open {site}. Copy the transaction ID and look it up there.'**
+  String explorerFailed(String site);
 }
 
 class _AppLocalizationsDelegate

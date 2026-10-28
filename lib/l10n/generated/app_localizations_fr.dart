@@ -1122,4 +1122,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get transactionPending => 'En attente';
+
+  @override
+  String get detailConfirmations => 'Confirmations';
+
+  @override
+  String viewOnExplorer(String site) {
+    return 'Voir sur $site';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'Lumen n\'a pas pu ouvrir $site. Copiez l\'ID de transaction et cherchez-le sur le site.';
+  }
 }

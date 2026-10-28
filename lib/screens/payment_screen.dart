@@ -1,5 +1,8 @@
+import 'package:flutter/semantics.dart';
+import 'package:intl/intl.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
@@ -8,6 +11,7 @@ import '../wallets/lumen_scope.dart';
 import '../widgets/activity.dart';
 import '../widgets/amount.dart';
 import '../widgets/details.dart';
+import '../widgets/flow_parts.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/share_text.dart';
 import '../widgets/wallet_kind_style.dart';
@@ -30,6 +34,10 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   late final Future<Transaction?> _transaction;
 
+  /// A chain payment read live from its wallet, since the history keeps the
+  /// confirmations it had when saved.
+  ChainDetails? _live;
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +46,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
     _transaction = wallet == null
         ? Future.value()
         : wallets.transaction(wallet, widget.transactionId);
+    if (wallet != null && wallet.network != null) _readLive(wallet);
+  }
+
+  Future<void> _readLive(Wallet wallet) async {
+    final saved = await _transaction;
+    final txid = saved?.txid;
+    if (txid == null) return;
+    final ChainDetails? live;
+    try {
+      live = await wallet.chainDetails(txid);
+    } on ActivityException {
+      return;
+    }
+    if (live == null || !mounted) return;
+    setState(() => _live = live);
+    if (saved!.isPending && !live.transaction.isPending) {
+      _announce(
+        context,
+        AppLocalizations.of(context).paymentConfirmedAnnouncement,
+      );
+    }
   }
 
   @override
@@ -48,15 +77,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     return FutureBuilder(
       future: _transaction,
       builder: (context, snapshot) {
-        final transaction = snapshot.data;
-        final share = transaction == null
+        final transaction = _live?.transaction ?? snapshot.data;
+        final share = transaction == null || wallet == null
             ? null
             : Builder(
                 builder: (button) => IconButton(
                   tooltip: l.shareReceipt,
                   icon: const Icon(Icons.share_outlined),
                   onPressed: () =>
-                      shareText(button, _receipt(context, transaction)),
+                      shareText(button, _receipt(context, transaction, wallet)),
                 ),
               );
         return Scaffold(
@@ -91,7 +120,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           )
                         else
-                          _PaymentDetails(transaction, wallet),
+                          _PaymentDetails(
+                            transaction,
+                            wallet,
+                            explorer: _live?.explorer,
+                          ),
                       ],
                     ),
                   ),
@@ -106,10 +139,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 }
 
 class _PaymentDetails extends StatelessWidget {
-  const _PaymentDetails(this.transaction, this.wallet);
+  const _PaymentDetails(this.transaction, this.wallet, {this.explorer});
 
   final Transaction transaction;
   final Wallet wallet;
+  final Uri? explorer;
 
   @override
   Widget build(BuildContext context) {
@@ -139,13 +173,30 @@ class _PaymentDetails extends StatelessWidget {
             style: TextStyle(fontSize: 15, color: c.text2),
           ),
         ],
+        if (t.txid != null) ...[
+          const SizedBox(height: 20),
+          if (t.isPending)
+            StatusLine(icon: Icons.schedule, title: l.waitingForConfirmation)
+          else
+            StatusLine(
+              icon: Icons.check_circle_outline,
+              title: l.paymentConfirmed,
+            ),
+        ],
         const SizedBox(height: 24),
         DetailsCard([
           (l.detailDate, Text(formatDateTime(context, t.at))),
           (l.columnWallet, Text(wallet.name)),
           (l.detailNetwork, Text(wallet.kind.label(l))),
+          if (t.confirmations case final count?)
+            (l.detailConfirmations, Text(_formatCount(l, count))),
           if (t.feeSats case final fee? when !t.isIncoming)
             (l.detailFeePaid, Text(l.amountSats(formatSats(context, fee)))),
+          if (t.txid case final txid?)
+            (
+              l.detailTxid,
+              CopyableValue(txid, tooltip: l.copyTxid, copied: l.txidCopied),
+            ),
           if (t.paymentHash case final hash?)
             (
               l.detailPaymentHash,
@@ -174,21 +225,99 @@ class _PaymentDetails extends StatelessWidget {
               ),
             ),
         ]),
+        if (explorer case final explorer?) ...[
+          const SizedBox(height: 16),
+          _ExplorerLink(explorer),
+        ],
       ],
     );
   }
 }
 
-/// A plain text receipt, without the wallet name, which is private.
-String _receipt(BuildContext context, Transaction t) {
+class _ExplorerLink extends StatefulWidget {
+  const _ExplorerLink(this.url);
+
+  final Uri url;
+
+  @override
+  State<_ExplorerLink> createState() => _ExplorerLinkState();
+}
+
+class _ExplorerLinkState extends State<_ExplorerLink> {
+  var _failed = false;
+
+  Future<void> _open() async {
+    bool opened;
+    try {
+      opened = await launchUrl(
+        widget.url,
+        mode: LaunchMode.externalApplication,
+      );
+    } catch (_) {
+      opened = false;
+    }
+    if (!mounted) return;
+    setState(() => _failed = !opened);
+    if (!opened) {
+      _announce(
+        context,
+        AppLocalizations.of(context).explorerFailed(widget.url.host),
+        assertive: true,
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        FilledButton.icon(
+          onPressed: _open,
+          style: quietButtonStyle(context),
+          icon: const Icon(Icons.open_in_new),
+          label: Text(l.viewOnExplorer(widget.url.host)),
+        ),
+        if (_failed) ...[
+          const SizedBox(height: 12),
+          ErrorNote(l.explorerFailed(widget.url.host)),
+        ],
+      ],
+    );
+  }
+}
+
+String _formatCount(AppLocalizations l, int count) =>
+    NumberFormat.decimalPattern(l.localeName).format(count);
+
+void _announce(
+  BuildContext context,
+  String message, {
+  bool assertive = false,
+}) => SemanticsService.sendAnnouncement(
+  View.of(context),
+  message,
+  Directionality.of(context),
+  assertiveness: assertive ? Assertiveness.assertive : Assertiveness.polite,
+);
+
+/// A plain text receipt, without the wallet name, which is private, or the
+/// explorer link, which unblinds every amount of the wallet's in the
+/// transaction, change included.
+String _receipt(BuildContext context, Transaction t, Wallet wallet) {
   final l = AppLocalizations.of(context);
   return [
     t.isIncoming ? l.paymentReceived : l.paymentSent,
     l.amountSats(formatSats(context, t.sats)),
     ?t.description,
     l.receiptLine(l.detailDate, formatDateTime(context, t.at)),
+    l.receiptLine(l.detailNetwork, wallet.kind.label(l)),
+    if (t.confirmations case final count?)
+      l.receiptLine(l.detailConfirmations, _formatCount(l, count)),
     if (t.feeSats case final fee? when !t.isIncoming)
       l.receiptLine(l.detailFeePaid, l.amountSats(formatSats(context, fee))),
+    if (t.txid case final txid?) l.receiptLine(l.detailTxid, txid),
     if (t.paymentHash case final hash?)
       l.receiptLine(l.detailPaymentHash, hash),
     if (t.preimage case final preimage?)

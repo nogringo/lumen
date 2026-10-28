@@ -135,6 +135,19 @@ final class Transaction {
   bool get isPending => confirmations == 0;
 }
 
+/// A chain payment as its wallet knows it now.
+final class ChainDetails {
+  const ChainDetails(this.transaction, {required this.explorer});
+
+  /// With its confirmations as of the wallet's last sync.
+  final Transaction transaction;
+
+  /// The transaction's page on a block explorer. Its fragment holds what
+  /// the page needs to show the wallet's own amounts, which the chain
+  /// hides, and browsers never send a fragment to the server.
+  final Uri explorer;
+}
+
 /// One page of a wallet's transaction list, newest first.
 final class TransactionPage {
   const TransactionPage(this.transactions, {required this.listed});
@@ -291,6 +304,11 @@ abstract interface class Wallet {
   /// Up to [limit] transactions, starting [offset] entries from the newest.
   /// Throws an [ActivityException] when they cannot be read.
   Future<TransactionPage> fetchTransactions({int limit = 10, int offset = 0});
+
+  /// The chain transaction [txid] as the wallet knows it now, or null when
+  /// it does not know it. Throws an [ActivityException] when it cannot be
+  /// read, and an [UnsupportedError] on a wallet without a [network].
+  Future<ChainDetails?> chainDetails(String txid);
 
   Future<void> rename(String name);
 

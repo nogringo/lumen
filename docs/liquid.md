@@ -232,10 +232,21 @@ How "send everything" came out:
 - On testnet, draining four coins (104,974 sats) sent 104,934 sats for 40 of fee, and draining a wallet whose only coin was still in the mempool sent it all back for 20. `tool/liquid_testnet.dart --send-all <address>` does the same.
 - Not tried in the running app yet.
 
-### 7. Payment details
+### 7. Payment details (done)
 
 - For Liquid: txid, confirmations, fee and date, plus a link to a block explorer that includes the unblinding data, since Liquid amounts are confidential.
 - The shared receipt follows the same fields.
+
+How it came out:
+
+- `Wallet.chainDetails(txid)` reads one chain payment as the wallet knows it now: synced unless the last sync is less than 15 s old, and read from the saved state when the server does not answer. The payment screen shows the saved payment at once, then the live one, so the confirmation count is current. A payment saved as pending that turns out to be confirmed is announced.
+- A chain payment shows "Waiting for confirmation" or "Confirmed" under its amount, and Confirmations, Fee paid and the transaction ID, which can be copied, in its details.
+- "View on liquid.network" opens mempool.space's Liquid explorer in the browser. The link carries LWK's unblinding data (`unblinded_url`: the value, asset and both blinders of each of the wallet's inputs and outputs) in its fragment, which browsers never send to the server. mempool can then deduce one amount left blinded, such as what the recipient got. The link comes from the saved state, so it shows offline too. When the browser does not open, a note under the button says to copy the transaction ID instead.
+- The receipt gains the network for every payment, and the confirmations and the transaction ID for chain ones. It leaves the link out: its fragment would show the amounts of the wallet's coins to whoever gets the receipt.
+- `url_launcher`, already in the lock file through other packages, is now a direct dependency.
+- `tool/liquid_testnet.dart` prints the explorer link of the newest transaction.
+- The screen reads the payment once. It does not follow a pending one until it confirms, as Send and Receive do.
+- Not tried in the running app yet. The link the testnet script prints, opened by hand, shows whether liquid.network unblinds the amounts.
 
 ### 8. Wallet settings
 

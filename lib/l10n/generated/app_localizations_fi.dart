@@ -1118,4 +1118,17 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get transactionPending => 'Vahvistamaton';
+
+  @override
+  String get detailConfirmations => 'Vahvistukset';
+
+  @override
+  String viewOnExplorer(String site) {
+    return 'Näytä sivustolla $site';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'Lumen ei voinut avata sivustoa $site. Kopioi transaktion tunniste ja hae sitä siellä.';
+  }
 }

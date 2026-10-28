@@ -1459,5 +1459,27 @@
   "transactionPending": "Pending",
   "@transactionPending": {
     "description": "Under the amount of a payment that waits in the mempool until a block confirms it."
+  },
+  "detailConfirmations": "Confirmations",
+  "@detailConfirmations": {
+    "description": "Row label: how many blocks confirm a chain payment, zero while it waits in the mempool."
+  },
+  "viewOnExplorer": "View on {site}",
+  "@viewOnExplorer": {
+    "description": "Button that opens the payment on a block explorer website.",
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
+  },
+  "explorerFailed": "Lumen could not open {site}. Copy the transaction ID and look it up there.",
+  "@explorerFailed": {
+    "description": "Shown and announced when the block explorer link does not open.",
+    "placeholders": {
+      "site": {
+        "type": "String"
+      }
+    }
   }
 }

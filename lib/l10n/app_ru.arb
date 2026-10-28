@@ -294,5 +294,8 @@
   "confirmsSoon": "Обычно в течение 2 минут",
   "paymentConfirmed": "Подтверждено",
   "paymentConfirmedAnnouncement": "Платёж подтверждён",
-  "transactionPending": "В ожидании"
+  "transactionPending": "В ожидании",
+  "detailConfirmations": "Подтверждения",
+  "viewOnExplorer": "Открыть на {site}",
+  "explorerFailed": "Lumen не удалось открыть {site}. Скопируйте ID транзакции и найдите его там."
 }

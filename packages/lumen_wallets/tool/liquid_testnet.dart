@@ -42,9 +42,14 @@ Future<void> main(List<String> args) async {
   );
   print('${discovery.script.name}, scanned in ${watch.elapsedMilliseconds} ms');
   print('Balance: ${await wallet.fetchBalance()} sats');
-  for (final t in (await wallet.fetchTransactions(limit: 5)).transactions) {
+  final recent = (await wallet.fetchTransactions(limit: 5)).transactions;
+  for (final t in recent) {
     final state = t.isPending ? 'pending' : '${t.confirmations} conf';
     print('  ${t.direction.name} ${t.sats} sats, fee ${t.feeSats}, $state');
+  }
+  if (recent.firstOrNull case final newest?) {
+    final details = await wallet.chainDetails(newest.id);
+    print('Newest on the explorer: ${details?.explorer}');
   }
   final address = await wallet.nextAddress();
   print('Receive at: ${address.address}');

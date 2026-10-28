@@ -520,6 +520,54 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  FakeWallet liquidHistory() => FakeWallet.liquid('savings', 'Savings')
+    ..transactions = [
+      tx('c0ffee', sats: 5000, minutesAgo: 5, feeSats: 30, confirmations: 0),
+    ];
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets(
+        'a Liquid payment meets the guidelines, $name, ${brightness.name}',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          await pumpLumen(
+            tester,
+            sources,
+            wallets: [liquidHistory()],
+            size: size,
+            brightness: brightness,
+          );
+          await openPayment(tester, 'Sent');
+          expect(find.text('View on liquid.network'), findsOneWidget);
+          await expectGuidelines(tester);
+          handle.dispose();
+        },
+        variant: _platformFor(size),
+      );
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('a Liquid payment lays out at 200% text, $name', (
+      tester,
+    ) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: [liquidHistory()],
+        size: size,
+        textScale: 2,
+      );
+      await openPayment(tester, 'Sent');
+      expect(tester.takeException(), isNull);
+      expect(find.text('View on liquid.network'), findsOneWidget);
+    }, variant: _platformFor(size));
+  }
+
   testWidgets('the review reads the amount with its heading', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpLumen(tester, sources, wallets: twoWallets());

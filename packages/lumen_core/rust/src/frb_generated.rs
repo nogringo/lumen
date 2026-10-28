@@ -40,7 +40,7 @@ flutter_rust_bridge::frb_generated_boilerplate!(
     default_rust_auto_opaque = RustAutoOpaqueMoi,
 );
 pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_VERSION: &str = "2.13.0";
-pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 2088845185;
+pub(crate) const FLUTTER_RUST_BRIDGE_CODEGEN_CONTENT_HASH: i32 = 1598725683;
 
 // Section: executor
 
@@ -423,6 +423,68 @@ fn wire__crate__api__liquid__LiquidWallet_descriptor_impl(
                 ))?;
                 std::result::Result::Ok(output_ok)
             })())
+        },
+    )
+}
+fn wire__crate__api__liquid__LiquidWallet_explorer_url_impl(
+    port_: flutter_rust_bridge::for_generated::MessagePort,
+    ptr_: flutter_rust_bridge::for_generated::PlatformGeneralizedUint8ListPtr,
+    rust_vec_len_: i32,
+    data_len_: i32,
+) {
+    FLUTTER_RUST_BRIDGE_HANDLER.wrap_async::<flutter_rust_bridge::for_generated::SseCodec, _, _, _>(
+        flutter_rust_bridge::for_generated::TaskInfo {
+            debug_name: "LiquidWallet_explorer_url",
+            port: Some(port_),
+            mode: flutter_rust_bridge::for_generated::FfiCallMode::Normal,
+        },
+        move || {
+            let message = unsafe {
+                flutter_rust_bridge::for_generated::Dart2RustMessageSse::from_wire(
+                    ptr_,
+                    rust_vec_len_,
+                    data_len_,
+                )
+            };
+            let mut deserializer =
+                flutter_rust_bridge::for_generated::SseDeserializer::new(message);
+            let api_that = <RustOpaqueMoi<
+                flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LiquidWallet>,
+            >>::sse_decode(&mut deserializer);
+            let api_txid = <String>::sse_decode(&mut deserializer);
+            let api_explorer = <String>::sse_decode(&mut deserializer);
+            deserializer.end();
+            move |context| async move {
+                transform_result_sse::<_, crate::api::liquid::LiquidError>(
+                    (move || async move {
+                        let mut api_that_guard = None;
+                        let decode_indices_ =
+                            flutter_rust_bridge::for_generated::lockable_compute_decode_order(
+                                vec![flutter_rust_bridge::for_generated::LockableOrderInfo::new(
+                                    &api_that, 0, false,
+                                )],
+                            );
+                        for i in decode_indices_ {
+                            match i {
+                                0 => {
+                                    api_that_guard =
+                                        Some(api_that.lockable_decode_async_ref().await)
+                                }
+                                _ => unreachable!(),
+                            }
+                        }
+                        let api_that_guard = api_that_guard.unwrap();
+                        let output_ok = crate::api::liquid::LiquidWallet::explorer_url(
+                            &*api_that_guard,
+                            api_txid,
+                            api_explorer,
+                        )
+                        .await?;
+                        std::result::Result::Ok(output_ok)
+                    })()
+                    .await,
+                )
+            }
         },
     )
 }
@@ -1339,29 +1401,35 @@ fn pde_ffi_dispatcher_primary_impl(
         6 => {
             wire__crate__api__liquid__LiquidWallet_broadcast_impl(port, ptr, rust_vec_len, data_len)
         }
-        8 => wire__crate__api__liquid__LiquidWallet_open_impl(port, ptr, rust_vec_len, data_len),
-        9 => wire__crate__api__liquid__LiquidWallet_prepare_send_impl(
+        8 => wire__crate__api__liquid__LiquidWallet_explorer_url_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        10 => wire__crate__api__liquid__LiquidWallet_prepare_send_all_impl(
+        9 => wire__crate__api__liquid__LiquidWallet_open_impl(port, ptr, rust_vec_len, data_len),
+        10 => wire__crate__api__liquid__LiquidWallet_prepare_send_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        11 => wire__crate__api__liquid__LiquidWallet_sign_impl(port, ptr, rust_vec_len, data_len),
-        12 => wire__crate__api__liquid__LiquidWallet_state_impl(port, ptr, rust_vec_len, data_len),
-        13 => wire__crate__api__liquid__LiquidWallet_sync_impl(port, ptr, rust_vec_len, data_len),
-        14 => wire__crate__api__liquid__LiquidWallet_tip_height_impl(
+        11 => wire__crate__api__liquid__LiquidWallet_prepare_send_all_impl(
             port,
             ptr,
             rust_vec_len,
             data_len,
         ),
-        15 => wire__crate__api__liquid__LiquidWallet_transactions_impl(
+        12 => wire__crate__api__liquid__LiquidWallet_sign_impl(port, ptr, rust_vec_len, data_len),
+        13 => wire__crate__api__liquid__LiquidWallet_state_impl(port, ptr, rust_vec_len, data_len),
+        14 => wire__crate__api__liquid__LiquidWallet_sync_impl(port, ptr, rust_vec_len, data_len),
+        15 => wire__crate__api__liquid__LiquidWallet_tip_height_impl(
+            port,
+            ptr,
+            rust_vec_len,
+            data_len,
+        ),
+        16 => wire__crate__api__liquid__LiquidWallet_transactions_impl(
             port,
             ptr,
             rust_vec_len,
@@ -1383,10 +1451,10 @@ fn pde_ffi_dispatcher_sync_impl(
         2 => wire__crate__api__liquid__LiquidDraft_sats_impl(ptr, rust_vec_len, data_len),
         3 => wire__crate__api__liquid__LiquidSigned_txid_impl(ptr, rust_vec_len, data_len),
         7 => wire__crate__api__liquid__LiquidWallet_descriptor_impl(ptr, rust_vec_len, data_len),
-        16 => wire__crate__api__liquid__descriptor_impl(ptr, rust_vec_len, data_len),
-        17 => wire__crate__api__liquid__generate_phrase_impl(ptr, rust_vec_len, data_len),
-        18 => wire__crate__api__liquid__init_app_impl(ptr, rust_vec_len, data_len),
-        19 => wire__crate__api__liquid__phrase_problem_impl(ptr, rust_vec_len, data_len),
+        17 => wire__crate__api__liquid__descriptor_impl(ptr, rust_vec_len, data_len),
+        18 => wire__crate__api__liquid__generate_phrase_impl(ptr, rust_vec_len, data_len),
+        19 => wire__crate__api__liquid__init_app_impl(ptr, rust_vec_len, data_len),
+        20 => wire__crate__api__liquid__phrase_problem_impl(ptr, rust_vec_len, data_len),
         _ => unreachable!(),
     }
 }

@@ -1143,4 +1143,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get transactionPending => 'В ожидании';
+
+  @override
+  String get detailConfirmations => 'Подтверждения';
+
+  @override
+  String viewOnExplorer(String site) {
+    return 'Открыть на $site';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'Lumen не удалось открыть $site. Скопируйте ID транзакции и найдите его там.';
+  }
 }

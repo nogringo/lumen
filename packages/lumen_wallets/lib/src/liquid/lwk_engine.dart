@@ -111,6 +111,10 @@ final class _LwkChain implements LiquidChain {
   ];
 
   @override
+  Future<String?> explorerUrl(String txid, String explorer) =>
+      _guardAsync(() => _wallet.explorerUrl(txid: txid, explorer: explorer));
+
+  @override
   Future<LiquidDraft> prepareSend(String address, int sats) async => _LwkDraft(
     await _guardAsync(
       () => _wallet.prepareSend(address: address, sats: BigInt.from(sats)),

@@ -53,6 +53,12 @@ final class _FakeChain implements LiquidChain {
   Future<List<ChainTx>> transactions() async => txs;
 
   @override
+  Future<String?> explorerUrl(String txid, String explorer) async =>
+      txs.any((tx) => tx.txid == txid)
+      ? '${explorer}tx/$txid#blinded=secrets'
+      : null;
+
+  @override
   Future<LiquidDraft> prepareSend(String address, int sats) async {
     if (prepareError case final error?) throw error;
     return _Draft(fee, address, sats);
@@ -404,6 +410,57 @@ void main() {
       expect([for (final t in second.transactions) t.id], ['tx2', 'tx1']);
       expect(second.listed, 2);
       expect((await wallet.fetchTransactions(offset: 5)).listed, 0);
+    });
+
+    test('one payment is read live, with its explorer link', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain
+        ..tip = 101
+        ..txs = [const ChainTx(txid: 'out', balance: -5030, fee: 30)];
+      expect((await wallet.chainDetails('out'))!.transaction.isPending, isTrue);
+
+      chain.txs = [
+        const ChainTx(txid: 'out', balance: -5030, fee: 30, height: 100),
+      ];
+      now = now.add(const Duration(minutes: 1));
+      final details = (await wallet.chainDetails('out'))!;
+      expect(
+        (details.transaction.sats, details.transaction.confirmations),
+        (5000, 2),
+      );
+      expect(
+        '${details.explorer}',
+        'https://liquid.network/tx/out#blinded=secrets',
+      );
+      expect(await wallet.chainDetails('unknown'), isNull);
+    });
+
+    test('a payment is read from the saved state while offline', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      chain.txs = [
+        const ChainTx(txid: 'in', balance: 2000, fee: 26, height: 100),
+      ];
+      await wallet.fetchBalance();
+      now = now.add(const Duration(minutes: 1));
+      chain.syncErrors.addAll([
+        for (var i = 0; i < 3; i++) _fails(LiquidChainError.unreachable),
+      ]);
+
+      final details = await wallet.chainDetails('in');
+      expect(details!.transaction.confirmations, 1);
+    });
+
+    test('a testnet payment links to the testnet explorer', () async {
+      final wallet = await source(
+        networks: const {ChainNetwork.liquidTestnet},
+      ).add(phrase: _phrase, name: 'Test', network: ChainNetwork.liquidTestnet);
+      chain.txs = [const ChainTx(txid: 'in', balance: 2000, fee: 26)];
+
+      final details = await wallet.chainDetails('in');
+      expect(
+        '${details!.explorer}',
+        startsWith('https://liquid.network/testnet/tx/in#'),
+      );
     });
   });
 

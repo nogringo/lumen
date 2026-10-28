@@ -56,6 +56,13 @@ final class LiquidWalletSource implements WalletSource {
     ),
   };
 
+  /// mempool.space's explorer, which unblinds amounts from a link's
+  /// fragment.
+  static const _explorers = {
+    ChainNetwork.liquid: 'https://liquid.network/',
+    ChainNetwork.liquidTestnet: 'https://liquid.network/testnet/',
+  };
+
   final Set<ChainNetwork> networks;
   final LiquidEngine _engine;
   final KeyValueStore _secrets;
@@ -671,6 +678,36 @@ final class LiquidWallet implements Wallet {
       ..sort((a, b) => b.at.compareTo(a.at));
     final page = all.skip(offset).take(limit).toList();
     return TransactionPage(page, listed: page.length);
+  }
+
+  /// Synced first when the server answers. Without an answer, the saved
+  /// state gives the confirmations as of the last sync.
+  @override
+  Future<ChainDetails?> chainDetails(String txid) async {
+    try {
+      final chain = await _opened();
+      try {
+        await _synced();
+      } on LiquidChainException {
+        // Read from the saved state.
+      }
+      final tx = (await chain.transactions())
+          .where((tx) => tx.txid == txid)
+          .firstOrNull;
+      final payment = tx == null
+          ? null
+          : _transaction(tx, await chain.tipHeight());
+      if (payment == null) return null;
+      final url = await chain.explorerUrl(
+        txid,
+        LiquidWalletSource._explorers[network]!,
+      );
+      return url == null
+          ? null
+          : ChainDetails(payment, explorer: Uri.parse(url));
+    } on LiquidChainException {
+      throw const ActivityException(ActivityError.unreachable);
+    }
   }
 
   /// Null for a transaction that moves no L-BTC of this wallet, such as one

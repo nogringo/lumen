@@ -56,6 +56,11 @@ abstract class LiquidWallet implements RustOpaqueInterface {
 
   String descriptor();
 
+  /// The page of [txid] on [explorer], a URL ending with `/`. Its fragment
+  /// holds what the explorer needs to unblind the wallet's own inputs and
+  /// outputs. None when the wallet does not know the transaction.
+  Future<String?> explorerUrl({required String txid, required String explorer});
+
   /// [state] is what [LiquidWallet::state] returned last time, so the next
   /// sync only fetches what changed. [waterfalls_url] is tried first, and
   /// [esplora_url] when it fails.

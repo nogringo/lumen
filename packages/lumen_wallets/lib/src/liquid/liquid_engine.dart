@@ -101,6 +101,11 @@ abstract interface class LiquidChain {
   /// Newest first.
   Future<List<ChainTx>> transactions();
 
+  /// The page of [txid] on [explorer], a URL ending with `/`, with what it
+  /// needs to unblind the wallet's own amounts in its fragment. Null when
+  /// the wallet does not know the transaction.
+  Future<String?> explorerUrl(String txid, String explorer);
+
   Future<LiquidDraft> prepareSend(String address, int sats);
 
   /// The whole L-BTC balance, the fee taken out of it.

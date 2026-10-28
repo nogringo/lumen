@@ -69,7 +69,7 @@ class RustLib extends BaseEntrypoint<RustLibApi, RustLibApiImpl, RustLibWire> {
   String get codegenVersion => '2.13.0';
 
   @override
-  int get rustContentHash => 2088845185;
+  int get rustContentHash => 1598725683;
 
   static const kDefaultExternalLibraryLoaderConfig =
       ExternalLibraryLoaderConfig(
@@ -102,6 +102,12 @@ abstract class RustLibApi extends BaseApi {
   });
 
   String crateApiLiquidLiquidWalletDescriptor({required LiquidWallet that});
+
+  Future<String?> crateApiLiquidLiquidWalletExplorerUrl({
+    required LiquidWallet that,
+    required String txid,
+    required String explorer,
+  });
 
   Future<LiquidWallet> crateApiLiquidLiquidWalletOpen({
     required String phrase,
@@ -408,6 +414,46 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       );
 
   @override
+  Future<String?> crateApiLiquidLiquidWalletExplorerUrl({
+    required LiquidWallet that,
+    required String txid,
+    required String explorer,
+  }) {
+    return handler.executeNormal(
+      NormalTask(
+        callFfi: (port_) {
+          final serializer = SseSerializer(generalizedFrbRustBinding);
+          sse_encode_Auto_Ref_RustOpaque_flutter_rust_bridgefor_generatedRustAutoOpaqueInnerLiquidWallet(
+            that,
+            serializer,
+          );
+          sse_encode_String(txid, serializer);
+          sse_encode_String(explorer, serializer);
+          pdeCallFfi(
+            generalizedFrbRustBinding,
+            serializer,
+            funcId: 8,
+            port: port_,
+          );
+        },
+        codec: SseCodec(
+          decodeSuccessData: sse_decode_opt_String,
+          decodeErrorData: sse_decode_liquid_error,
+        ),
+        constMeta: kCrateApiLiquidLiquidWalletExplorerUrlConstMeta,
+        argValues: [that, txid, explorer],
+        apiImpl: this,
+      ),
+    );
+  }
+
+  TaskConstMeta get kCrateApiLiquidLiquidWalletExplorerUrlConstMeta =>
+      const TaskConstMeta(
+        debugName: "LiquidWallet_explorer_url",
+        argNames: ["that", "txid", "explorer"],
+      );
+
+  @override
   Future<LiquidWallet> crateApiLiquidLiquidWalletOpen({
     required String phrase,
     required LiquidNetwork network,
@@ -429,7 +475,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 8,
+            funcId: 9,
             port: port_,
           );
         },
@@ -477,7 +523,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 9,
+            funcId: 10,
             port: port_,
           );
         },
@@ -516,7 +562,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 10,
+            funcId: 11,
             port: port_,
           );
         },
@@ -558,7 +604,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 11,
+            funcId: 12,
             port: port_,
           );
         },
@@ -595,7 +641,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 12,
+            funcId: 13,
             port: port_,
           );
         },
@@ -626,7 +672,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 13,
+            funcId: 14,
             port: port_,
           );
         },
@@ -659,7 +705,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 14,
+            funcId: 15,
             port: port_,
           );
         },
@@ -695,7 +741,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           pdeCallFfi(
             generalizedFrbRustBinding,
             serializer,
-            funcId: 15,
+            funcId: 16,
             port: port_,
           );
         },
@@ -729,7 +775,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(phrase, serializer);
           sse_encode_liquid_network(network, serializer);
           sse_encode_script_kind(script, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 16)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -753,7 +799,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 17)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_String,
@@ -775,7 +821,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
       SyncTask(
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 18)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_unit,
@@ -798,7 +844,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
         callFfi: () {
           final serializer = SseSerializer(generalizedFrbRustBinding);
           sse_encode_String(phrase, serializer);
-          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 19)!;
+          return pdeCallFfi(generalizedFrbRustBinding, serializer, funcId: 20)!;
         },
         codec: SseCodec(
           decodeSuccessData: sse_decode_opt_box_autoadd_phrase_problem,
@@ -1776,6 +1822,18 @@ class LiquidWalletImpl extends RustOpaque implements LiquidWallet {
 
   String descriptor() =>
       RustLib.instance.api.crateApiLiquidLiquidWalletDescriptor(that: this);
+
+  /// The page of [txid] on [explorer], a URL ending with `/`. Its fragment
+  /// holds what the explorer needs to unblind the wallet's own inputs and
+  /// outputs. None when the wallet does not know the transaction.
+  Future<String?> explorerUrl({
+    required String txid,
+    required String explorer,
+  }) => RustLib.instance.api.crateApiLiquidLiquidWalletExplorerUrl(
+    that: this,
+    txid: txid,
+    explorer: explorer,
+  );
 
   /// Builds a payment of [sats] L-BTC to [address] and quotes its fee,
   /// without signing or sending it.

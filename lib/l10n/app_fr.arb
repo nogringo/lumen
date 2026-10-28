@@ -294,5 +294,8 @@
   "confirmsSoon": "En général sous 2 minutes",
   "paymentConfirmed": "Confirmé",
   "paymentConfirmedAnnouncement": "Paiement confirmé",
-  "transactionPending": "En attente"
+  "transactionPending": "En attente",
+  "detailConfirmations": "Confirmations",
+  "viewOnExplorer": "Voir sur {site}",
+  "explorerFailed": "Lumen n'a pas pu ouvrir {site}. Copiez l'ID de transaction et cherchez-le sur le site."
 }

@@ -1054,4 +1054,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get transactionPending => '待确认';
+
+  @override
+  String get detailConfirmations => '确认数';
+
+  @override
+  String viewOnExplorer(String site) {
+    return '在 $site 上查看';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'Lumen 无法打开 $site。请复制交易 ID 并在该网站上查找。';
+  }
 }

@@ -257,6 +257,22 @@ class FakeWallet implements Wallet {
     return TransactionPage(page, listed: page.length);
   }
 
+  /// Read from [transactions], as the chain has them now.
+  @override
+  Future<ChainDetails?> chainDetails(String txid) async {
+    if (network == null) throw UnsupportedError('No chain');
+    await Future<void>.delayed(Duration.zero);
+    for (final t in transactions) {
+      if (t.txid == txid) {
+        return ChainDetails(
+          t,
+          explorer: Uri.parse('https://liquid.network/tx/$txid#blinded=1,2'),
+        );
+      }
+    }
+    return null;
+  }
+
   @override
   Future<void> rename(String name) async => this.name = name;
 
@@ -353,6 +369,10 @@ final class FakeLiquidChain implements LiquidChain {
 
   @override
   Future<List<ChainTx>> transactions() async => txs;
+
+  @override
+  Future<String?> explorerUrl(String txid, String explorer) async =>
+      txs.any((tx) => tx.txid == txid) ? '${explorer}tx/$txid' : null;
 
   @override
   Future<LiquidDraft> prepareSend(String address, int sats) =>

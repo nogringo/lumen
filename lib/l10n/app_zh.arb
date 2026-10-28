@@ -294,5 +294,8 @@
   "confirmsSoon": "通常在 2 分钟内",
   "paymentConfirmed": "已确认",
   "paymentConfirmedAnnouncement": "付款已确认",
-  "transactionPending": "待确认"
+  "transactionPending": "待确认",
+  "detailConfirmations": "确认数",
+  "viewOnExplorer": "在 {site} 上查看",
+  "explorerFailed": "Lumen 无法打开 {site}。请复制交易 ID 并在该网站上查找。"
 }

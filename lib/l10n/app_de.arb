@@ -294,5 +294,8 @@
   "confirmsSoon": "Meist innerhalb von 2 Minuten",
   "paymentConfirmed": "Bestätigt",
   "paymentConfirmedAnnouncement": "Zahlung bestätigt",
-  "transactionPending": "Ausstehend"
+  "transactionPending": "Ausstehend",
+  "detailConfirmations": "Bestätigungen",
+  "viewOnExplorer": "Auf {site} ansehen",
+  "explorerFailed": "Lumen konnte {site} nicht öffnen. Kopiere die Transaktions-ID und suche sie dort."
 }

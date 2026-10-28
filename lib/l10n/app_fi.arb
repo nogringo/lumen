@@ -294,5 +294,8 @@
   "confirmsSoon": "Yleensä 2 minuutin kuluessa",
   "paymentConfirmed": "Vahvistettu",
   "paymentConfirmedAnnouncement": "Maksu vahvistettu",
-  "transactionPending": "Vahvistamaton"
+  "transactionPending": "Vahvistamaton",
+  "detailConfirmations": "Vahvistukset",
+  "viewOnExplorer": "Näytä sivustolla {site}",
+  "explorerFailed": "Lumen ei voinut avata sivustoa {site}. Kopioi transaktion tunniste ja hae sitä siellä."
 }

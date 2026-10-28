@@ -1081,4 +1081,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get transactionPending => '承認待ち';
+
+  @override
+  String get detailConfirmations => '承認数';
+
+  @override
+  String viewOnExplorer(String site) {
+    return '$site で見る';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'Lumen は $site を開けませんでした。トランザクション ID をコピーして、そのサイトで検索してください。';
+  }
 }

@@ -33,6 +33,7 @@ dependencies:
   serverpod_argon2: ^0.1.0
   share_plus: ^13.3.1
   shared_preferences: ^2.5.6
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   bech32: ^0.2.2
@@ -42,6 +43,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   http: ^1.6.0
   ndk: ^0.10.1
+  url_launcher_platform_interface: ^2.3.2
 
 flutter:
   uses-material-design: true

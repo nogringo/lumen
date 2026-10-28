@@ -445,6 +445,10 @@ final class _NwcWallet implements Wallet {
   Stream<Transaction> watchConfirmation(String txid) =>
       throw UnsupportedError('NWC wallets have no chain transactions');
 
+  @override
+  Future<ChainDetails?> chainDetails(String txid) =>
+      throw UnsupportedError('NWC wallets have no chain transactions');
+
   /// NWC quotes no fee, so this only checks the request.
   @override
   Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async =>

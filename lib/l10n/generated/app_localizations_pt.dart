@@ -1122,6 +1122,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get transactionPending => 'Pendente';
+
+  @override
+  String get detailConfirmations => 'Confirmações';
+
+  @override
+  String viewOnExplorer(String site) {
+    return 'Ver em $site';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'O Lumen não conseguiu abrir $site. Copie o ID da transação e procure-o lá.';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2238,4 +2251,17 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get transactionPending => 'Pendente';
+
+  @override
+  String get detailConfirmations => 'Confirmações';
+
+  @override
+  String viewOnExplorer(String site) {
+    return 'Ver em $site';
+  }
+
+  @override
+  String explorerFailed(String site) {
+    return 'O Lumen não conseguiu abrir $site. Copie o ID da transação e pesquise lá.';
+  }
 }
