@@ -2,6 +2,8 @@ import 'package:lumen_core/lumen_core.dart' as core;
 
 import '../wallet.dart';
 import 'liquid_engine.dart';
+import 'lwk_library_io.dart'
+    if (dart.library.js_interop) 'lwk_library_web.dart';
 
 /// [LiquidEngine] over LWK, through lumen_core.
 final class LwkEngine implements LiquidEngine {
@@ -18,7 +20,7 @@ final class LwkEngine implements LiquidEngine {
       core.RustLib.init(
         externalLibrary: libraryPath == null
             ? null
-            : core.ExternalLibrary.open(libraryPath),
+            : openLwkLibrary(libraryPath),
       ).catchError((Object e) {
         _loading = null;
         throw e;

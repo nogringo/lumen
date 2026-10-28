@@ -51,6 +51,7 @@ flutter run
 - macOS and iOS store wallets in the Keychain, so pick your development team in Xcode (Runner target, Signing & Capabilities) before the first run.
 - Linux needs `libsecret-1-dev` to build.
 - Building needs Rust through [rustup](https://rustup.rs): the build compiles `lumen_core` on the stable toolchain and adds the targets it needs.
+- On the web, run `tool/build_wasm.sh` first, or Liquid wallets cannot open. It needs [wasm-pack](https://github.com/wasm-bindgen/wasm-pack) and installs the nightly toolchain it builds with.
 
 ## Test
 

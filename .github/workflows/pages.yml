@@ -30,6 +30,18 @@ jobs:
           cache: true
           pub-cache: true
 
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: wasm-pack@0.15.0
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: packages/lumen_core/rust
+
+      - run: flutter pub get
+
+      - run: tool/build_wasm.sh
+
       - run: flutter build web --release --base-href /lumen/
 
       - uses: actions/upload-pages-artifact@v5

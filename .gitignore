@@ -32,6 +32,9 @@ migrate_working_dir/
 build/
 /coverage/
 
+# lumen_core's wasm, from tool/build_wasm.sh
+/web/pkg/
+
 # Symbolication related
 app.*.symbols
 

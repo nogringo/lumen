@@ -298,6 +298,17 @@ How the Rust checks came out:
 - The crate went through `rustfmt` for the first time, and lost three `clone()` calls on `Network`, which is `Copy`.
 - Stable moves every six weeks, so a new clippy lint can turn the job red without a change here.
 
+How the web build came out:
+
+- The web app no longer compiled: `LwkEngine.init` called `ExternalLibrary.open`, which only exists on native platforms. Every Pages build since Liquid reached `main` failed, and the site stayed on the October 15 version. The call now goes through a conditional import (`lwk_library_io.dart`, `lwk_library_web.dart`).
+- `tool/build_wasm.sh` builds `lumen_core` into `web/pkg/` (git-ignored), where flutter_rust_bridge loads it from. It runs flutter_rust_bridge's `build-web` through `dart run`, so CI does not need the codegen binary.
+- The build is single-threaded: threads need COOP and COEP headers, which GitHub Pages cannot send. `build-web` warns about it on every run.
+- `build-web` builds the standard library too (`-Z build-std`), which needs nightly. The script pins `nightly-2026-10-11` and installs it with `rust-src`, `llvm-tools` and the wasm target, so a broken nightly cannot break the deploy. It uses that nightly's `llvm-ar` on every host, since Apple's `ar` writes empty archives.
+- The Pages workflow installs wasm-pack 0.15.0 (`taiki-e/install-action`), caches the Rust build, and runs the script before `flutter build web`.
+- Locally the wasm builds in about a minute and weighs 5.1 MB, as in the spike. Served under `/lumen/` as on Pages, in headless Chrome, a testnet wallet loads LWK, gives an address and syncs through Waterfalls in about 0.2 s.
+- `flutter run -d chrome` needs the script first too.
+- Not run on GitHub yet: the first Pages run will tell how long the wasm build takes there.
+
 ## Later
 
 - **Lightning from Liquid.** Paying invoices and receiving over Lightning with Liquid funds needs a swap service. Boltz suspended its non-custodial swaps in August 2026, and Blockstream announced its own Blockstream Swaps, in beta. LWK has a `lwk_boltz` crate. Put swaps behind an interface and pick a provider once one is generally available.
