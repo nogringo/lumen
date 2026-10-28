@@ -59,6 +59,14 @@ final class _FakeChain implements LiquidChain {
   }
 
   @override
+  Future<LiquidDraft> prepareSendAll(String address) async {
+    if (balanceSats <= fee) {
+      throw const LiquidChainException(LiquidChainError.insufficientFunds);
+    }
+    return _Draft(fee, address, balanceSats - fee);
+  }
+
+  @override
   Future<LiquidSigned> sign(LiquidDraft draft) async => const _Signed('tx9');
 
   @override
@@ -74,6 +82,8 @@ final class _Draft implements LiquidDraft {
   @override
   final int fee;
   final String address;
+
+  @override
   final int sats;
 }
 
@@ -171,6 +181,7 @@ void main() {
       expect(loaded.capabilities, {
         WalletCapability.receiveAddress,
         WalletCapability.payAddress,
+        WalletCapability.payAll,
       });
       expect(await loaded.connectionString(), isNull);
     });
@@ -407,6 +418,25 @@ void main() {
       final payment = await wallet.confirmSend(quote);
       expect((payment.txid, payment.feeSats), ('tx9', 30));
       expect(chain.broadcasts, 1);
+    });
+
+    test('sends everything, the fee taken out of it', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      await expectLater(
+        wallet.prepareSendAll(_elsewhere),
+        throwsA(
+          isA<SendException>().having(
+            (e) => e.error,
+            'error',
+            SendError.insufficientBalance,
+          ),
+        ),
+      );
+
+      chain.balanceSats = 12000;
+      final quote = await wallet.prepareSendAll(_elsewhere);
+      expect((quote.sats, quote.feeSats), (11970, 30));
+      expect((await wallet.confirmSend(quote)).txid, 'tx9');
     });
 
     test('a sent transaction is followed until it confirms', () async {

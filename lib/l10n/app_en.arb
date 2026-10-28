@@ -313,6 +313,19 @@
   "@amountLabel": {
     "description": "Label of the amount field."
   },
+  "sendEverything": "Send everything",
+  "@sendEverything": {
+    "description": "Switch under the amount that sends the whole balance of the paying wallet."
+  },
+  "sendEverythingHint": "The whole balance of {name}, less the fee.",
+  "@sendEverythingHint": {
+    "description": "Under Send everything: what is sent. name is the paying wallet.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "createInvoice": "Create invoice",
   "@createInvoice": {
     "description": "Button that asks the wallet for a Lightning invoice."

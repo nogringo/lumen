@@ -239,6 +239,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get amountLabel => '金額（sats）';
 
   @override
+  String get sendEverything => 'すべて送金';
+
+  @override
+  String sendEverythingHint(String name) {
+    return '$name の残高すべてから手数料を差し引いた額。';
+  }
+
+  @override
   String get createInvoice => 'インボイスを作成';
 
   @override

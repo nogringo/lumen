@@ -454,6 +454,10 @@ final class _NwcWallet implements Wallet {
       };
 
   @override
+  Future<SendQuote> prepareSendAll(ChainAddress address) =>
+      throw UnsupportedError('NWC pays invoices only');
+
+  @override
   Future<Payment> confirmSend(SendQuote quote) => switch (quote.request) {
     final Invoice invoice => _source._payInvoice(id, invoice),
     ChainAddress() => throw UnsupportedError('NWC pays invoices only'),

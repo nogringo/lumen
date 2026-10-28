@@ -246,6 +246,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get amountLabel => 'Сумма в sats';
 
   @override
+  String get sendEverything => 'Отправить всё';
+
+  @override
+  String sendEverythingHint(String name) {
+    return 'Весь баланс кошелька $name за вычетом комиссии.';
+  }
+
+  @override
   String get createInvoice => 'Создать счёт';
 
   @override

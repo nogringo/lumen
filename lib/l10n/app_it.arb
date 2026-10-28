@@ -67,6 +67,8 @@
   "receiveInto": "Ricevi su",
   "chooseWallet": "Scegli il portafoglio che riceve",
   "amountLabel": "Importo in sats",
+  "sendEverything": "Invia tutto",
+  "sendEverythingHint": "L'intero saldo di {name}, meno la commissione.",
   "createInvoice": "Crea fattura",
   "creatingInvoice": "Creazione della fattura",
   "errorAmountEmpty": "Inserisci un importo di almeno 1 sat.",

@@ -407,6 +407,7 @@ final class LiquidWallet implements Wallet {
   Set<WalletCapability> get capabilities => const {
     WalletCapability.receiveAddress,
     WalletCapability.payAddress,
+    WalletCapability.payAll,
   };
 
   @override
@@ -569,28 +570,40 @@ final class LiquidWallet implements Wallet {
   }
 
   @override
-  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async {
+  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) {
     final address = switch (request) {
       ChainAddress() => request,
       Invoice() => throw UnsupportedError('Liquid wallets pay addresses only'),
     };
-    if (address.network != network) {
-      throw const SendException(SendError.wrongNetwork);
-    }
     final amount = address.sats ?? sats;
     if (amount == null || amount <= 0) {
       throw ArgumentError.value(sats, 'sats', 'must be positive');
     }
+    return _prepare(
+      address,
+      (chain) => chain.prepareSend(address.address, amount),
+    );
+  }
+
+  /// Ignores an amount [address] asks for.
+  @override
+  Future<SendQuote> prepareSendAll(ChainAddress address) =>
+      _prepare(address, (chain) => chain.prepareSendAll(address.address));
+
+  Future<SendQuote> _prepare(
+    ChainAddress address,
+    Future<LiquidDraft> Function(LiquidChain chain) build,
+  ) async {
+    if (address.network != network) {
+      throw const SendException(SendError.wrongNetwork);
+    }
     try {
-      final draft = await (await _synced()).prepareSend(
-        address.address,
-        amount,
-      );
+      final draft = await build(await _synced());
       return _LiquidQuote(
         this,
         draft,
         request: address,
-        sats: amount,
+        sats: draft.sats,
         feeSats: draft.fee,
       );
     } on LiquidChainException catch (e) {

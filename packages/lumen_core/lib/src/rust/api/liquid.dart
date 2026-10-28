@@ -7,7 +7,7 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `accepted`, `descriptor_of`, `other`, `signer`
+// These functions are ignored because they are not marked as `pub`: `accepted`, `descriptor_of`, `other`, `recipient`, `signer`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `eq`, `fmt`, `fmt`, `from`
 
 /// A new 12-word recovery phrase.
@@ -32,6 +32,9 @@ String descriptor({
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LiquidDraft>>
 abstract class LiquidDraft implements RustOpaqueInterface {
   BigInt get fee;
+
+  /// What the recipient gets, fee excluded.
+  BigInt get sats;
 }
 
 // Rust type: RustOpaqueMoi<flutter_rust_bridge::for_generated::RustAutoOpaqueInner<LiquidSigned>>
@@ -78,6 +81,10 @@ abstract class LiquidWallet implements RustOpaqueInterface {
     required String address,
     required BigInt sats,
   });
+
+  /// Builds a payment of the whole L-BTC balance to [address], the fee
+  /// taken out of it, without signing or sending it.
+  Future<LiquidDraft> prepareSendAll({required String address});
 
   Future<LiquidSigned> sign({required LiquidDraft draft});
 

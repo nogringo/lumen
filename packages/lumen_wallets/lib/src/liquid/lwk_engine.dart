@@ -118,6 +118,11 @@ final class _LwkChain implements LiquidChain {
   );
 
   @override
+  Future<LiquidDraft> prepareSendAll(String address) async => _LwkDraft(
+    await _guardAsync(() => _wallet.prepareSendAll(address: address)),
+  );
+
+  @override
   Future<LiquidSigned> sign(LiquidDraft draft) async => _LwkSigned(
     await _guardAsync(() => _wallet.sign(draft: (draft as _LwkDraft)._draft)),
   );
@@ -131,6 +136,9 @@ final class _LwkDraft implements LiquidDraft {
   _LwkDraft(this._draft);
 
   final core.LiquidDraft _draft;
+
+  @override
+  int get sats => _draft.sats.toInt();
 
   @override
   int get fee => _draft.fee.toInt();

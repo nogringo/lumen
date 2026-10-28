@@ -244,6 +244,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get amountLabel => 'Importe en sats';
 
   @override
+  String get sendEverything => 'Enviar todo';
+
+  @override
+  String sendEverythingHint(String name) {
+    return 'Todo el saldo de $name, menos la comisión.';
+  }
+
+  @override
   String get createInvoice => 'Crear factura';
 
   @override

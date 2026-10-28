@@ -244,6 +244,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get amountLabel => 'Summa (sats)';
 
   @override
+  String get sendEverything => 'Lähetä kaikki';
+
+  @override
+  String sendEverythingHint(String name) {
+    return 'Lompakon $name koko saldo, josta vähennetään kulu.';
+  }
+
+  @override
   String get createInvoice => 'Luo lasku';
 
   @override

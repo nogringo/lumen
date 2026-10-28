@@ -46,6 +46,7 @@ class FakeWallet implements Wallet {
        capabilities = const {
          WalletCapability.receiveAddress,
          WalletCapability.payAddress,
+         WalletCapability.payAll,
        };
 
   @override
@@ -183,6 +184,18 @@ class FakeWallet implements Wallet {
     return SendQuote(
       request: request,
       sats: request.sats ?? sats!,
+      feeSats: quotedFeeSats,
+    );
+  }
+
+  /// Sends [balance], less [quotedFeeSats].
+  @override
+  Future<SendQuote> prepareSendAll(ChainAddress address) async {
+    await Future<void>.delayed(Duration.zero);
+    if (prepareError case final error?) throw SendException(error);
+    return SendQuote(
+      request: address,
+      sats: balance - (quotedFeeSats ?? 0),
       feeSats: quotedFeeSats,
     );
   }
@@ -343,6 +356,10 @@ final class FakeLiquidChain implements LiquidChain {
 
   @override
   Future<LiquidDraft> prepareSend(String address, int sats) =>
+      throw UnimplementedError();
+
+  @override
+  Future<LiquidDraft> prepareSendAll(String address) =>
       throw UnimplementedError();
 
   @override

@@ -67,6 +67,8 @@
   "receiveInto": "Vers",
   "chooseWallet": "Choisir le portefeuille qui reçoit",
   "amountLabel": "Montant en sats",
+  "sendEverything": "Tout envoyer",
+  "sendEverythingHint": "Tout le solde de {name}, moins les frais.",
   "createInvoice": "Créer la facture",
   "creatingInvoice": "Création de la facture",
   "errorAmountEmpty": "Saisissez un montant d'au moins 1 sat.",

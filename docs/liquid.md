@@ -118,7 +118,7 @@ How it came out:
 - A payment to oneself shows as outgoing, 0 sats, with its fee. Worth a "to yourself" label in step 7.
 - `tool/liquid_testnet.dart` syncs and sends on testnet (about 2 s for a full scan, 33 sats of fee).
 - The crate's own tests (`cargo test`, including the known-phrase vectors) do not run in CI until step 9 installs Rust.
-- Not in the crate yet: "send everything" (step 6, LWK's `drain_lbtc_wallet`).
+- "Send everything" (LWK's `drain_lbtc_wallet`) came with step 6.
 
 ### 3. Wire Liquid into the app (done)
 
@@ -201,7 +201,7 @@ How receiving came out:
 - Not tried in the running app on testnet yet.
 - Activity rows, on Home and in Activity, show "Pending" with a clock under the amount of a payment still in the mempool, read after the amount ("received 21,000 sats, Pending").
 
-### 6. Send
+### 6. Send (done)
 
 - The send field recognizes Liquid addresses and URIs, typed, pasted or scanned.
 - Amount, with a "send everything" option that leaves room for the fee.
@@ -222,7 +222,15 @@ How sending came out:
 - Errors on a Liquid payment name the Liquid server or network, not the wallet: unreachable, refused, or sent without an answer. The last one offers no retry, as for Lightning.
 - The To field's hint and errors name what the wallets can pay: Lightning, Liquid or both.
 - Sending again after the network refused a payment sends the same reviewed transaction, which it will likely refuse again. Edit payment builds a new one.
-- Not tried in the running app on testnet yet.
+- Tried in the running app on testnet.
+
+How "send everything" came out:
+
+- The crate drains with LWK (`drain_lbtc_wallet`, then `drain_lbtc_to`): every L-BTC coin goes in, and what the fee leaves goes to the address, with no change output. `LiquidDraft.sats` gives that amount, read from the wallet's net change. Other assets stay in the wallet.
+- `Wallet.prepareSendAll`, behind the `payAll` capability, which only Liquid wallets have: NWC cannot know a Lightning fee before paying.
+- The send form shows a "Send everything" switch under the amount when the paying wallet can drain and the address leaves the amount open. On, it hides the amount field and names the wallet that empties. The review shows the exact amount and fee.
+- On testnet, draining four coins (104,974 sats) sent 104,934 sats for 40 of fee, and draining a wallet whose only coin was still in the mempool sent it all back for 20. `tool/liquid_testnet.dart --send-all <address>` does the same.
+- Not tried in the running app yet.
 
 ### 7. Payment details
 

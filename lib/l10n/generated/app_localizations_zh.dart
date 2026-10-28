@@ -235,6 +235,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get amountLabel => '金额（sats）';
 
   @override
+  String get sendEverything => '全部发送';
+
+  @override
+  String sendEverythingHint(String name) {
+    return '$name 的全部余额，扣除手续费。';
+  }
+
+  @override
   String get createInvoice => '创建发票';
 
   @override

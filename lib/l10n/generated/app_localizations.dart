@@ -517,6 +517,18 @@ abstract class AppLocalizations {
   /// **'Amount in sats'**
   String get amountLabel;
 
+  /// Switch under the amount that sends the whole balance of the paying wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Send everything'**
+  String get sendEverything;
+
+  /// Under Send everything: what is sent. name is the paying wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole balance of {name}, less the fee.'**
+  String sendEverythingHint(String name);
+
   /// Button that asks the wallet for a Lightning invoice.
   ///
   /// In en, this message translates to:

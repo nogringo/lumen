@@ -67,6 +67,8 @@
   "receiveInto": "收款至",
   "chooseWallet": "选择收款钱包",
   "amountLabel": "金额（sats）",
+  "sendEverything": "全部发送",
+  "sendEverythingHint": "{name} 的全部余额，扣除手续费。",
   "createInvoice": "创建发票",
   "creatingInvoice": "正在创建发票",
   "errorAmountEmpty": "请输入至少 1 sat 的金额。",

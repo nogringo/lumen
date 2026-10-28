@@ -67,6 +67,8 @@
   "receiveInto": "Auf",
   "chooseWallet": "Wähle die Wallet, die empfängt",
   "amountLabel": "Betrag in sats",
+  "sendEverything": "Alles senden",
+  "sendEverythingHint": "Das ganze Guthaben von {name}, abzüglich der Gebühr.",
   "createInvoice": "Rechnung erstellen",
   "creatingInvoice": "Rechnung wird erstellt",
   "errorAmountEmpty": "Gib einen Betrag von mindestens 1 sat ein.",

@@ -230,6 +230,9 @@ enum WalletCapability {
 
   /// Sending to a [ChainAddress].
   payAddress,
+
+  /// [Wallet.prepareSendAll].
+  payAll,
 }
 
 abstract interface class Wallet {
@@ -276,6 +279,10 @@ abstract interface class Wallet {
   /// anything. [sats] is the amount for a request that sets none. Throws a
   /// [SendException] when it cannot be paid.
   Future<SendQuote> prepareSend(PaymentRequest request, {int? sats});
+
+  /// Like [prepareSend], for the whole balance: the fee is taken out of it,
+  /// and the quote's amount is what [address] gets.
+  Future<SendQuote> prepareSendAll(ChainAddress address);
 
   /// Sends the payment [quote] describes. Throws a [SendException] when it
   /// did not go through, or may not have.

@@ -67,6 +67,8 @@
   "receiveInto": "受取先",
   "chooseWallet": "受け取るウォレットを選択",
   "amountLabel": "金額（sats）",
+  "sendEverything": "すべて送金",
+  "sendEverythingHint": "{name} の残高すべてから手数料を差し引いた額。",
   "createInvoice": "インボイスを作成",
   "creatingInvoice": "インボイスを作成中",
   "errorAmountEmpty": "1 sat 以上の金額を入力してください。",

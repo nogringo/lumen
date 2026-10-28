@@ -1,5 +1,6 @@
-// Syncs a Liquid testnet wallet through LWK and, with --send, pays 1000 sats
-// to itself. From packages/lumen_wallets:
+// Syncs a Liquid testnet wallet through LWK. With --send, pays 1000 sats to
+// itself; with --send-all <address>, sends that address everything. From
+// packages/lumen_wallets:
 //
 //   cargo build --release --manifest-path ../lumen_core/rust/Cargo.toml
 //   LUMEN_TESTNET_PHRASE="twelve words ..." dart run tool/liquid_testnet.dart
@@ -51,6 +52,17 @@ Future<void> main(List<String> args) async {
   if (args.contains('--send')) {
     final quote = await wallet.prepareSend(address, sats: 1000);
     print('Fee: ${quote.feeSats} sats');
+    final payment = await wallet.confirmSend(quote);
+    print('Sent: ${payment.txid}');
+    print('Balance: ${await wallet.fetchBalance()} sats');
+  }
+
+  final all = args.indexOf('--send-all');
+  if (all >= 0) {
+    final quote = await wallet.prepareSendAll(
+      ChainAddress(args[all + 1], network: network),
+    );
+    print('Sending ${quote.sats} sats, fee ${quote.feeSats} sats');
     final payment = await wallet.confirmSend(quote);
     print('Sent: ${payment.txid}');
     print('Balance: ${await wallet.fetchBalance()} sats');

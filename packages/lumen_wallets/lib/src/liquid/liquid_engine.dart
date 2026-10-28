@@ -103,6 +103,9 @@ abstract interface class LiquidChain {
 
   Future<LiquidDraft> prepareSend(String address, int sats);
 
+  /// The whole L-BTC balance, the fee taken out of it.
+  Future<LiquidDraft> prepareSendAll(String address);
+
   Future<LiquidSigned> sign(LiquidDraft draft);
 
   /// Safe to call again for the same [signed] transaction.
@@ -136,6 +139,8 @@ final class ChainTx {
 }
 
 abstract interface class LiquidDraft {
+  /// What the recipient gets, fee excluded.
+  int get sats;
   int get fee;
 }
 

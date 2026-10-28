@@ -67,6 +67,8 @@
   "receiveInto": "Vastaanottava lompakko",
   "chooseWallet": "Valitse vastaanottava lompakko",
   "amountLabel": "Summa (sats)",
+  "sendEverything": "Lähetä kaikki",
+  "sendEverythingHint": "Lompakon {name} koko saldo, josta vähennetään kulu.",
   "createInvoice": "Luo lasku",
   "creatingInvoice": "Luodaan laskua",
   "errorAmountEmpty": "Anna summa, joka on vähintään 1 sat.",

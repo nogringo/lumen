@@ -67,6 +67,8 @@
   "receiveInto": "Куда",
   "chooseWallet": "Выберите кошелёк для получения",
   "amountLabel": "Сумма в sats",
+  "sendEverything": "Отправить всё",
+  "sendEverythingHint": "Весь баланс кошелька {name} за вычетом комиссии.",
   "createInvoice": "Создать счёт",
   "creatingInvoice": "Создание счёта",
   "errorAmountEmpty": "Введите сумму не меньше 1 sat.",

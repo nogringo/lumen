@@ -157,10 +157,17 @@ pub struct LiquidTx {
 #[frb(opaque)]
 pub struct LiquidDraft {
     pset: PartiallySignedTransaction,
+    sats: u64,
     fee: u64,
 }
 
 impl LiquidDraft {
+    /// What the recipient gets, fee excluded.
+    #[frb(sync, getter)]
+    pub fn sats(&self) -> u64 {
+        self.sats
+    }
+
     #[frb(sync, getter)]
     pub fn fee(&self) -> u64 {
         self.fee
@@ -324,7 +331,45 @@ impl LiquidWallet {
         address: String,
         sats: u64,
     ) -> Result<LiquidDraft, LiquidError> {
-        let address = Address::from_str(&address).map_err(|e| LiquidError {
+        let address = self.recipient(&address)?;
+        let wollet = self.wollet.lock().await;
+        let builder = wollet.tx_builder();
+        let builder = if address.is_blinded() {
+            builder.add_lbtc_recipient(&address, sats)?
+        } else {
+            builder.add_explicit_recipient(&address, sats, wollet.policy_asset())?
+        };
+        let pset = builder.finish()?;
+        let fee = wollet.get_details(&pset)?.fees_in(&wollet.policy_asset());
+        Ok(LiquidDraft { pset, sats, fee })
+    }
+
+    /// Builds a payment of the whole L-BTC balance to [address], the fee
+    /// taken out of it, without signing or sending it.
+    pub async fn prepare_send_all(&self, address: String) -> Result<LiquidDraft, LiquidError> {
+        let address = self.recipient(&address)?;
+        let wollet = self.wollet.lock().await;
+        let builder = wollet.tx_builder().drain_lbtc_wallet();
+        let builder = if address.is_blinded() {
+            builder.drain_lbtc_to(&address)?
+        } else {
+            builder.drain_lbtc_to_explicit(&address)?
+        };
+        let pset = builder.finish()?;
+        let details = wollet.get_details(&pset)?;
+        let policy = wollet.policy_asset();
+        let fee = details.fees_in(&policy);
+        // The wallet's net change, fee included.
+        let spent = details.balances().as_ref().get(&policy).copied().unwrap_or(0);
+        Ok(LiquidDraft {
+            pset,
+            sats: spent.unsigned_abs().saturating_sub(fee),
+            fee,
+        })
+    }
+
+    fn recipient(&self, address: &str) -> Result<Address, LiquidError> {
+        let address = Address::from_str(address).map_err(|e| LiquidError {
             kind: LiquidErrorKind::InvalidAddress,
             message: e.to_string(),
         })?;
@@ -334,22 +379,7 @@ impl LiquidWallet {
                 message: "address from another network".into(),
             });
         }
-        let wollet = self.wollet.lock().await;
-        let builder = wollet.tx_builder();
-        let builder = if address.is_blinded() {
-            builder.add_lbtc_recipient(&address, sats)?
-        } else {
-            builder.add_explicit_recipient(&address, sats, wollet.policy_asset())?
-        };
-        let pset = builder.finish()?;
-        let fee = wollet
-            .get_details(&pset)?
-            .balance()
-            .fees()
-            .get(&wollet.policy_asset())
-            .copied()
-            .unwrap_or(0);
-        Ok(LiquidDraft { pset, fee })
+        Ok(address)
     }
 
     pub async fn sign(&self, draft: &LiquidDraft) -> Result<LiquidSigned, LiquidError> {
@@ -501,7 +531,12 @@ mod tests {
         assert_eq!(error.kind, LiquidErrorKind::InvalidAddress);
 
         let own = wallet.address(Some(3)).await.unwrap().address;
-        let error = wallet.prepare_send(own, 1000).await.err().unwrap();
+        let error = wallet.prepare_send(own.clone(), 1000).await.err().unwrap();
+        assert_eq!(error.kind, LiquidErrorKind::InsufficientFunds);
+
+        let error = wallet.prepare_send_all(testnet.into()).await.err().unwrap();
+        assert_eq!(error.kind, LiquidErrorKind::WrongNetwork);
+        let error = wallet.prepare_send_all(own).await.err().unwrap();
         assert_eq!(error.kind, LiquidErrorKind::InsufficientFunds);
     }
 

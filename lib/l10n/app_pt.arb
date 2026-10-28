@@ -67,6 +67,8 @@
   "receiveInto": "Para",
   "chooseWallet": "Escolher a carteira que recebe",
   "amountLabel": "Montante em sats",
+  "sendEverything": "Enviar tudo",
+  "sendEverythingHint": "Todo o saldo de {name}, menos a taxa.",
   "createInvoice": "Criar fatura",
   "creatingInvoice": "A criar fatura",
   "errorAmountEmpty": "Introduza um montante de pelo menos 1 sat.",

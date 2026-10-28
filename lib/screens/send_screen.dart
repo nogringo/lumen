@@ -17,6 +17,7 @@ import '../widgets/details.dart';
 import '../widgets/flow_parts.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/share_text.dart';
+import '../widgets/switch_row.dart';
 import '../widgets/wallet_picker.dart';
 
 /// [to] fills in the recipient, as read from a QR code.
@@ -65,6 +66,9 @@ class _SendFlowState extends State<_SendFlow> {
   final _stepFocus = FocusNode();
 
   late String? _walletId = widget.walletId;
+
+  /// Send everything is on, which only counts where [_canSendAll].
+  var _all = false;
   var _step = _Step.form;
   var _busy = false;
 
@@ -123,6 +127,13 @@ class _SendFlowState extends State<_SendFlow> {
   };
 
   int get _typedSats => _fixedSats ?? int.tryParse(_amount.text) ?? 0;
+
+  /// Whether [wallet] can send its whole balance to what is typed: an
+  /// address that leaves the amount open.
+  bool _canSendAll(Wallet wallet) =>
+      _typed is AddressRecipient &&
+      _fixedSats == null &&
+      wallet.capabilities.contains(WalletCapability.payAll);
 
   /// The wallets that can pay [recipient], or all of them when none can, so
   /// that the picker still shows one while the error says why.
@@ -248,7 +259,13 @@ class _SendFlowState extends State<_SendFlow> {
     if (_unpayable(recipient, l) case final error?) {
       return _fieldError(to: error);
     }
-    final int sats;
+    final wallets = LumenScope.readWallets(context);
+    final wallet = _walletIn(wallets);
+    if (wallet == null) return;
+    final all = _all && _canSendAll(wallet);
+
+    // Sending everything learns its amount from the quote.
+    var sats = 0;
     switch (recipient) {
       case InvoiceRecipient(:final invoice):
         if (invoice.isExpiredAt(DateTime.now())) {
@@ -258,16 +275,14 @@ class _SendFlowState extends State<_SendFlow> {
       case LnurlRecipient():
         sats = int.tryParse(_amount.text) ?? 0;
         if (sats <= 0) return _fieldError(amount: l.errorAmountEmpty);
-      case AddressRecipient(:final address):
+      case AddressRecipient(:final address) when !all:
         sats = address.sats ?? int.tryParse(_amount.text) ?? 0;
         if (sats <= 0) return _fieldError(amount: l.errorAmountEmpty);
+      case AddressRecipient():
     }
 
-    final wallets = LumenScope.readWallets(context);
-    final wallet = _walletIn(wallets);
-    if (wallet == null) return;
     final balance = wallets.balanceOf(wallet).sats;
-    if (balance != null && balance < sats) {
+    if (!all && balance != null && balance < sats) {
       return _showError(
         l.notEnoughSats(wallet.name, formatSats(context, balance)),
       );
@@ -288,6 +303,8 @@ class _SendFlowState extends State<_SendFlow> {
           terms = await lnurlPay.terms(recipient);
         case InvoiceRecipient(:final invoice):
           quote = await wallet.prepareSend(invoice);
+        case AddressRecipient(:final address) when all:
+          quote = await wallet.prepareSendAll(address);
         case AddressRecipient(:final address):
           quote = await wallet.prepareSend(address, sats: sats);
       }
@@ -316,7 +333,7 @@ class _SendFlowState extends State<_SendFlow> {
       _recipient = recipient;
       _terms = terms;
       _quote = quote;
-      _sats = sats;
+      _sats = quote?.sats ?? sats;
       _payer = wallet;
       _error = null;
       _step = _Step.review;
@@ -404,7 +421,7 @@ class _SendFlowState extends State<_SendFlow> {
       _step = _Step.form;
       _error = null;
     });
-    final field = _fixedSats == null ? _amountFocus : _toFocus;
+    final field = _fixedSats == null && !_all ? _amountFocus : _toFocus;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) field.requestFocus();
     });
@@ -536,8 +553,22 @@ class _SendFlowState extends State<_SendFlow> {
           label: l.amountSetByLink,
           sats: sats,
         ),
+        _ when _all && _canSendAll(wallet) => const SizedBox.shrink(),
         _ => _amountField(l),
       },
+      if (_canSendAll(wallet)) ...[
+        const SizedBox(height: 8),
+        SwitchRow(
+          title: l.sendEverything,
+          hint: l.sendEverythingHint(wallet.name),
+          value: _all,
+          onChanged: () => setState(() {
+            _all = !_all;
+            _amountError = null;
+            _error = null;
+          }),
+        ),
+      ],
       const SizedBox(height: 20),
       WalletPicker(
         label: l.payFrom,

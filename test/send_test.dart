@@ -362,6 +362,78 @@ void main() {
     handle.dispose();
   });
 
+  testWidgets('sends everything, the fee taken out of it', (tester) async {
+    final handle = tester.ensureSemantics();
+    final wallet = FakeWallet.liquid('savings', 'Savings', balance: 50000)
+      ..quotedFeeSats = 26;
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openSend(tester);
+    await fillTo(tester, _liquid);
+
+    await tester.tap(find.text('Send everything'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.getSemantics(find.text('Send everything')),
+      matchesSemantics(
+        label: 'Send everything\nThe whole balance of Savings, less the fee.',
+        hasToggledState: true,
+        isToggled: true,
+        hasTapAction: true,
+        hasFocusAction: true,
+        isFocusable: true,
+      ),
+    );
+    expect(find.text('Amount in sats'), findsNothing);
+
+    await review(tester);
+    expect(
+      find.bySemanticsLabel('You are sending\n49,974 sats'),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('Fee\n26 sats'), findsOneWidget);
+
+    await tester.tap(find.text('Send 49,974 sats'));
+    await tester.pumpAndSettle();
+    expect(wallet.paid.single.sats, 49974);
+    expect(wallet.balance, 0);
+    expect(find.text('Payment sent'), findsOneWidget);
+    handle.dispose();
+  });
+
+  testWidgets('send everything is offered for an address without amount', (
+    tester,
+  ) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: [
+        FakeWallet('home', 'Home node', balance: 1000),
+        FakeWallet.liquid('savings', 'Savings', balance: 50000),
+      ],
+    );
+    await openSend(tester);
+    expect(find.text('Send everything'), findsNothing);
+    await fillTo(tester, 'barista@example.com');
+    expect(find.text('Send everything'), findsNothing);
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0001');
+    expect(find.text('Send everything'), findsNothing);
+
+    await fillTo(tester, _liquid);
+    await tester.tap(find.text('Send everything'));
+    await tester.pumpAndSettle();
+    expect(find.text('Amount in sats'), findsNothing);
+    await review(tester);
+    await tester.tap(find.text('Edit payment'));
+    await tester.pumpAndSettle();
+    expect(find.text('Amount in sats'), findsNothing);
+
+    await tester.tap(find.text('Send everything'));
+    await tester.pumpAndSettle();
+    expect(find.text('Amount in sats'), findsOneWidget);
+    await review(tester);
+    expect(find.text('Enter an amount of at least 1 sat.'), findsOneWidget);
+  });
+
   testWidgets('a Liquid receipt names the transaction, which can be copied', (
     tester,
   ) async {

@@ -245,6 +245,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get amountLabel => 'Montante em sats';
 
   @override
+  String get sendEverything => 'Enviar tudo';
+
+  @override
+  String sendEverythingHint(String name) {
+    return 'Todo o saldo de $name, menos a taxa.';
+  }
+
+  @override
   String get createInvoice => 'Criar fatura';
 
   @override
@@ -1355,6 +1363,14 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get amountLabel => 'Valor em sats';
+
+  @override
+  String get sendEverything => 'Enviar tudo';
+
+  @override
+  String sendEverythingHint(String name) {
+    return 'Todo o saldo de $name, menos a taxa.';
+  }
 
   @override
   String get createInvoice => 'Criar fatura';

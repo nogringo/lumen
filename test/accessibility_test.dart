@@ -433,14 +433,20 @@ void main() {
     }, variant: _platformFor(size));
   }
 
-  Future<void> reviewLiquidPayment(WidgetTester tester) async {
+  /// Sends everything, so the form shows its switch.
+  Future<void> reviewLiquidPayment(
+    WidgetTester tester, {
+    Future<void> Function()? onForm,
+  }) async {
     await tester.tap(find.text('Send'));
     await tester.pumpAndSettle();
-    await tester.enterText(
-      find.byType(TextField).first,
-      'liquidnetwork:$liquidAddress?amount=0.0001',
-    );
+    await tester.enterText(find.byType(TextField).first, liquidAddress);
     await tester.pump();
+    await tester.ensureVisible(find.text('Send everything'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Send everything'));
+    await tester.pumpAndSettle();
+    await onForm?.call();
     await tester.ensureVisible(find.text('Review'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Review'));
@@ -468,13 +474,16 @@ void main() {
             brightness: brightness,
           );
 
-          await reviewLiquidPayment(tester);
+          await reviewLiquidPayment(
+            tester,
+            onForm: () => expectGuidelines(tester),
+          );
           expect(find.text('Fee'), findsOneWidget);
           await expectGuidelines(tester);
 
-          await tester.ensureVisible(find.text('Send 10,000 sats'));
+          await tester.ensureVisible(find.text('Send 49,974 sats'));
           await tester.pumpAndSettle();
-          await tester.tap(find.text('Send 10,000 sats'));
+          await tester.tap(find.text('Send 49,974 sats'));
           await tester.pumpAndSettle();
           expect(find.text('Waiting for confirmation'), findsOneWidget);
           await expectGuidelines(tester);
@@ -495,12 +504,16 @@ void main() {
         textScale: 2,
       );
 
-      await reviewLiquidPayment(tester);
+      await reviewLiquidPayment(
+        tester,
+        onForm: () async =>
+            expect(tester.takeException(), isNull, reason: 'form'),
+      );
       expect(tester.takeException(), isNull, reason: 'review');
 
-      await tester.ensureVisible(find.text('Send 10,000 sats'));
+      await tester.ensureVisible(find.text('Send 49,974 sats'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Send 10,000 sats'));
+      await tester.tap(find.text('Send 49,974 sats'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: 'sent');
       expect(find.text('Transaction ID'), findsOneWidget);
