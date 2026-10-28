@@ -190,6 +190,17 @@ How the screen privacy came out:
 
 Done when: receiving on testnet shows the payment without leaving the screen, and the receive tests cover the address case.
 
+How receiving came out:
+
+- A wallet that receives by address and not by invoice gets the address flow. The address shows as soon as the screen opens, with no amount, since an address takes any amount. The wallet picker stays enabled while the wallet syncs, and an address that arrives for a wallet no longer chosen is dropped.
+- "Add amount" puts an optional amount in the QR code, and what is copied or shared becomes a `liquidnetwork:` URI (`liquidtestnet:` on testnet, `liquidRequest`) with the amount in L-BTC and the L-BTC `assetid`, which the Blockstream app requires next to an amount. The address stays the same, so the watch goes on while the amount is edited.
+- The address is shown whole, in groups of four, and read aloud a group at a time ("Address lq1q, qvxk, ..."). Copy and share sit under it.
+- `watchPayment` now emits the payment as a `Transaction`: once for NWC, built from the invoice; for Liquid, as soon as the first incoming payment to the address is in the mempool, then again when it confirms. The screen shows the amount that arrived, which may differ from the one asked.
+- Once paid, the screen says "Waiting for confirmation, usually within 2 minutes", then "Confirmed", announced. The wallet is refreshed both times, so Home shows the payment right away.
+- The widget tests use `FakeWallet.liquid`. The real wallet's futures start in `runAsync` during `pumpLumen`, so a real `LiquidWallet` would need the real event loop at each step. The package tests cover the real watch.
+- Not tried in the running app on testnet yet.
+- Still to do: activity rows mark pending payments.
+
 ### 6. Send
 
 - The send field recognizes Liquid addresses and URIs, typed, pasted or scanned.

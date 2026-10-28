@@ -1,4 +1,5 @@
 export 'src/lightning/lnurl_pay.dart';
+export 'src/liquid/liquid_address.dart' show liquidRequest;
 export 'src/liquid/liquid_engine.dart'
     show LiquidChainException, LiquidScript, LiquidServers, PhraseProblem;
 export 'src/liquid/liquid_wallet_source.dart'

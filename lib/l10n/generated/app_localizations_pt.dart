@@ -1021,6 +1021,49 @@ class AppLocalizationsPt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'A obter um endereço';
+
+  @override
+  String get addressUnavailable =>
+      'O Lumen não conseguiu obter um endereço desta carteira. Verifique a ligação e tente novamente.';
+
+  @override
+  String get liquidQrLabel =>
+      'Código QR do endereço Liquid. O endereço está abaixo, com um botão para o copiar.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'Código QR do endereço Liquid para $amount sats. O endereço está abaixo, com um botão para o copiar.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Endereço $groups';
+  }
+
+  @override
+  String get addAmount => 'Adicionar montante';
+
+  @override
+  String get amountOptional =>
+      'Opcional. Deixe vazio para receber qualquer montante.';
+
+  @override
+  String get showQrCode => 'Mostrar código QR';
+
+  @override
+  String get waitingForConfirmation => 'A aguardar confirmação';
+
+  @override
+  String get confirmsSoon => 'Normalmente em menos de 2 minutos';
+
+  @override
+  String get paymentConfirmed => 'Confirmado';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Pagamento confirmado';
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2036,4 +2079,47 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'Obtendo um endereço';
+
+  @override
+  String get addressUnavailable =>
+      'O Lumen não conseguiu obter um endereço desta carteira. Verifique sua conexão e tente novamente.';
+
+  @override
+  String get liquidQrLabel =>
+      'QR code do endereço Liquid. O endereço está abaixo, com um botão para copiar.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'QR code do endereço Liquid para $amount sats. O endereço está abaixo, com um botão para copiar.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Endereço $groups';
+  }
+
+  @override
+  String get addAmount => 'Adicionar valor';
+
+  @override
+  String get amountOptional =>
+      'Opcional. Deixe em branco para receber qualquer valor.';
+
+  @override
+  String get showQrCode => 'Mostrar QR code';
+
+  @override
+  String get waitingForConfirmation => 'Aguardando confirmação';
+
+  @override
+  String get confirmsSoon => 'Normalmente em até 2 minutos';
+
+  @override
+  String get paymentConfirmed => 'Confirmado';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Pagamento confirmado';
 }

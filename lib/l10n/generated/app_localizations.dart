@@ -589,13 +589,13 @@ abstract class AppLocalizations {
   /// **'Lightning address'**
   String get lightningAddress;
 
-  /// Tooltip and accessible name of the button that copies the Lightning address.
+  /// Tooltip and accessible name of the button that copies the Lightning or Liquid address.
   ///
   /// In en, this message translates to:
   /// **'Copy address'**
   String get copyAddress;
 
-  /// Announced to screen readers after copying the Lightning address.
+  /// Announced to screen readers after copying the Lightning or Liquid address.
   ///
   /// In en, this message translates to:
   /// **'Address copied'**
@@ -613,7 +613,7 @@ abstract class AppLocalizations {
   /// **'QR code of the Lightning address {address}'**
   String addressQrLabel(String address);
 
-  /// Button that shares the Lightning address.
+  /// Button that shares the Lightning or Liquid address.
   ///
   /// In en, this message translates to:
   /// **'Share address'**
@@ -1716,6 +1716,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 word} other{{count} words}}'**
   String wordCount(int count);
+
+  /// Shown next to a spinner while the wallet gives an address to receive on.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting an address'**
+  String get gettingAddress;
+
+  /// Error when the wallet could not give an address to receive on.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not get an address from this wallet. Check your connection, then try again.'**
+  String get addressUnavailable;
+
+  /// Accessible description of the QR code of a Liquid address without an amount.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code of the Liquid address. The address is below, with a copy button.'**
+  String get liquidQrLabel;
+
+  /// Accessible description of the QR code of a Liquid address that asks for an amount.
+  ///
+  /// In en, this message translates to:
+  /// **'QR code of the Liquid address for {amount} sats. The address is below, with a copy button.'**
+  String liquidAmountQrLabel(String amount);
+
+  /// Accessible label of the address to receive on, followed by its characters in groups of four, separated by commas.
+  ///
+  /// In en, this message translates to:
+  /// **'Address {groups}'**
+  String addressText(String groups);
+
+  /// Button under a Liquid address QR code that opens the amount field.
+  ///
+  /// In en, this message translates to:
+  /// **'Add amount'**
+  String get addAmount;
+
+  /// Help under the amount field of a Liquid address, where the amount can stay empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional. Leave it empty to receive any amount.'**
+  String get amountOptional;
+
+  /// Button that goes back to the Liquid address QR code with the amount entered.
+  ///
+  /// In en, this message translates to:
+  /// **'Show QR code'**
+  String get showQrCode;
+
+  /// Status of a payment received on chain until a block confirms it.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for confirmation'**
+  String get waitingForConfirmation;
+
+  /// Under Waiting for confirmation: how long a Liquid payment usually takes to confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Usually within 2 minutes'**
+  String get confirmsSoon;
+
+  /// Status of a payment received on chain once a block confirms it.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get paymentConfirmed;
+
+  /// Announced to screen readers when the payment received confirms.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment confirmed'**
+  String get paymentConfirmedAnnouncement;
 }
 
 class _AppLocalizationsDelegate

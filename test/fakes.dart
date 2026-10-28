@@ -36,6 +36,14 @@ class FakeWallet implements Wallet {
     },
   });
 
+  /// Receives on an address and pays addresses, as a Liquid wallet does.
+  FakeWallet.liquid(this.id, this.name, {this.balance = 0})
+    : lightningAddress = null,
+      capabilities = const {
+        WalletCapability.receiveAddress,
+        WalletCapability.payAddress,
+      };
+
   @override
   final String id;
 
@@ -74,7 +82,8 @@ class FakeWallet implements Wallet {
   ReceiveError? receiveError;
   Duration invoiceLifetime = const Duration(hours: 1);
   final List<int> invoiceAmounts = [];
-  StreamController<void>? _payment;
+  StreamController<Transaction>? _payment;
+  PaymentRequest? _watched;
 
   @override
   Future<int> fetchBalance() async {
@@ -97,19 +106,55 @@ class FakeWallet implements Wallet {
     );
   }
 
-  @override
-  Future<ChainAddress> nextAddress() => throw UnsupportedError('No address');
+  int addressCount = 0;
 
   @override
-  Stream<void> watchPayment(PaymentRequest request) {
-    _payment = StreamController<void>();
+  Future<ChainAddress> nextAddress() async {
+    if (!capabilities.contains(WalletCapability.receiveAddress)) {
+      throw UnsupportedError('No address');
+    }
+    await Future<void>.delayed(Duration.zero);
+    if (receiveError case final error?) throw ReceiveException(error);
+    addressCount++;
+    return const ChainAddress(liquidAddress, network: ChainNetwork.liquid);
+  }
+
+  @override
+  Stream<Transaction> watchPayment(PaymentRequest request) {
+    _watched = request;
+    _payment = StreamController<Transaction>();
     return _payment!.stream;
   }
 
-  /// Pays the last invoice being watched.
-  void pay() => _payment
-    ?..add(null)
-    ..close();
+  /// Pays the last request being watched, with [sats] when it sets no
+  /// amount. A payment to an address stays pending until [confirm].
+  void pay([int? sats]) {
+    final request = _watched!;
+    final onChain = request is ChainAddress;
+    _payment!.add(
+      _received(sats ?? request.sats!, confirmations: onChain ? 0 : null),
+    );
+    if (!onChain) _payment!.close();
+  }
+
+  void confirm() {
+    final pending = _lastReceived!;
+    _payment!
+      ..add(_received(pending.sats, confirmations: 1))
+      ..close();
+  }
+
+  Transaction? _lastReceived;
+
+  Transaction _received(int sats, {int? confirmations}) =>
+      _lastReceived = Transaction(
+        id: 'paid',
+        direction: TransactionDirection.incoming,
+        sats: sats,
+        at: DateTime.now(),
+        txid: confirmations == null ? null : 'paid',
+        confirmations: confirmations,
+      );
 
   SendError? sendError;
   int feeSats = 0;
@@ -211,6 +256,9 @@ final class FakeLiquidChain implements LiquidChain {
   /// Thrown by every sync while set.
   LiquidChainException? syncError;
 
+  /// Thrown when asked for an address while set.
+  LiquidChainException? addressError;
+
   @override
   Future<bool> sync() async {
     syncs++;
@@ -228,7 +276,10 @@ final class FakeLiquidChain implements LiquidChain {
   Future<int> tipHeight() async => tip;
 
   @override
-  Future<String> nextAddress() async => 'lq1fake';
+  Future<String> nextAddress() async {
+    if (addressError case final error?) throw error;
+    return liquidAddress;
+  }
 
   @override
   Future<List<ChainTx>> transactions() async => txs;
@@ -279,6 +330,10 @@ final class FakeLiquidEngine implements LiquidEngine {
 
 const liquidPhrase =
     'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+
+/// The first address of [liquidPhrase].
+const liquidAddress =
+    'lq1qqvxk052kf3qtkxmrakx50a9gc3smqad2ync54hzntjt980kfej9kkfe0247rp5h4yzmdftsahhw64uy8pzfe7cpg4fgykm7cv';
 
 /// Real sources over in-memory stores, for screens that need them.
 WalletSources memorySources({

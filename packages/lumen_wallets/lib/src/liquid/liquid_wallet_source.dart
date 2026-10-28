@@ -496,29 +496,37 @@ final class LiquidWallet implements Wallet {
     }
   }
 
-  /// Syncs every few seconds and emits once a transaction paying [request]
-  /// shows up, even unconfirmed.
+  /// Syncs every few seconds. Emits the first incoming transaction paying
+  /// [request] while still in the mempool, then again when it confirms.
   @override
-  Stream<void> watchPayment(PaymentRequest request) {
+  Stream<Transaction> watchPayment(PaymentRequest request) {
     final address = switch (request) {
       ChainAddress(:final address) => address,
       Invoice() => throw UnsupportedError('Liquid wallets have no invoices'),
     };
-    late final StreamController<void> controller;
+    late final StreamController<Transaction> controller;
     Timer? timer;
     var checking = false;
+    String? seen;
 
     Future<void> check() async {
       if (checking || controller.isClosed) return;
       checking = true;
       try {
         final chain = await _synced(force: true);
-        final paid = (await chain.transactions()).any(
-          (tx) => tx.received.contains(address),
-        );
-        if (paid && !controller.isClosed) {
+        final tip = await chain.tipHeight();
+        final payment = [
+          for (final tx in await chain.transactions())
+            if (seen == null ? tx.received.contains(address) : tx.txid == seen)
+              if (_transaction(tx, tip) case final t? when t.isIncoming) t,
+        ].lastOrNull;
+        if (payment == null || controller.isClosed) return;
+        if (seen == null || !payment.isPending) {
+          seen = payment.id;
+          controller.add(payment);
+        }
+        if (!payment.isPending) {
           timer?.cancel();
-          controller.add(null);
           await controller.close();
         }
       } catch (_) {
@@ -528,7 +536,7 @@ final class LiquidWallet implements Wallet {
       }
     }
 
-    controller = StreamController<void>(
+    controller = StreamController<Transaction>(
       onListen: () {
         check();
         timer = Timer.periodic(_source._watchInterval, (_) {

@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Tämä lompakko on jo Lumenissa.",
   "wordsPasted": "{count, plural, =1{1 sana täytetty} other{{count} sanaa täytetty}}",
   "phraseLength": "Lauseen pituus",
-  "wordCount": "{count, plural, =1{1 sana} other{{count} sanaa}}"
+  "wordCount": "{count, plural, =1{1 sana} other{{count} sanaa}}",
+  "gettingAddress": "Haetaan osoitetta",
+  "addressUnavailable": "Lumen ei saanut osoitetta tältä lompakolta. Tarkista yhteytesi ja yritä uudelleen.",
+  "liquidQrLabel": "Liquid-osoitteen QR-koodi. Osoite on alla, ja siinä on kopiointipainike.",
+  "liquidAmountQrLabel": "Liquid-osoitteen QR-koodi, {amount} sats. Osoite on alla, ja siinä on kopiointipainike.",
+  "addressText": "Osoite {groups}",
+  "addAmount": "Lisää summa",
+  "amountOptional": "Valinnainen. Jätä tyhjäksi, niin voit vastaanottaa minkä tahansa summan.",
+  "showQrCode": "Näytä QR-koodi",
+  "waitingForConfirmation": "Odotetaan vahvistusta",
+  "confirmsSoon": "Yleensä 2 minuutin kuluessa",
+  "paymentConfirmed": "Vahvistettu",
+  "paymentConfirmedAnnouncement": "Maksu vahvistettu"
 }

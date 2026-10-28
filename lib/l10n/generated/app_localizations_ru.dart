@@ -1042,4 +1042,47 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'Получение адреса';
+
+  @override
+  String get addressUnavailable =>
+      'Lumen не удалось получить адрес от этого кошелька. Проверьте подключение и попробуйте снова.';
+
+  @override
+  String get liquidQrLabel =>
+      'QR-код адреса Liquid. Адрес ниже, рядом кнопка копирования.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'QR-код адреса Liquid на $amount sats. Адрес ниже, рядом кнопка копирования.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Адрес $groups';
+  }
+
+  @override
+  String get addAmount => 'Указать сумму';
+
+  @override
+  String get amountOptional =>
+      'Необязательно. Оставьте пустым, чтобы получить любую сумму.';
+
+  @override
+  String get showQrCode => 'Показать QR-код';
+
+  @override
+  String get waitingForConfirmation => 'Ожидание подтверждения';
+
+  @override
+  String get confirmsSoon => 'Обычно в течение 2 минут';
+
+  @override
+  String get paymentConfirmed => 'Подтверждено';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Платёж подтверждён';
 }

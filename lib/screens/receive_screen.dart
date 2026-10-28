@@ -58,11 +58,26 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
   var _creating = false;
   ReceiveError? _error;
 
-  Invoice? _invoice;
-  Wallet? _invoiceWallet;
+  /// The invoice or address on screen, and the wallet it pays into.
+  PaymentRequest? _request;
+  Wallet? _requestWallet;
+
+  /// The wallet an address is being asked from.
+  Wallet? _gettingAddress;
+  var _editingAmount = false;
   var _expired = false;
-  var _paid = false;
-  StreamSubscription<void>? _payment;
+  Transaction? _received;
+  StreamSubscription<Transaction>? _payment;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final wallet = _walletIn(LumenScope.readWallets(context));
+      if (wallet != null && _receivesByAddress(wallet)) _getAddress(wallet);
+    });
+  }
 
   @override
   void dispose() {
@@ -75,6 +90,12 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
 
   Wallet? _walletIn(WalletsController wallets) =>
       wallets.walletById(_walletId ?? '') ?? wallets.wallets.firstOrNull;
+
+  /// Wallets that create invoices receive by invoice, even when they also
+  /// have an address.
+  static bool _receivesByAddress(Wallet wallet) =>
+      wallet.capabilities.contains(WalletCapability.receiveAddress) &&
+      !wallet.capabilities.contains(WalletCapability.receiveInvoice);
 
   Future<void> _create() async {
     final l = AppLocalizations.of(context);
@@ -92,7 +113,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
     setState(() {
       _creating = true;
       _error = null;
-      _invoice = null;
+      _request = null;
       _expired = false;
     });
     ReceiveError? error;
@@ -100,10 +121,10 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       final invoice = await wallet.createInvoice(sats);
       if (!mounted) return;
       setState(() {
-        _invoice = invoice;
-        _invoiceWallet = wallet;
+        _request = invoice;
+        _requestWallet = wallet;
       });
-      _payment = wallet.watchPayment(invoice).listen((_) => _onPaid());
+      _payment = wallet.watchPayment(invoice).listen(_onPaid);
       _focusResult();
     } on ReceiveException catch (e) {
       error = e.error;
@@ -118,18 +139,84 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
     }
   }
 
-  void _onPaid() {
-    final invoice = _invoice;
-    final wallet = _invoiceWallet;
-    if (!mounted || invoice == null || wallet == null) return;
-    setState(() => _paid = true);
-    HapticFeedback.successNotification();
-    LumenScope.readWallets(context).refresh(wallet);
-    _announce(
-      AppLocalizations.of(context)
-          .receivedAnnouncement(formatSats(context, invoice.sats), wallet.name),
-    );
+  /// An address can wait on a slow sync, so the picker stays enabled
+  /// meanwhile and an answer for a wallet no longer chosen is dropped.
+  Future<void> _getAddress(Wallet wallet) async {
+    final sats = switch (_request) {
+      ChainAddress(:final sats) => sats,
+      _ => null,
+    };
+    _payment?.cancel();
+    setState(() {
+      _gettingAddress = wallet;
+      _request = null;
+      _error = null;
+      _editingAmount = false;
+      _amountMissing = false;
+    });
+    ReceiveError? error;
+    try {
+      final address = await wallet.nextAddress();
+      if (!mounted || _gettingAddress != wallet) return;
+      setState(() {
+        _request = ChainAddress(
+          address.address,
+          network: address.network,
+          sats: sats,
+        );
+        _requestWallet = wallet;
+      });
+      _payment = wallet.watchPayment(address).listen(_onPaid);
+    } on ReceiveException catch (e) {
+      error = e.error;
+    } catch (_) {
+      error = ReceiveError.unreachable;
+    }
+    if (!mounted || _gettingAddress != wallet) return;
+    setState(() {
+      _gettingAddress = null;
+      _error = error;
+    });
+    if (error != null) {
+      _announce(
+        AppLocalizations.of(context).addressUnavailable,
+        assertive: true,
+      );
+    }
+  }
+
+  void _setAddressAmount() {
+    final address = _request;
+    if (address is! ChainAddress) return;
+    final sats = int.tryParse(_amount.text) ?? 0;
+    setState(() {
+      _request = ChainAddress(
+        address.address,
+        network: address.network,
+        sats: sats > 0 ? sats : null,
+      );
+      _editingAmount = false;
+    });
     _focusResult();
+  }
+
+  /// Called again when a pending payment confirms.
+  void _onPaid(Transaction payment) {
+    final wallet = _requestWallet;
+    if (!mounted || wallet == null) return;
+    final l = AppLocalizations.of(context);
+    final first = _received == null;
+    setState(() => _received = payment);
+    LumenScope.readWallets(context).refresh(wallet);
+    if (first) {
+      HapticFeedback.successNotification();
+      _announce(
+        l.receivedAnnouncement(formatSats(context, payment.sats), wallet.name),
+      );
+      _focusResult();
+    } else if (!payment.isPending) {
+      _announce(l.paymentConfirmedAnnouncement);
+    }
   }
 
   void _onExpired() {
@@ -141,15 +228,34 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
   void _chooseWallet(String id) {
     if (id == _walletId) return;
     setState(() => _walletId = id);
-    if (_invoice != null) _create();
+    final wallet = _walletIn(LumenScope.readWallets(context));
+    if (wallet == null) return;
+    if (_receivesByAddress(wallet)) {
+      _getAddress(wallet);
+      return;
+    }
+    final hadInvoice = _request is Invoice;
+    _payment?.cancel();
+    setState(() {
+      _request = null;
+      _gettingAddress = null;
+      _editingAmount = false;
+      _error = null;
+    });
+    if (hadInvoice) _create();
   }
 
   void _editAmount() {
-    _payment?.cancel();
-    setState(() {
-      _invoice = null;
-      _expired = false;
-    });
+    if (_request case ChainAddress(:final sats)) {
+      _amount.text = sats?.toString() ?? '';
+      setState(() => _editingAmount = true);
+    } else {
+      _payment?.cancel();
+      setState(() {
+        _request = null;
+        _expired = false;
+      });
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _amountFocus.requestFocus();
     });
@@ -176,11 +282,10 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
     final wallets = LumenScope.walletsOf(context);
     final wallet = _walletIn(wallets);
     if (wallet == null) return const SizedBox.shrink();
-    final invoice = _invoice;
 
     final List<Widget> body;
-    if (invoice != null && _paid) {
-      body = _paidView(invoice, _invoiceWallet ?? wallet);
+    if (_received case final received?) {
+      body = _paidView(received, _requestWallet ?? wallet);
     } else {
       body = [
         WalletPicker(
@@ -192,10 +297,13 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
           onChanged: _chooseWallet,
         ),
         const SizedBox(height: 20),
-        ...switch (invoice) {
+        ...switch (_request) {
+          ChainAddress() when _editingAmount => _amountForm(wallet),
+          final ChainAddress address => _addressView(address),
+          Invoice() when _expired => _expiredView(),
+          final Invoice invoice => _invoiceView(invoice),
+          null when _receivesByAddress(wallet) => _addressMissing(wallet),
           null => _amountForm(wallet),
-          _ when _expired => _expiredView(),
-          _ => _invoiceView(invoice),
         },
       ];
     }
@@ -208,8 +316,10 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
 
   Widget get _bottomGap => widget.frame.bottomGap;
 
+  /// The amount of a new invoice, or the optional amount of an address.
   List<Widget> _amountForm(Wallet wallet) {
     final l = AppLocalizations.of(context);
+    final byAddress = _receivesByAddress(wallet);
     return [
       if (wallet.lightningAddress case final address?) ...[
         AddressCard(address),
@@ -226,7 +336,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
             LengthLimitingTextInputFormatter(12),
           ],
           textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _create(),
+          onSubmitted: (_) => byAddress ? _setAddressAmount() : _create(),
           onChanged: (_) {
             if (_amountMissing) setState(() => _amountMissing = false);
           },
@@ -252,6 +362,8 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
               ),
             ),
             suffixIconConstraints: const BoxConstraints(),
+            helperText: byAddress ? l.amountOptional : null,
+            helperMaxLines: 3,
             errorText: _amountMissing ? l.errorAmountEmpty : null,
           ),
         ),
@@ -261,10 +373,81 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
         ErrorNote(error.message(l)),
       ],
       _bottomGap,
+      if (byAddress)
+        FilledButton(onPressed: _setAddressAmount, child: Text(l.showQrCode))
+      else
+        FilledButton(
+          onPressed: _creating ? null : _create,
+          child: Text(_creating ? l.creatingInvoice : l.createInvoice),
+        ),
+    ];
+  }
+
+  /// While the wallet gives an address, or after it could not.
+  List<Widget> _addressMissing(Wallet wallet) {
+    final l = AppLocalizations.of(context);
+    if (_error == null) {
+      return [
+        MergeSemantics(
+          child: Row(
+            children: [
+              const SizedBox.square(
+                dimension: 18,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l.gettingAddress,
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: LumenColors.of(context).text2,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+    return [
+      ErrorNote(l.addressUnavailable),
+      _bottomGap,
       FilledButton(
-        onPressed: _creating ? null : _create,
-        child: Text(_creating ? l.creatingInvoice : l.createInvoice),
+        onPressed: () => _getAddress(wallet),
+        child: Text(l.tryAgain),
       ),
+    ];
+  }
+
+  List<Widget> _addressView(ChainAddress address) {
+    final l = AppLocalizations.of(context);
+    final sats = address.sats;
+    return [
+      Center(
+        child: Focus(
+          focusNode: _resultFocus,
+          child: QrCodeView(
+            data: liquidRequest(address),
+            semanticLabel: sats == null
+                ? l.liquidQrLabel
+                : l.liquidAmountQrLabel(formatSats(context, sats)),
+          ),
+        ),
+      ),
+      const SizedBox(height: 16),
+      if (sats != null) Center(child: AmountText(sats, fontSize: 32)),
+      Center(
+        child: TextButton.icon(
+          onPressed: _editAmount,
+          icon: Icon(sats == null ? Icons.add : Icons.edit_outlined),
+          label: Text(sats == null ? l.addAmount : l.editAmount),
+        ),
+      ),
+      const SizedBox(height: 8),
+      _AddressLine(address),
+      const SizedBox(height: 16),
+      _StatusLine(icon: Icons.schedule, title: l.waitingForPayment),
     ];
   }
 
@@ -308,7 +491,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
     ];
   }
 
-  List<Widget> _paidView(Invoice invoice, Wallet wallet) {
+  List<Widget> _paidView(Transaction payment, Wallet wallet) {
     final l = AppLocalizations.of(context);
     return [
       const SizedBox(height: 16),
@@ -326,13 +509,27 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
         ),
       ),
       const SizedBox(height: 8),
-      Center(child: AmountText(invoice.sats, fontSize: 44)),
+      Center(child: AmountText(payment.sats, fontSize: 44)),
       const SizedBox(height: 8),
       Text(
         l.receivedInto(wallet.name),
         textAlign: TextAlign.center,
         style: TextStyle(fontSize: 15, color: LumenColors.of(context).text2),
       ),
+      if (payment.confirmations != null) ...[
+        const SizedBox(height: 20),
+        if (payment.isPending)
+          _StatusLine(
+            icon: Icons.schedule,
+            title: l.waitingForConfirmation,
+            detail: l.confirmsSoon,
+          )
+        else
+          _StatusLine(
+            icon: Icons.check_circle_outline,
+            title: l.paymentConfirmed,
+          ),
+      ],
       _bottomGap,
       FilledButton(
         onPressed: widget.frame.onDone,
@@ -398,6 +595,108 @@ class _CopyLine extends StatelessWidget {
   }
 }
 
+/// The whole address in groups of four, so it can be compared by eye and is
+/// read aloud a group at a time.
+class _AddressLine extends StatelessWidget {
+  const _AddressLine(this.address);
+
+  final ChainAddress address;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final c = LumenColors.of(context);
+    final raised = IconButton.styleFrom(backgroundColor: c.surface3);
+    final request = liquidRequest(address);
+    final groups = [
+      for (final match in RegExp('.{1,4}').allMatches(address.address))
+        match[0]!,
+    ];
+    return Container(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 6, 6),
+      decoration: BoxDecoration(
+        color: c.surface2,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 10),
+            child: Text(
+              groups.join(' '),
+              semanticsLabel: l.addressText(groups.join(', ')),
+              style: TextStyle(
+                fontFamily: monoFamily,
+                fontSize: 14,
+                height: 1.5,
+                color: c.text,
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              CopyButton(
+                text: request,
+                tooltip: l.copyAddress,
+                copied: l.addressCopied,
+                style: raised,
+              ),
+              const SizedBox(width: 8),
+              Builder(
+                builder: (buttonContext) => IconButton(
+                  tooltip: l.shareAddress,
+                  style: raised,
+                  icon: const Icon(Icons.share_outlined),
+                  onPressed: () => shareText(buttonContext, request),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A status with its icon and an optional detail, read as one.
+class _StatusLine extends StatelessWidget {
+  const _StatusLine({required this.icon, required this.title, this.detail});
+
+  final IconData icon;
+  final String title;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return MergeSemantics(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(icon, size: 16, color: c.text2),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontSize: 15, color: c.text)),
+                if (detail case final detail?)
+                  Text(detail, style: TextStyle(fontSize: 13, color: c.text2)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// "Waiting for payment" and the time left, updated without announcing it.
 class _InvoiceStatus extends StatefulWidget {
   const _InvoiceStatus({required this.invoice, required this.onExpired});
@@ -450,36 +749,10 @@ class _InvoiceStatusState extends State<_InvoiceStatus> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final c = LumenColors.of(context);
-    final timeLeft = _timeLeft(l);
-    return MergeSemantics(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(Icons.schedule, size: 16, color: c.text2),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l.waitingForPayment,
-                  style: TextStyle(fontSize: 15, color: c.text),
-                ),
-                if (timeLeft != null)
-                  Text(
-                    timeLeft,
-                    style: TextStyle(fontSize: 13, color: c.text2),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
+    return _StatusLine(
+      icon: Icons.schedule,
+      title: l.waitingForPayment,
+      detail: _timeLeft(l),
     );
   }
 }

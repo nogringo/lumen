@@ -76,4 +76,59 @@ void main() {
       expect(liquidAddress(text), isNull, reason: text);
     }
   });
+
+  group('requests', () {
+    test('without an amount, the address is the request', () {
+      final address = liquidAddress(_mainnet.first)!;
+
+      expect(liquidRequest(address), _mainnet.first);
+    });
+
+    test('an amount makes a URI in L-BTC that reads back', () {
+      for (final (sats, amount) in [
+        (21000, '0.00021'),
+        (1, '0.00000001'),
+        (150000000, '1.5'),
+        (200000000, '2'),
+      ]) {
+        final request = liquidRequest(
+          ChainAddress(
+            _mainnet.first,
+            network: ChainNetwork.liquid,
+            sats: sats,
+          ),
+        );
+
+        expect(
+          request,
+          'liquidnetwork:${_mainnet.first}?amount=$amount'
+          '&assetid=${lbtcAssetIds[ChainNetwork.liquid]}',
+        );
+        final read = parseRecipient(request) as AddressRecipient;
+        expect(
+          (read.address.address, read.address.sats),
+          (_mainnet.first, sats),
+        );
+      }
+    });
+
+    test('testnet has its own scheme and asset', () {
+      final request = liquidRequest(
+        ChainAddress(
+          _testnet.first,
+          network: ChainNetwork.liquidTestnet,
+          sats: 5000,
+        ),
+      );
+
+      expect(request, startsWith('liquidtestnet:${_testnet.first}?'));
+      expect(
+        (parseRecipient(
+          request,
+          networks: {ChainNetwork.liquidTestnet},
+        ) as AddressRecipient).address.sats,
+        5000,
+      );
+    });
+  });
 }

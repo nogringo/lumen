@@ -960,4 +960,44 @@ class AppLocalizationsZh extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => '正在获取地址';
+
+  @override
+  String get addressUnavailable => 'Lumen 无法从此钱包获取地址。请检查网络连接，然后重试。';
+
+  @override
+  String get liquidQrLabel => 'Liquid 地址二维码。地址在下方，附有复制按钮。';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return '金额为 $amount sats 的 Liquid 地址二维码。地址在下方，附有复制按钮。';
+  }
+
+  @override
+  String addressText(String groups) {
+    return '地址 $groups';
+  }
+
+  @override
+  String get addAmount => '添加金额';
+
+  @override
+  String get amountOptional => '选填。留空即可接收任意金额。';
+
+  @override
+  String get showQrCode => '显示二维码';
+
+  @override
+  String get waitingForConfirmation => '等待确认';
+
+  @override
+  String get confirmsSoon => '通常在 2 分钟内';
+
+  @override
+  String get paymentConfirmed => '已确认';
+
+  @override
+  String get paymentConfirmedAnnouncement => '付款已确认';
 }

@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Esta billetera ya está en Lumen.",
   "wordsPasted": "{count, plural, =1{1 palabra rellenada} other{{count} palabras rellenadas}}",
   "phraseLength": "Longitud de la frase",
-  "wordCount": "{count, plural, =1{1 palabra} other{{count} palabras}}"
+  "wordCount": "{count, plural, =1{1 palabra} other{{count} palabras}}",
+  "gettingAddress": "Obteniendo una dirección",
+  "addressUnavailable": "Lumen no pudo obtener una dirección de esta billetera. Comprueba tu conexión y vuelve a intentarlo.",
+  "liquidQrLabel": "Código QR de la dirección Liquid. La dirección está debajo, con un botón para copiarla.",
+  "liquidAmountQrLabel": "Código QR de la dirección Liquid por {amount} sats. La dirección está debajo, con un botón para copiarla.",
+  "addressText": "Dirección {groups}",
+  "addAmount": "Añadir importe",
+  "amountOptional": "Opcional. Déjalo vacío para recibir cualquier importe.",
+  "showQrCode": "Mostrar código QR",
+  "waitingForConfirmation": "Esperando la confirmación",
+  "confirmsSoon": "Normalmente en menos de 2 minutos",
+  "paymentConfirmed": "Confirmado",
+  "paymentConfirmedAnnouncement": "Pago confirmado"
 }

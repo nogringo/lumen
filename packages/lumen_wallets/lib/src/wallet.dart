@@ -258,9 +258,10 @@ abstract interface class Wallet {
   /// the wallet cannot give one.
   Future<ChainAddress> nextAddress();
 
-  /// Emits once when [request] is paid, then closes. Cancelling the
-  /// subscription stops watching.
-  Stream<void> watchPayment(PaymentRequest request);
+  /// Emits the payment of [request] as soon as the wallet sees it, again
+  /// once a pending one confirms, then closes. Cancelling the subscription
+  /// stops watching.
+  Stream<Transaction> watchPayment(PaymentRequest request);
 
   /// Checks that [request] can be paid and quotes the fee, without sending
   /// anything. [sats] is the amount for a request that sets none. Throws a

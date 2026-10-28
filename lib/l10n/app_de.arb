@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Diese Wallet ist schon in Lumen.",
   "wordsPasted": "{count, plural, =1{1 Wort eingetragen} other{{count} Wörter eingetragen}}",
   "phraseLength": "Länge der Phrase",
-  "wordCount": "{count, plural, =1{1 Wort} other{{count} Wörter}}"
+  "wordCount": "{count, plural, =1{1 Wort} other{{count} Wörter}}",
+  "gettingAddress": "Adresse wird abgerufen",
+  "addressUnavailable": "Lumen konnte von dieser Wallet keine Adresse erhalten. Prüfe deine Verbindung und versuche es dann erneut.",
+  "liquidQrLabel": "QR-Code der Liquid-Adresse. Die Adresse steht darunter, mit einer Schaltfläche zum Kopieren.",
+  "liquidAmountQrLabel": "QR-Code der Liquid-Adresse über {amount} sats. Die Adresse steht darunter, mit einer Schaltfläche zum Kopieren.",
+  "addressText": "Adresse {groups}",
+  "addAmount": "Betrag hinzufügen",
+  "amountOptional": "Optional. Lass das Feld leer, um einen beliebigen Betrag zu empfangen.",
+  "showQrCode": "QR-Code anzeigen",
+  "waitingForConfirmation": "Warte auf Bestätigung",
+  "confirmsSoon": "Meist innerhalb von 2 Minuten",
+  "paymentConfirmed": "Bestätigt",
+  "paymentConfirmedAnnouncement": "Zahlung bestätigt"
 }

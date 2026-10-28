@@ -1018,4 +1018,47 @@ class AppLocalizationsIt extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'Recupero di un indirizzo';
+
+  @override
+  String get addressUnavailable =>
+      'Lumen non è riuscito a ottenere un indirizzo da questo portafoglio. Verifica la connessione, poi riprova.';
+
+  @override
+  String get liquidQrLabel =>
+      'Codice QR dell\'indirizzo Liquid. L\'indirizzo è qui sotto, con un pulsante per copiarlo.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'Codice QR dell\'indirizzo Liquid per $amount sats. L\'indirizzo è qui sotto, con un pulsante per copiarlo.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Indirizzo $groups';
+  }
+
+  @override
+  String get addAmount => 'Aggiungi importo';
+
+  @override
+  String get amountOptional =>
+      'Facoltativo. Lascialo vuoto per ricevere qualsiasi importo.';
+
+  @override
+  String get showQrCode => 'Mostra codice QR';
+
+  @override
+  String get waitingForConfirmation => 'In attesa di conferma';
+
+  @override
+  String get confirmsSoon => 'Di solito entro 2 minuti';
+
+  @override
+  String get paymentConfirmed => 'Confermato';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Pagamento confermato';
 }

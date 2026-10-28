@@ -265,6 +265,79 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets(
+        'Liquid receive meets the guidelines, $name, ${brightness.name}',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          final wallet = FakeWallet.liquid('savings', 'Savings');
+          await pumpLumen(
+            tester,
+            sources,
+            wallets: [wallet],
+            size: size,
+            brightness: brightness,
+          );
+
+          await tester.tap(find.text('Receive'));
+          await tester.pumpAndSettle();
+          await expectGuidelines(tester);
+
+          await tester.tap(find.text('Add amount'));
+          await tester.pumpAndSettle();
+          await expectGuidelines(tester);
+          await tester.enterText(find.byType(TextField), '21000');
+          await tester.tap(find.text('Show QR code'));
+          await tester.pumpAndSettle();
+          await expectGuidelines(tester);
+
+          wallet.pay(21000);
+          await tester.pumpAndSettle();
+          await expectGuidelines(tester);
+          wallet.confirm();
+          await tester.pumpAndSettle();
+          await expectGuidelines(tester);
+          handle.dispose();
+        },
+        variant: _platformFor(size),
+      );
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('Liquid receive lays out at 200% text, $name', (tester) async {
+      final wallet = FakeWallet.liquid('savings', 'Savings');
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: [wallet],
+        size: size,
+        textScale: 2,
+      );
+
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'address');
+
+      await tester.tap(find.text('Add amount'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'amount');
+      await tester.enterText(find.byType(TextField), '21000');
+      await tester.tap(find.text('Show QR code'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'address with amount');
+
+      wallet.pay(21000);
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'pending');
+      expect(find.text('Waiting for confirmation'), findsOneWidget);
+    }, variant: _platformFor(size));
+  }
+
   Future<void> reviewPayment(WidgetTester tester) async {
     await tester.tap(find.text('Send'));
     await tester.pumpAndSettle();

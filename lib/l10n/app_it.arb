@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Questo portafoglio è già in Lumen.",
   "wordsPasted": "{count, plural, =1{1 parola inserita} other{{count} parole inserite}}",
   "phraseLength": "Lunghezza della frase",
-  "wordCount": "{count, plural, =1{1 parola} other{{count} parole}}"
+  "wordCount": "{count, plural, =1{1 parola} other{{count} parole}}",
+  "gettingAddress": "Recupero di un indirizzo",
+  "addressUnavailable": "Lumen non è riuscito a ottenere un indirizzo da questo portafoglio. Verifica la connessione, poi riprova.",
+  "liquidQrLabel": "Codice QR dell'indirizzo Liquid. L'indirizzo è qui sotto, con un pulsante per copiarlo.",
+  "liquidAmountQrLabel": "Codice QR dell'indirizzo Liquid per {amount} sats. L'indirizzo è qui sotto, con un pulsante per copiarlo.",
+  "addressText": "Indirizzo {groups}",
+  "addAmount": "Aggiungi importo",
+  "amountOptional": "Facoltativo. Lascialo vuoto per ricevere qualsiasi importo.",
+  "showQrCode": "Mostra codice QR",
+  "waitingForConfirmation": "In attesa di conferma",
+  "confirmsSoon": "Di solito entro 2 minuti",
+  "paymentConfirmed": "Confermato",
+  "paymentConfirmedAnnouncement": "Pagamento confermato"
 }

@@ -373,11 +373,11 @@
   },
   "copyAddress": "Copy address",
   "@copyAddress": {
-    "description": "Tooltip and accessible name of the button that copies the Lightning address."
+    "description": "Tooltip and accessible name of the button that copies the Lightning or Liquid address."
   },
   "addressCopied": "Address copied",
   "@addressCopied": {
-    "description": "Announced to screen readers after copying the Lightning address."
+    "description": "Announced to screen readers after copying the Lightning or Liquid address."
   },
   "showAddressQr": "Show QR code",
   "@showAddressQr": {
@@ -394,7 +394,7 @@
   },
   "shareAddress": "Share address",
   "@shareAddress": {
-    "description": "Button that shares the Lightning address."
+    "description": "Button that shares the Lightning or Liquid address."
   },
   "waitingForPayment": "Waiting for payment",
   "@waitingForPayment": {
@@ -1327,5 +1327,63 @@
         "type": "int"
       }
     }
+  },
+  "gettingAddress": "Getting an address",
+  "@gettingAddress": {
+    "description": "Shown next to a spinner while the wallet gives an address to receive on."
+  },
+  "addressUnavailable": "Lumen could not get an address from this wallet. Check your connection, then try again.",
+  "@addressUnavailable": {
+    "description": "Error when the wallet could not give an address to receive on."
+  },
+  "liquidQrLabel": "QR code of the Liquid address. The address is below, with a copy button.",
+  "@liquidQrLabel": {
+    "description": "Accessible description of the QR code of a Liquid address without an amount."
+  },
+  "liquidAmountQrLabel": "QR code of the Liquid address for {amount} sats. The address is below, with a copy button.",
+  "@liquidAmountQrLabel": {
+    "description": "Accessible description of the QR code of a Liquid address that asks for an amount.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "addressText": "Address {groups}",
+  "@addressText": {
+    "description": "Accessible label of the address to receive on, followed by its characters in groups of four, separated by commas.",
+    "placeholders": {
+      "groups": {
+        "type": "String"
+      }
+    }
+  },
+  "addAmount": "Add amount",
+  "@addAmount": {
+    "description": "Button under a Liquid address QR code that opens the amount field."
+  },
+  "amountOptional": "Optional. Leave it empty to receive any amount.",
+  "@amountOptional": {
+    "description": "Help under the amount field of a Liquid address, where the amount can stay empty."
+  },
+  "showQrCode": "Show QR code",
+  "@showQrCode": {
+    "description": "Button that goes back to the Liquid address QR code with the amount entered."
+  },
+  "waitingForConfirmation": "Waiting for confirmation",
+  "@waitingForConfirmation": {
+    "description": "Status of a payment received on chain until a block confirms it."
+  },
+  "confirmsSoon": "Usually within 2 minutes",
+  "@confirmsSoon": {
+    "description": "Under Waiting for confirmation: how long a Liquid payment usually takes to confirm."
+  },
+  "paymentConfirmed": "Confirmed",
+  "@paymentConfirmed": {
+    "description": "Status of a payment received on chain once a block confirms it."
+  },
+  "paymentConfirmedAnnouncement": "Payment confirmed",
+  "@paymentConfirmedAnnouncement": {
+    "description": "Announced to screen readers when the payment received confirms."
   }
 }

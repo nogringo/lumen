@@ -1017,4 +1017,47 @@ class AppLocalizationsFi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'Haetaan osoitetta';
+
+  @override
+  String get addressUnavailable =>
+      'Lumen ei saanut osoitetta tältä lompakolta. Tarkista yhteytesi ja yritä uudelleen.';
+
+  @override
+  String get liquidQrLabel =>
+      'Liquid-osoitteen QR-koodi. Osoite on alla, ja siinä on kopiointipainike.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'Liquid-osoitteen QR-koodi, $amount sats. Osoite on alla, ja siinä on kopiointipainike.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Osoite $groups';
+  }
+
+  @override
+  String get addAmount => 'Lisää summa';
+
+  @override
+  String get amountOptional =>
+      'Valinnainen. Jätä tyhjäksi, niin voit vastaanottaa minkä tahansa summan.';
+
+  @override
+  String get showQrCode => 'Näytä QR-koodi';
+
+  @override
+  String get waitingForConfirmation => 'Odotetaan vahvistusta';
+
+  @override
+  String get confirmsSoon => 'Yleensä 2 minuutin kuluessa';
+
+  @override
+  String get paymentConfirmed => 'Vahvistettu';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Maksu vahvistettu';
 }

@@ -274,8 +274,8 @@ final class NwcWalletSource implements WalletSource {
 
   /// Listens for the wallet's payment notifications, and also looks the
   /// invoice up regularly since not every wallet sends them.
-  Stream<void> _watchPayment(String id, Invoice invoice) {
-    final controller = StreamController<void>();
+  Stream<Transaction> _watchPayment(String id, Invoice invoice) {
+    final controller = StreamController<Transaction>();
     StreamSubscription<void>? notifications;
     NwcConnection? listening;
     Timer? timer;
@@ -287,7 +287,17 @@ final class NwcWalletSource implements WalletSource {
 
     void paid() {
       if (stopped || controller.isClosed) return;
-      controller.add(null);
+      controller.add(
+        Transaction(
+          id: invoice.paymentHash ?? invoice.request,
+          direction: TransactionDirection.incoming,
+          sats: invoice.sats,
+          at: DateTime.now(),
+          description: invoice.description,
+          paymentHash: invoice.paymentHash,
+          invoice: invoice.request,
+        ),
+      );
       controller.close();
     }
 
@@ -423,7 +433,7 @@ final class _NwcWallet implements Wallet {
       throw UnsupportedError('NWC wallets have no address');
 
   @override
-  Stream<void> watchPayment(PaymentRequest request) => switch (request) {
+  Stream<Transaction> watchPayment(PaymentRequest request) => switch (request) {
     Invoice() => _source._watchPayment(id, request),
     ChainAddress() => throw UnsupportedError('NWC wallets have no address'),
   };

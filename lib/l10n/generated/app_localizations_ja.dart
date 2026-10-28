@@ -983,4 +983,45 @@ class AppLocalizationsJa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'アドレスを取得中';
+
+  @override
+  String get addressUnavailable =>
+      'Lumen はこのウォレットからアドレスを取得できませんでした。接続を確認して、もう一度お試しください。';
+
+  @override
+  String get liquidQrLabel => 'Liquid アドレスの QR コード。アドレスはこの下にあり、コピーボタンが付いています。';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return '$amount sats の Liquid アドレスの QR コード。アドレスはこの下にあり、コピーボタンが付いています。';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'アドレス $groups';
+  }
+
+  @override
+  String get addAmount => '金額を追加';
+
+  @override
+  String get amountOptional => '任意です。空欄のままにすると、どの金額でも受け取れます。';
+
+  @override
+  String get showQrCode => 'QR コードを表示';
+
+  @override
+  String get waitingForConfirmation => '承認を待っています';
+
+  @override
+  String get confirmsSoon => '通常 2 分以内';
+
+  @override
+  String get paymentConfirmed => '承認済み';
+
+  @override
+  String get paymentConfirmedAnnouncement => '支払いが承認されました';
 }

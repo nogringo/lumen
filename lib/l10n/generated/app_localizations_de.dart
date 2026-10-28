@@ -1020,4 +1020,47 @@ class AppLocalizationsDe extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get gettingAddress => 'Adresse wird abgerufen';
+
+  @override
+  String get addressUnavailable =>
+      'Lumen konnte von dieser Wallet keine Adresse erhalten. Prüfe deine Verbindung und versuche es dann erneut.';
+
+  @override
+  String get liquidQrLabel =>
+      'QR-Code der Liquid-Adresse. Die Adresse steht darunter, mit einer Schaltfläche zum Kopieren.';
+
+  @override
+  String liquidAmountQrLabel(String amount) {
+    return 'QR-Code der Liquid-Adresse über $amount sats. Die Adresse steht darunter, mit einer Schaltfläche zum Kopieren.';
+  }
+
+  @override
+  String addressText(String groups) {
+    return 'Adresse $groups';
+  }
+
+  @override
+  String get addAmount => 'Betrag hinzufügen';
+
+  @override
+  String get amountOptional =>
+      'Optional. Lass das Feld leer, um einen beliebigen Betrag zu empfangen.';
+
+  @override
+  String get showQrCode => 'QR-Code anzeigen';
+
+  @override
+  String get waitingForConfirmation => 'Warte auf Bestätigung';
+
+  @override
+  String get confirmsSoon => 'Meist innerhalb von 2 Minuten';
+
+  @override
+  String get paymentConfirmed => 'Bestätigt';
+
+  @override
+  String get paymentConfirmedAnnouncement => 'Zahlung bestätigt';
 }

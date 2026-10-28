@@ -539,7 +539,92 @@ void main() {
       chain.txs = [
         const ChainTx(txid: 'in', balance: 1000, fee: 26, received: [_address]),
       ];
-      expect(await paid.timeout(const Duration(seconds: 5)), hasLength(1));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      chain.txs = [
+        const ChainTx(
+          txid: 'in',
+          balance: 1000,
+          fee: 26,
+          height: 100,
+          received: [_address],
+        ),
+      ];
+
+      final [pending, confirmed] = await paid.timeout(
+        const Duration(seconds: 5),
+      );
+      expect(
+        (pending.txid, pending.sats, pending.isPending),
+        ('in', 1000, true),
+      );
+      expect((confirmed.txid, confirmed.confirmations), ('in', 1));
+    });
+
+    test('a payment already confirmed is reported once', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final address = await wallet.nextAddress();
+      chain.txs = [
+        const ChainTx(
+          txid: 'in',
+          balance: 1000,
+          fee: 26,
+          height: 99,
+          received: [_address],
+        ),
+      ];
+
+      final [payment] = await wallet
+          .watchPayment(address)
+          .toList()
+          .timeout(const Duration(seconds: 5));
+      expect(payment.confirmations, 2);
+    });
+
+    test('the watch follows the first payment, not the next ones', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final address = await wallet.nextAddress();
+      final paid = wallet.watchPayment(address).toList();
+      chain.txs = [
+        const ChainTx(txid: 'a', balance: 700, fee: 26, received: [_address]),
+      ];
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      chain.txs = [
+        const ChainTx(txid: 'b', balance: 500, fee: 26, received: [_address]),
+        const ChainTx(
+          txid: 'a',
+          balance: 700,
+          fee: 26,
+          height: 100,
+          received: [_address],
+        ),
+      ];
+
+      final payments = await paid.timeout(const Duration(seconds: 5));
+      expect(
+        [for (final p in payments) (p.txid, p.sats)],
+        [('a', 700), ('a', 700)],
+      );
+    });
+
+    test('a transaction spending from the address is not a payment', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final address = await wallet.nextAddress();
+      final paid = wallet.watchPayment(address).first;
+      chain.txs = [
+        const ChainTx(
+          txid: 'self',
+          balance: -26,
+          fee: 26,
+          received: [_address],
+        ),
+      ];
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      chain.txs = [
+        const ChainTx(txid: 'in', balance: 900, fee: 26, received: [_address]),
+        ...chain.txs,
+      ];
+
+      expect((await paid.timeout(const Duration(seconds: 5))).txid, 'in');
     });
 
     test('the watch waits out a rate limit', () async {
@@ -553,7 +638,13 @@ void main() {
 
       now = now.add(const Duration(minutes: 1));
       chain.txs = [
-        const ChainTx(txid: 'in', balance: 1000, fee: 26, received: [_address]),
+        const ChainTx(
+          txid: 'in',
+          balance: 1000,
+          fee: 26,
+          height: 100,
+          received: [_address],
+        ),
       ];
       expect(await paid.timeout(const Duration(seconds: 5)), hasLength(1));
       expect(chain.syncs, 3);

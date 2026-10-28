@@ -7,6 +7,25 @@ import '../wallet.dart';
 ChainAddress? liquidAddress(String text) =>
     _segwitAddress(text) ?? _base58Address(text);
 
+/// What a payer scans or pastes to pay [address]: the address alone, or a
+/// `liquidnetwork:` URI when it sets an amount. Wallets such as the
+/// Blockstream app refuse an amount without its asset, so the URI names
+/// L-BTC.
+String liquidRequest(ChainAddress address) {
+  final sats = address.sats;
+  if (sats == null) return address.address;
+  final scheme = switch (address.network) {
+    ChainNetwork.liquid => 'liquidnetwork',
+    ChainNetwork.liquidTestnet => 'liquidtestnet',
+  };
+  final fraction = '${sats % 100000000}'
+      .padLeft(8, '0')
+      .replaceFirst(RegExp(r'0+$'), '');
+  final amount = '${sats ~/ 100000000}${fraction.isEmpty ? '' : '.$fraction'}';
+  return '$scheme:${address.address}'
+      '?amount=$amount&assetid=${lbtcAssetIds[address.network]}';
+}
+
 /// The L-BTC asset id on each network.
 const lbtcAssetIds = {
   ChainNetwork.liquid:

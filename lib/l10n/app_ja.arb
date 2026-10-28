@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "このウォレットはすでに Lumen にあります。",
   "wordsPasted": "{count, plural, other{{count} 個の単語を入力しました}}",
   "phraseLength": "フレーズの長さ",
-  "wordCount": "{count, plural, other{{count} 語}}"
+  "wordCount": "{count, plural, other{{count} 語}}",
+  "gettingAddress": "アドレスを取得中",
+  "addressUnavailable": "Lumen はこのウォレットからアドレスを取得できませんでした。接続を確認して、もう一度お試しください。",
+  "liquidQrLabel": "Liquid アドレスの QR コード。アドレスはこの下にあり、コピーボタンが付いています。",
+  "liquidAmountQrLabel": "{amount} sats の Liquid アドレスの QR コード。アドレスはこの下にあり、コピーボタンが付いています。",
+  "addressText": "アドレス {groups}",
+  "addAmount": "金額を追加",
+  "amountOptional": "任意です。空欄のままにすると、どの金額でも受け取れます。",
+  "showQrCode": "QR コードを表示",
+  "waitingForConfirmation": "承認を待っています",
+  "confirmsSoon": "通常 2 分以内",
+  "paymentConfirmed": "承認済み",
+  "paymentConfirmedAnnouncement": "支払いが承認されました"
 }

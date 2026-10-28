@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Esta carteira já está no Lumen.",
   "wordsPasted": "{count, plural, =1{1 palavra preenchida} other{{count} palavras preenchidas}}",
   "phraseLength": "Tamanho da frase",
-  "wordCount": "{count, plural, =1{1 palavra} other{{count} palavras}}"
+  "wordCount": "{count, plural, =1{1 palavra} other{{count} palavras}}",
+  "gettingAddress": "A obter um endereço",
+  "addressUnavailable": "O Lumen não conseguiu obter um endereço desta carteira. Verifique a ligação e tente novamente.",
+  "liquidQrLabel": "Código QR do endereço Liquid. O endereço está abaixo, com um botão para o copiar.",
+  "liquidAmountQrLabel": "Código QR do endereço Liquid para {amount} sats. O endereço está abaixo, com um botão para o copiar.",
+  "addressText": "Endereço {groups}",
+  "addAmount": "Adicionar montante",
+  "amountOptional": "Opcional. Deixe vazio para receber qualquer montante.",
+  "showQrCode": "Mostrar código QR",
+  "waitingForConfirmation": "A aguardar confirmação",
+  "confirmsSoon": "Normalmente em menos de 2 minutos",
+  "paymentConfirmed": "Confirmado",
+  "paymentConfirmedAnnouncement": "Pagamento confirmado"
 }

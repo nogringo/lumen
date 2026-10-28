@@ -266,5 +266,17 @@
   "errorRestoreDuplicate": "Этот кошелёк уже есть в Lumen.",
   "wordsPasted": "{count, plural, =1{Заполнено 1 слово} few{Заполнено {count} слова} many{Заполнено {count} слов} other{Заполнено {count} слова}}",
   "phraseLength": "Длина фразы",
-  "wordCount": "{count, plural, =1{1 слово} few{{count} слова} many{{count} слов} other{{count} слова}}"
+  "wordCount": "{count, plural, =1{1 слово} few{{count} слова} many{{count} слов} other{{count} слова}}",
+  "gettingAddress": "Получение адреса",
+  "addressUnavailable": "Lumen не удалось получить адрес от этого кошелька. Проверьте подключение и попробуйте снова.",
+  "liquidQrLabel": "QR-код адреса Liquid. Адрес ниже, рядом кнопка копирования.",
+  "liquidAmountQrLabel": "QR-код адреса Liquid на {amount} sats. Адрес ниже, рядом кнопка копирования.",
+  "addressText": "Адрес {groups}",
+  "addAmount": "Указать сумму",
+  "amountOptional": "Необязательно. Оставьте пустым, чтобы получить любую сумму.",
+  "showQrCode": "Показать QR-код",
+  "waitingForConfirmation": "Ожидание подтверждения",
+  "confirmsSoon": "Обычно в течение 2 минут",
+  "paymentConfirmed": "Подтверждено",
+  "paymentConfirmedAnnouncement": "Платёж подтверждён"
 }

@@ -6,6 +6,9 @@ import 'package:material_ui/material_ui.dart';
 import 'fakes.dart';
 
 final _qr = find.bySemanticsLabel(RegExp(r'^QR code of the Lightning invoice'));
+final _liquidQr = find.bySemanticsLabel(
+  RegExp(r'^QR code of the Liquid address'),
+);
 
 void main() {
   late WalletSources sources;
@@ -316,6 +319,181 @@ void main() {
     },
     variant: TargetPlatformVariant.only(TargetPlatform.macOS),
   );
+
+  group('a Liquid wallet', () {
+    testWidgets('shows an address, then the payment until it confirms', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final haptics = watchHaptics(tester);
+      final wallet = FakeWallet.liquid('savings', 'Savings');
+      await pumpLumen(tester, sources, wallets: [wallet]);
+
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+      expect(wallet.addressCount, 1);
+      expect(find.byType(TextField), findsNothing);
+      expect(
+        tester.getSemantics(_liquidQr).label,
+        'QR code of the Liquid address. The address is below, with a copy button.',
+      );
+      expect(
+        find.bySemanticsLabel(
+          RegExp(r'^Address lq1q, qvxk, 052k, f3qt, .*, km7c, v$'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('Waiting for payment'), findsOneWidget);
+
+      final fetchesBefore = wallet.fetchCount;
+      wallet.pay(21000);
+      await tester.pumpAndSettle();
+      expect(find.text('Payment received'), findsOneWidget);
+      expect(find.text('Into Savings'), findsOneWidget);
+      expect(
+        find.bySemanticsLabel(
+          'Waiting for confirmation\nUsually within 2 minutes',
+        ),
+        findsOneWidget,
+      );
+      expect(haptics, ['HapticFeedbackType.successNotification']);
+
+      wallet.confirm();
+      await tester.pumpAndSettle();
+      expect(find.text('Confirmed'), findsOneWidget);
+      expect(find.text('Waiting for confirmation'), findsNothing);
+      expect(haptics, hasLength(1));
+      expect(wallet.fetchCount, fetchesBefore + 2);
+
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(find.text('Total balance'), findsOneWidget);
+      handle.dispose();
+    });
+
+    testWidgets('an amount goes into the QR code and what is copied', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      final copied = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (call) async {
+          if (call.method == 'Clipboard.setData') {
+            copied.add((call.arguments as Map)['text'] as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+      final wallet = FakeWallet.liquid('savings', 'Savings');
+      await pumpLumen(tester, sources, wallets: [wallet]);
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byTooltip('Copy address'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add amount'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Optional. Leave it empty to receive any amount.'),
+        findsOneWidget,
+      );
+      await tester.enterText(find.byType(TextField), '21000');
+      await tester.tap(find.text('Show QR code'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.getSemantics(_liquidQr).label,
+        'QR code of the Liquid address for 21,000 sats. The address is below, with a copy button.',
+      );
+      await tester.tap(find.byTooltip('Copy address'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Edit amount'));
+      await tester.pumpAndSettle();
+      expect(find.text('21000'), findsOneWidget);
+      await tester.enterText(find.byType(TextField), '');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(find.text('Add amount'), findsOneWidget);
+
+      expect(copied, [
+        liquidAddress,
+        'liquidnetwork:$liquidAddress?amount=0.00021'
+            '&assetid=6f0279e9ed041c3d710a9f57d0c02928416460c4b722ae3457a11eec381c526d',
+      ]);
+      expect(wallet.addressCount, 1);
+      handle.dispose();
+    });
+
+    testWidgets('a payment while the amount is edited still shows', (
+      tester,
+    ) async {
+      final wallet = FakeWallet.liquid('savings', 'Savings');
+      await pumpLumen(tester, sources, wallets: [wallet]);
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add amount'));
+      await tester.pumpAndSettle();
+
+      wallet.pay(500);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Payment received'), findsOneWidget);
+    });
+
+    testWidgets('an address it cannot give says how to fix it', (tester) async {
+      final wallet = FakeWallet.liquid('savings', 'Savings')
+        ..receiveError = ReceiveError.unreachable;
+      await pumpLumen(tester, sources, wallets: [wallet]);
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'Lumen could not get an address from this wallet. Check your connection, then try again.',
+        ),
+        findsOneWidget,
+      );
+      wallet.receiveError = null;
+      await tester.tap(find.text('Try again'));
+      await tester.pumpAndSettle();
+      expect(_liquidQr, findsOneWidget);
+    });
+
+    testWidgets('choosing a Lightning wallet asks for an amount again', (
+      tester,
+    ) async {
+      final home = FakeWallet('home', 'Home node');
+      final savings = FakeWallet.liquid('savings', 'Savings');
+      await pumpLumen(tester, sources, wallets: [home, savings]);
+      await tester.tap(find.text('Receive'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '300');
+      await tester.tap(find.text('Create invoice'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Home node').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Savings').last);
+      await tester.pumpAndSettle();
+      expect(_liquidQr, findsOneWidget);
+      expect(_qr, findsNothing);
+
+      await tester.tap(find.text('Savings').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Home node').last);
+      await tester.pumpAndSettle();
+      expect(find.text('Create invoice'), findsOneWidget);
+      expect(_liquidQr, findsNothing);
+      expect(home.invoiceAmounts, [300]);
+    });
+  });
 
   testWidgets('on desktop, receive is a dialog that Escape closes', (
     tester,
