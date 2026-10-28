@@ -110,7 +110,7 @@ class _ActivityScreenState extends State<ActivityScreen> with TickingNow {
             padding: LayoutSize.of(context).screenPadding,
             children: [
               if (hasSidebar(context))
-                PageTitle(title)
+                PageTitle(title, backButton: true)
               else
                 TopBar(title: title),
               const SizedBox(height: 24),

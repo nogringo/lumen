@@ -680,7 +680,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       expect(find.byTooltip('Refresh balance (⌘R)'), findsOneWidget);
-      final back = tester.getCenter(find.byTooltip('Back'));
+      final back = tester.getCenter(find.byTooltip('Back (⌘←)'));
       final title = tester.getCenter(find.bySemanticsLabel('Home node').last);
       final menu = tester.getCenter(find.byTooltip('Home node options'));
       expect(title.dx - back.dx, closeTo(menu.dx - title.dx, 1));

@@ -26,6 +26,7 @@ class LiquidStartScreen extends StatelessWidget {
     final l = AppLocalizations.of(context);
     return NarrowPage(
       title: l.liquidStartTitle,
+      backButton: true,
       content: [
         const Align(
           alignment: AlignmentDirectional.centerStart,
@@ -99,6 +100,7 @@ class _CreateLiquidScreenState extends State<CreateLiquidScreen> {
     final l = AppLocalizations.of(context);
     return NarrowPage(
       title: l.newLiquidTitle,
+      backButton: true,
       content: [
         Semantics(
           header: true,
@@ -592,6 +594,7 @@ class _RestoreLiquidScreenState extends State<RestoreLiquidScreen> {
     return PrivateScreen(
       child: NarrowPage(
         title: l.restoreLiquidTitle,
+        backButton: true,
         content: [
           _Lead(l.restoreLead),
           const SizedBox(height: 20),

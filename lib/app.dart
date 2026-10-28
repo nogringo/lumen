@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:material_ui/material_ui.dart';
@@ -108,23 +110,57 @@ class _LumenAppState extends State<LumenApp> {
                 localizationsDelegates: _localizations,
                 supportedLocales: AppLocalizations.supportedLocales,
                 routerConfig: router,
-                builder: (context, child) => CallbackShortcuts(
-                  bindings: {
-                    const SingleActivator(LogicalKeyboardKey.keyR, meta: true):
-                        _refresh,
-                    const SingleActivator(
-                      LogicalKeyboardKey.keyR,
-                      control: true,
-                    ): _refresh,
-                    const SingleActivator(LogicalKeyboardKey.f5): _refresh,
-                    const SingleActivator(LogicalKeyboardKey.keyL, meta: true):
-                        widget.gate.lockNow,
-                    const SingleActivator(
-                      LogicalKeyboardKey.keyL,
-                      control: true,
-                    ): widget.gate.lockNow,
-                  },
-                  child: child!,
+                // Here rather than in the builder, so a text field gets
+                // ⌘← and Alt+← first to move its cursor.
+                shortcuts: {
+                  ...WidgetsApp.defaultShortcuts,
+                  const SingleActivator(
+                    LogicalKeyboardKey.bracketLeft,
+                    meta: true,
+                  ): const _BackIntent(),
+                  const SingleActivator(
+                    LogicalKeyboardKey.arrowLeft,
+                    meta: true,
+                  ): const _BackIntent(),
+                  const SingleActivator(
+                    LogicalKeyboardKey.arrowLeft,
+                    alt: true,
+                  ): const _BackIntent(),
+                },
+                builder: (context, child) => Actions(
+                  actions: {_BackIntent: _BackAction(router)},
+                  child: Listener(
+                    onPointerDown: (event) {
+                      // Browsers already go back with it.
+                      if (!kIsWeb &&
+                          (event.buttons & kBackMouseButton) != 0 &&
+                          router.canPop()) {
+                        router.routerDelegate.popRoute();
+                      }
+                    },
+                    child: CallbackShortcuts(
+                      bindings: {
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyR,
+                          meta: true,
+                        ): _refresh,
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyR,
+                          control: true,
+                        ): _refresh,
+                        const SingleActivator(LogicalKeyboardKey.f5): _refresh,
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyL,
+                          meta: true,
+                        ): widget.gate.lockNow,
+                        const SingleActivator(
+                          LogicalKeyboardKey.keyL,
+                          control: true,
+                        ): widget.gate.lockNow,
+                      },
+                      child: child!,
+                    ),
+                  ),
                 ),
               ),
             );
@@ -133,6 +169,24 @@ class _LumenAppState extends State<LumenApp> {
       ),
     );
   }
+}
+
+class _BackIntent extends Intent {
+  const _BackIntent();
+}
+
+/// Goes back as Android's back button does, which also closes a dialog.
+/// Disabled with nowhere to go back to, so a browser can take the keys.
+class _BackAction extends Action<_BackIntent> {
+  _BackAction(this.router);
+
+  final GoRouter router;
+
+  @override
+  bool isEnabled(_BackIntent intent) => router.canPop();
+
+  @override
+  Future<bool> invoke(_BackIntent intent) => router.routerDelegate.popRoute();
 }
 
 const _localizations = [

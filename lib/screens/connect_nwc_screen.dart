@@ -192,7 +192,7 @@ class _ConnectNwcScreenState extends State<ConnectNwcScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (sidebar)
-                    PageTitle(l.connectNwcTitle)
+                    PageTitle(l.connectNwcTitle, backButton: true)
                   else
                     TopBar(title: l.connectNwcTitle),
                   const SizedBox(height: 20),

@@ -12,8 +12,11 @@ class LumenBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final back = AppLocalizations.of(context).back;
     return IconButton(
-      tooltip: AppLocalizations.of(context).back,
+      tooltip: isDesktopPlatform(context)
+          ? '$back (${backKeys(context)})'
+          : back,
       style: IconButton.styleFrom(
         backgroundColor: LumenColors.of(context).surface2,
       ),
@@ -70,15 +73,24 @@ class TopBar extends StatelessWidget {
 
 /// Desktop header next to the sidebar: left-aligned title, optional action.
 class PageTitle extends StatelessWidget {
-  const PageTitle(this.title, {super.key, this.trailing});
+  const PageTitle(
+    this.title, {
+    super.key,
+    this.trailing,
+    this.backButton = false,
+  });
 
   final String title;
   final Widget? trailing;
+
+  /// For a page the sidebar does not list, which it cannot lead back from.
+  final bool backButton;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
+        if (backButton) ...[const LumenBackButton(), const SizedBox(width: 12)],
         Expanded(
           child: ScreenTitle(
             child: Text(
@@ -99,6 +111,13 @@ String shortcutKeys(BuildContext context, String key) =>
       TargetPlatform.macOS || TargetPlatform.iOS => '⌘$key',
       _ => 'Ctrl+$key',
     };
+
+/// The keys that go back, as the app binds them. ⌘← rather than ⌘[, which
+/// layouts such as AZERTY only type with ⌥⇧.
+String backKeys(BuildContext context) => switch (Theme.of(context).platform) {
+  TargetPlatform.macOS || TargetPlatform.iOS => '⌘←',
+  _ => 'Alt+←',
+};
 
 /// Whether the platform is driven by a mouse, which cannot pull to refresh.
 bool isDesktopPlatform(BuildContext context) =>
@@ -280,7 +299,8 @@ class NarrowPage extends StatelessWidget {
   final List<Widget> content;
   final List<Widget> bottom;
 
-  /// Shows a back button on desktop too, as inside a multi-step flow.
+  /// Shows a back button on desktop too, for a page the sidebar does not
+  /// list.
   final bool backButton;
 
   static const _maxWidth = 560.0;
@@ -307,8 +327,8 @@ class NarrowPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (sidebar && !backButton)
-                    PageTitle(title)
+                  if (sidebar)
+                    PageTitle(title, backButton: backButton)
                   else
                     TopBar(title: title),
                   const SizedBox(height: 20),

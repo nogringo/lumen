@@ -72,7 +72,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         if (hasSidebar(context))
-                          PageTitle(l.paymentTitle, trailing: share)
+                          PageTitle(
+                            l.paymentTitle,
+                            backButton: true,
+                            trailing: share,
+                          )
                         else
                           TopBar(title: l.paymentTitle, actions: [?share]),
                         const SizedBox(height: 24),

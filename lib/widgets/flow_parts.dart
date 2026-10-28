@@ -85,7 +85,7 @@ class FlowScreen extends StatelessWidget {
                 FlowFrame(
                   expand: true,
                   headerWith: ({action}) => hasSidebar(context)
-                      ? PageTitle(title, trailing: action)
+                      ? PageTitle(title, backButton: true, trailing: action)
                       : TopBar(title: title, actions: [?action]),
                   onDone: () =>
                       context.canPop() ? context.pop() : context.go('/'),
