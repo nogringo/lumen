@@ -297,5 +297,10 @@
   "transactionPending": "Vahvistamaton",
   "detailConfirmations": "Vahvistukset",
   "viewOnExplorer": "Näytä sivustolla {site}",
-  "explorerFailed": "Lumen ei voinut avata sivustoa {site}. Kopioi transaktion tunniste ja hae sitä siellä."
+  "explorerFailed": "Lumen ei voinut avata sivustoa {site}. Kopioi transaktion tunniste ja hae sitä siellä.",
+  "showRecoveryPhrase": "Näytä palautuslause",
+  "showPhraseTitle": "Näytetäänkö palautuslause?",
+  "showPhraseBody": "Kuka tahansa, joka näkee tai kuulee nämä sanat, voi käyttää tämän lompakon varat. Varmista, ettei kukaan näe näyttöäsi tai kuule ruudunlukuohjelmaasi.",
+  "show": "Näytä",
+  "savedPhraseLead": "Näillä sanoilla voit palauttaa lompakon {name} Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä."
 }

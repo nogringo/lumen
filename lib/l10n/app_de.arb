@@ -297,5 +297,10 @@
   "transactionPending": "Ausstehend",
   "detailConfirmations": "Bestätigungen",
   "viewOnExplorer": "Auf {site} ansehen",
-  "explorerFailed": "Lumen konnte {site} nicht öffnen. Kopiere die Transaktions-ID und suche sie dort."
+  "explorerFailed": "Lumen konnte {site} nicht öffnen. Kopiere die Transaktions-ID und suche sie dort.",
+  "showRecoveryPhrase": "Wiederherstellungsphrase anzeigen",
+  "showPhraseTitle": "Wiederherstellungsphrase anzeigen?",
+  "showPhraseBody": "Wer diese Wörter sieht oder hört, kann das Guthaben dieser Wallet ausgeben. Achte darauf, dass niemand deinen Bildschirm sieht oder deinen Screenreader hört.",
+  "show": "Anzeigen",
+  "savedPhraseLead": "Diese Wörter stellen {name} in Lumen oder einer anderen Liquid-App wieder her. Bewahre sie auf Papier auf, in dieser Reihenfolge."
 }

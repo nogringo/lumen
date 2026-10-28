@@ -426,6 +426,9 @@ final class _NwcWallet implements Wallet {
   Future<String> connectionString() async => (await _source._saved(id)).nwcUrl;
 
   @override
+  Future<String?> recoveryPhrase() async => null;
+
+  @override
   Future<int> fetchBalance() => _source._fetchBalance(id);
 
   @override

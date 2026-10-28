@@ -1156,4 +1156,22 @@ class AppLocalizationsRu extends AppLocalizations {
   String explorerFailed(String site) {
     return 'Lumen не удалось открыть $site. Скопируйте ID транзакции и найдите его там.';
   }
+
+  @override
+  String get showRecoveryPhrase => 'Показать фразу восстановления';
+
+  @override
+  String get showPhraseTitle => 'Показать фразу восстановления?';
+
+  @override
+  String get showPhraseBody =>
+      'Любой, кто увидит или услышит эти слова, сможет потратить средства этого кошелька. Убедитесь, что никто не видит ваш экран и не слышит программу чтения с экрана.';
+
+  @override
+  String get show => 'Показать';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'Эти слова восстанавливают кошелёк $name в Lumen или другом приложении Liquid. Храните их на бумаге в этом порядке.';
+  }
 }

@@ -34,7 +34,8 @@ class FakeWallet implements Wallet {
       WalletCapability.receiveInvoice,
       WalletCapability.payInvoice,
     },
-  }) : network = null;
+  }) : network = null,
+       phrase = null;
 
   /// Receives on an address and pays addresses, as a Liquid wallet does.
   FakeWallet.liquid(
@@ -43,6 +44,7 @@ class FakeWallet implements Wallet {
     this.balance = 0,
     this.network = ChainNetwork.liquid,
   }) : lightningAddress = null,
+       phrase = liquidPhrase,
        capabilities = const {
          WalletCapability.receiveAddress,
          WalletCapability.payAddress,
@@ -73,6 +75,11 @@ class FakeWallet implements Wallet {
 
   @override
   Future<String?> connectionString() async => connection;
+
+  final String? phrase;
+
+  @override
+  Future<String?> recoveryPhrase() async => phrase;
 
   int balance;
   BalanceError? error;

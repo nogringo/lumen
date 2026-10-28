@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
@@ -111,20 +112,101 @@ void main() {
     handle.dispose();
   });
 
-  testWidgets('a Liquid wallet has no connection string to copy', (
+  Future<void> openMenu(WidgetTester tester, String name) async {
+    await tester.tap(find.text(name).first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('$name options'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('a Liquid wallet offers its phrase, not a connection string', (
     tester,
   ) async {
     final wallet = await tester.runAsync(
       () => sources.liquid.add(phrase: liquidPhrase, name: 'Savings'),
     );
     await pumpLumen(tester, sources, wallets: [wallet!]);
-    await tester.tap(find.text('Savings').first);
+    await openMenu(tester, 'Savings');
+
+    expect(find.text('Rename'), findsOneWidget);
+    expect(find.text('Show recovery phrase'), findsOneWidget);
+    expect(find.text('Copy connection string'), findsNothing);
+  });
+
+  testWidgets('a Lightning wallet has no phrase to show', (tester) async {
+    await pumpLumen(tester, sources, wallets: [FakeWallet('home', 'Home')]);
+    await openMenu(tester, 'Home');
+
+    expect(find.text('Copy connection string'), findsOneWidget);
+    expect(find.text('Show recovery phrase'), findsNothing);
+  });
+
+  testWidgets('the recovery phrase shows after a warning, kept private', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final calls = <Object?>[];
+    tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('lumen/screen'),
+      (call) async => calls.add(call.arguments),
+    );
+    final wallet = await tester.runAsync(
+      () => sources.liquid.add(phrase: liquidPhrase, name: 'Savings'),
+    );
+    await pumpLumen(tester, sources, wallets: [wallet!]);
+    await openMenu(tester, 'Savings');
+    await tester.tap(find.text('Show recovery phrase'));
     await tester.pumpAndSettle();
+
+    expect(find.text('Show the recovery phrase?'), findsOneWidget);
+    expect(find.bySemanticsLabel('Passphrase'), findsNothing);
+    await tester.tap(find.text('Cancel'));
+    await tester.pumpAndSettle();
+    expect(find.text('Recovery phrase'), findsNothing);
+    expect(calls, isEmpty);
 
     await tester.tap(find.byTooltip('Savings options'));
     await tester.pumpAndSettle();
+    await tester.tap(find.text('Show recovery phrase'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show'));
+    await tester.pumpAndSettle();
 
-    expect(find.text('Rename'), findsOneWidget);
-    expect(find.text('Copy connection string'), findsNothing);
+    expect(find.text('Recovery phrase'), findsOneWidget);
+    expect(
+      find.text(
+        'These words restore Savings in Lumen or another Liquid app. '
+        'Keep them on paper, in this order.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('Word 1 of 12, abandon'), findsOneWidget);
+    expect(find.bySemanticsLabel('Word 12 of 12, about'), findsOneWidget);
+    expect(calls, [true]);
+
+    await tester.tap(find.text('Done'));
+    await tester.pumpAndSettle();
+    expect(find.text('Recovery phrase'), findsNothing);
+    expect(find.byTooltip('Savings options'), findsOneWidget);
+    expect(calls, [true, false]);
+    handle.dispose();
+  });
+
+  testWidgets('a restored 24-word phrase shows every word', (tester) async {
+    final handle = tester.ensureSemantics();
+    final words = [...List.filled(23, 'abandon'), 'art'];
+    final wallet = await tester.runAsync(
+      () => sources.liquid.add(phrase: words.join(' '), name: 'Jade'),
+    );
+    await pumpLumen(tester, sources, wallets: [wallet!]);
+    await openMenu(tester, 'Jade');
+    await tester.tap(find.text('Show recovery phrase'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show'));
+    await tester.pumpAndSettle();
+
+    expect(find.bySemanticsLabel('Word 1 of 24, abandon'), findsOneWidget);
+    expect(find.bySemanticsLabel('Word 24 of 24, art'), findsOneWidget);
+    handle.dispose();
   });
 }

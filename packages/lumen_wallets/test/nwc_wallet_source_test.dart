@@ -86,6 +86,7 @@ void main() {
   test('gives back the saved connection string', () async {
     final saved = (await sources.nwc.load()).single;
     expect(await saved.connectionString(), _uri);
+    expect(await saved.recoveryPhrase(), isNull);
 
     final uri =
         'nostr+walletconnect://${'a' * 64}?relay=ws://127.0.0.1:9&secret=$_secret';

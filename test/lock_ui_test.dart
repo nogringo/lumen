@@ -26,6 +26,7 @@ void main() {
     Size size = phoneSize,
     Brightness brightness = Brightness.light,
     double textScale = 1,
+    FakeWallet Function()? wallet,
   }) async {
     tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
@@ -44,7 +45,7 @@ void main() {
     await tester.runAsync(() async {
       for (var i = 0; i < 3; i++) {
         final wallets = await loadedController([
-          FakeWallet('home', 'Home node', balance: 21000),
+          wallet?.call() ?? FakeWallet('home', 'Home node', balance: 21000),
         ]);
         await wallets.refreshAll();
         ready.add(LumenSession(memorySources(), wallets));
@@ -328,6 +329,48 @@ void main() {
     await tapAndSettle(tester, find.text('Copy'));
     expect(copied(), 'nostr+walletconnect://wallet?secret=fake');
     expect(find.text('Connection string copied.'), findsOneWidget);
+  });
+
+  testWidgets('with App lock on, the recovery phrase needs the passphrase', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final gate = await pumpGate(
+      tester,
+      locked: true,
+      wallet: () => FakeWallet.liquid('savings', 'Savings'),
+    );
+    await tester.enterText(find.bySemanticsLabel('Passphrase'), _passphrase);
+    await tapAndSettle(tester, find.text('Unlock'));
+    await tapAndSettle(tester, find.text('Savings'));
+    await tapAndSettle(tester, find.byTooltip('Savings options'));
+    await tapAndSettle(tester, find.text('Show recovery phrase'));
+
+    await tapAndSettle(tester, find.text('Show'));
+    expect(find.text('Enter your passphrase.'), findsOneWidget);
+
+    await tester.enterText(
+      find.bySemanticsLabel('Passphrase'),
+      'wrong horse battery',
+    );
+    await tapAndSettle(tester, find.text('Show'));
+    expect(
+      find.text('This is not your passphrase. Check it and try again.'),
+      findsOneWidget,
+    );
+    expect(find.text('Recovery phrase'), findsNothing);
+
+    await tester.enterText(find.bySemanticsLabel('Passphrase'), _passphrase);
+    await tapAndSettle(tester, find.text('Show'));
+    expect(find.text('Show the recovery phrase?'), findsNothing);
+    expect(find.text('Recovery phrase'), findsOneWidget);
+    expect(find.bySemanticsLabel('Word 1 of 12, abandon'), findsOneWidget);
+
+    await tester.runAsync(gate.lockNow);
+    await settle(tester);
+    expect(find.text('Unlock'), findsOneWidget);
+    expect(find.text('Recovery phrase'), findsNothing);
+    handle.dispose();
   });
 
   testWidgets('the passphrase can be changed with the current one', (

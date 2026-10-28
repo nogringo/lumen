@@ -1094,4 +1094,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String explorerFailed(String site) {
     return 'Lumen は $site を開けませんでした。トランザクション ID をコピーして、そのサイトで検索してください。';
   }
+
+  @override
+  String get showRecoveryPhrase => 'リカバリーフレーズを表示';
+
+  @override
+  String get showPhraseTitle => 'リカバリーフレーズを表示しますか？';
+
+  @override
+  String get showPhraseBody =>
+      'これらの単語を見たり聞いたりした人は誰でも、このウォレットの資金を使えます。画面を誰にも見られず、スクリーンリーダーの音声を誰にも聞かれないことを確認してください。';
+
+  @override
+  String get show => '表示';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'これらの単語で、Lumen または他の Liquid アプリで $name を復元できます。この順番どおりに紙に書いて保管してください。';
+  }
 }

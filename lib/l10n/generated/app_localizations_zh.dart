@@ -1067,4 +1067,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String explorerFailed(String site) {
     return 'Lumen 无法打开 $site。请复制交易 ID 并在该网站上查找。';
   }
+
+  @override
+  String get showRecoveryPhrase => '显示恢复短语';
+
+  @override
+  String get showPhraseTitle => '显示恢复短语？';
+
+  @override
+  String get showPhraseBody =>
+      '任何看到或听到这些单词的人都能花掉这个钱包里的资金。请确认没有人能看到您的屏幕或听到您的屏幕阅读器。';
+
+  @override
+  String get show => '显示';
+
+  @override
+  String savedPhraseLead(String name) {
+    return '这些单词可在 Lumen 或其他 Liquid 应用中恢复 $name。请按此顺序写在纸上保存。';
+  }
 }

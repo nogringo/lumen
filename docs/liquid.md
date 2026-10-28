@@ -254,6 +254,14 @@ How it came out:
 - Removing a Liquid wallet warns that the funds go with it unless the phrase is saved, and asks for confirmation.
 - The Waterfalls and Esplora URLs, with a reset to the defaults. Leaving Waterfalls empty syncs through Esplora only.
 
+How showing the phrase came out:
+
+- A Liquid wallet's menu has "Show recovery phrase". A dialog first warns that anyone who sees or hears the words can spend the funds, since a screen reader reads them aloud. While App lock is on, it also asks for the passphrase, with the same tries and waits as unlocking. The phrase is only read from storage once the dialog lets it show.
+- `Wallet.recoveryPhrase()` gives it, null for NWC wallets, the way `connectionString()` is null for Liquid ones.
+- The words show as they did at creation (`PhraseWords`, now shared), 12 or 24 of them, in a `PrivateScreen` pushed outside the router. Locking Lumen closes the screen along with the session.
+- The copy connection dialog and this one share their passphrase check.
+- Not tried in the running app yet.
+
 ### 9. Build, CI and release
 
 - Install Rust and the needed targets in [ci.yml](../.github/workflows/ci.yml), [release.yml](../.github/workflows/release.yml) and the Pages workflow, with caching so builds stay fast. The Pages build needs nightly and the single-threaded wasm build.

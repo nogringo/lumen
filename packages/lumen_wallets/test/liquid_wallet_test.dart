@@ -190,6 +190,7 @@ void main() {
         WalletCapability.payAll,
       });
       expect(await loaded.connectionString(), isNull);
+      expect(await loaded.recoveryPhrase(), _phrase);
     });
 
     test('rename is saved, remove forgets the phrase and state', () async {

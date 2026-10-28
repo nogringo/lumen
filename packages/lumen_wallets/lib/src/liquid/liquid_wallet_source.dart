@@ -420,6 +420,10 @@ final class LiquidWallet implements Wallet {
   @override
   Future<String?> connectionString() async => null;
 
+  @override
+  Future<String?> recoveryPhrase() =>
+      _source._secrets.read(LiquidWalletSource._phraseKey(id));
+
   Future<LiquidChain> _opened() => _chain ??=
       () async {
         final (chain, seen) = await _source._open(_record);

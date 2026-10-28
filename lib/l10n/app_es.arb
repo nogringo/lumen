@@ -297,5 +297,10 @@
   "transactionPending": "Pendiente",
   "detailConfirmations": "Confirmaciones",
   "viewOnExplorer": "Ver en {site}",
-  "explorerFailed": "Lumen no pudo abrir {site}. Copia el ID de la transacción y búscalo allí."
+  "explorerFailed": "Lumen no pudo abrir {site}. Copia el ID de la transacción y búscalo allí.",
+  "showRecoveryPhrase": "Mostrar frase de recuperación",
+  "showPhraseTitle": "¿Mostrar la frase de recuperación?",
+  "showPhraseBody": "Quien vea u oiga estas palabras puede gastar los fondos de esta billetera. Comprueba que nadie pueda ver tu pantalla ni oír tu lector de pantalla.",
+  "show": "Mostrar",
+  "savedPhraseLead": "Estas palabras restauran {name} en Lumen o en otra app de Liquid. Guárdalas en papel, en este orden."
 }

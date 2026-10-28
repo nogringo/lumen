@@ -1135,6 +1135,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String explorerFailed(String site) {
     return 'O Lumen não conseguiu abrir $site. Copie o ID da transação e procure-o lá.';
   }
+
+  @override
+  String get showRecoveryPhrase => 'Mostrar frase de recuperação';
+
+  @override
+  String get showPhraseTitle => 'Mostrar a frase de recuperação?';
+
+  @override
+  String get showPhraseBody =>
+      'Quem vir ou ouvir estas palavras pode gastar os fundos desta carteira. Confirme que ninguém consegue ver o seu ecrã nem ouvir o seu leitor de ecrã.';
+
+  @override
+  String get show => 'Mostrar';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'Estas palavras restauram $name no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem.';
+  }
 }
 
 /// The translations for Portuguese, as used in Brazil (`pt_BR`).
@@ -2263,5 +2281,23 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String explorerFailed(String site) {
     return 'O Lumen não conseguiu abrir $site. Copie o ID da transação e pesquise lá.';
+  }
+
+  @override
+  String get showRecoveryPhrase => 'Mostrar frase de recuperação';
+
+  @override
+  String get showPhraseTitle => 'Mostrar a frase de recuperação?';
+
+  @override
+  String get showPhraseBody =>
+      'Quem vir ou ouvir estas palavras pode gastar os fundos desta carteira. Confira se ninguém consegue ver sua tela nem ouvir seu leitor de tela.';
+
+  @override
+  String get show => 'Mostrar';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'Estas palavras restauram $name no Lumen ou em outro app Liquid. Guarde-as no papel, nesta ordem.';
   }
 }

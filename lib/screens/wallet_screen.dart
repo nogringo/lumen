@@ -13,7 +13,10 @@ import '../wallets/wallets_controller.dart';
 import '../widgets/activity.dart';
 import '../widgets/address_card.dart';
 import '../widgets/amount.dart';
+import '../widgets/flow_parts.dart';
 import '../widgets/passphrase_field.dart';
+import '../widgets/phrase_words.dart';
+import '../widgets/private_screen.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/wallet_actions.dart';
 import '../widgets/wallet_kind_style.dart';
@@ -138,7 +141,7 @@ class _Balance extends StatelessWidget {
   }
 }
 
-enum _Action { rename, copyConnection, remove }
+enum _Action { rename, copyConnection, showPhrase, remove }
 
 class _WalletMenu extends StatelessWidget {
   const _WalletMenu(this.wallet);
@@ -154,6 +157,7 @@ class _WalletMenu extends StatelessWidget {
       onSelected: (action) => switch (action) {
         _Action.rename => _rename(context),
         _Action.copyConnection => _copyConnection(context),
+        _Action.showPhrase => _showPhrase(context),
         _Action.remove => _remove(context),
       },
       itemBuilder: (context) => [
@@ -175,6 +179,17 @@ class _WalletMenu extends StatelessWidget {
                 const Icon(Icons.key_outlined, size: 18),
                 const SizedBox(width: 12),
                 Flexible(child: Text(l.copyConnection)),
+              ],
+            ),
+          ),
+        if (wallet.kind == WalletKind.liquid)
+          PopupMenuItem(
+            value: _Action.showPhrase,
+            child: Row(
+              children: [
+                const Icon(Icons.visibility_outlined, size: 18),
+                const SizedBox(width: 12),
+                Flexible(child: Text(l.showRecoveryPhrase)),
               ],
             ),
           ),
@@ -207,6 +222,21 @@ class _WalletMenu extends StatelessWidget {
     await showDialog<void>(
       context: context,
       builder: (_) => _CopyConnectionDialog(connection),
+    );
+  }
+
+  /// Reads the phrase only once the dialog lets it show.
+  Future<void> _showPhrase(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => const _ShowPhraseDialog(),
+    );
+    if (confirmed != true || !context.mounted) return;
+    final phrase = await wallet.recoveryPhrase();
+    if (phrase == null || !context.mounted) return;
+    await pushStep<void>(
+      context,
+      (_) => _PhraseScreen(name: wallet.name, phrase: phrase),
     );
   }
 
@@ -300,6 +330,59 @@ class _RenameDialogState extends State<_RenameDialog> {
   }
 }
 
+/// The passphrase field of a dialog that guards a wallet secret, shown while
+/// App lock is on.
+mixin _PassphraseCheck<T extends StatefulWidget> on State<T> {
+  final _passphrase = TextEditingController();
+  final _focus = FocusNode();
+  String? _error;
+  var _checking = false;
+
+  @override
+  void dispose() {
+    _passphrase.dispose();
+    _focus.dispose();
+    super.dispose();
+  }
+
+  /// Whether the secret may go out: right away while App lock is off, once
+  /// the passphrase is right otherwise. A wrong one is shown under the field.
+  Future<bool> _passphraseAccepted() async {
+    final l = AppLocalizations.of(context);
+    final lock = GateScope.of(context).lock;
+    if (_checking) return false;
+    if (!lock.enabled) return true;
+    if (_passphrase.text.isEmpty) {
+      setState(() => _error = l.errorPassphraseEmpty);
+      reportFieldError(context, l.errorPassphraseEmpty, _focus);
+      return false;
+    }
+    _checking = true;
+    final check = await lock.check(_passphrase.text);
+    _checking = false;
+    if (!mounted) return false;
+    final message = refusalMessage(l, check, lock.retryAt);
+    if (message == null) return true;
+    setState(() => _error = message);
+    reportFieldError(context, message, _focus);
+    return false;
+  }
+
+  Widget _passphraseField({required VoidCallback onSubmitted}) =>
+      PassphraseField(
+        label: AppLocalizations.of(context).passphraseLabel,
+        controller: _passphrase,
+        focusNode: _focus,
+        errorText: _error,
+        autofillHints: const [AutofillHints.password],
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => onSubmitted(),
+        onChanged: (_) {
+          if (_error != null) setState(() => _error = null);
+        },
+      );
+}
+
 /// Warns before the connection string reaches the clipboard, and asks for the
 /// passphrase first while App lock is on.
 class _CopyConnectionDialog extends StatefulWidget {
@@ -311,45 +394,18 @@ class _CopyConnectionDialog extends StatefulWidget {
   State<_CopyConnectionDialog> createState() => _CopyConnectionDialogState();
 }
 
-class _CopyConnectionDialogState extends State<_CopyConnectionDialog> {
-  final _passphrase = TextEditingController();
-  final _focus = FocusNode();
-  String? _error;
-  var _checking = false;
+class _CopyConnectionDialogState extends State<_CopyConnectionDialog>
+    with _PassphraseCheck {
   var _copied = false;
 
-  @override
-  void dispose() {
-    _passphrase.dispose();
-    _focus.dispose();
-    super.dispose();
-  }
-
   Future<void> _copy() async {
-    final l = AppLocalizations.of(context);
-    final lock = GateScope.of(context).lock;
-    if (_checking) return;
-    if (lock.enabled) {
-      if (_passphrase.text.isEmpty) {
-        setState(() => _error = l.errorPassphraseEmpty);
-        return reportFieldError(context, l.errorPassphraseEmpty, _focus);
-      }
-      _checking = true;
-      final check = await lock.check(_passphrase.text);
-      _checking = false;
-      if (!mounted) return;
-      final message = refusalMessage(l, check, lock.retryAt);
-      if (message != null) {
-        setState(() => _error = message);
-        return reportFieldError(context, message, _focus);
-      }
-    }
+    if (!await _passphraseAccepted()) return;
     await Clipboard.setData(ClipboardData(text: widget.connection));
     if (!mounted) return;
     setState(() => _copied = true);
     SemanticsService.sendAnnouncement(
       View.of(context),
-      l.connectionCopied,
+      AppLocalizations.of(context).connectionCopied,
       Directionality.of(context),
     );
   }
@@ -382,18 +438,7 @@ class _CopyConnectionDialogState extends State<_CopyConnectionDialog> {
             ),
           ] else if (locked) ...[
             const SizedBox(height: 20),
-            PassphraseField(
-              label: l.passphraseLabel,
-              controller: _passphrase,
-              focusNode: _focus,
-              errorText: _error,
-              autofillHints: const [AutofillHints.password],
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => _copy(),
-              onChanged: (_) {
-                if (_error != null) setState(() => _error = null);
-              },
-            ),
+            _passphraseField(onSubmitted: _copy),
           ],
         ],
       ),
@@ -412,6 +457,85 @@ class _CopyConnectionDialogState extends State<_CopyConnectionDialog> {
               ),
               TextButton(onPressed: _copy, child: Text(l.copy)),
             ],
+    );
+  }
+}
+
+/// Warns before the recovery phrase shows, and asks for the passphrase first
+/// while App lock is on. Pops true once it may show.
+class _ShowPhraseDialog extends StatefulWidget {
+  const _ShowPhraseDialog();
+
+  @override
+  State<_ShowPhraseDialog> createState() => _ShowPhraseDialogState();
+}
+
+class _ShowPhraseDialogState extends State<_ShowPhraseDialog>
+    with _PassphraseCheck {
+  Future<void> _show() async {
+    if (!await _passphraseAccepted() || !mounted) return;
+    Navigator.pop(context, true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return AlertDialog(
+      scrollable: true,
+      title: Text(l.showPhraseTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l.showPhraseBody),
+          if (GateScope.of(context).lock.enabled) ...[
+            const SizedBox(height: 20),
+            _passphraseField(onSubmitted: _show),
+          ],
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(l.cancel),
+        ),
+        TextButton(onPressed: _show, child: Text(l.show)),
+      ],
+    );
+  }
+}
+
+/// The recovery phrase of a saved wallet, pushed outside the router like
+/// the one shown when the wallet was created.
+class _PhraseScreen extends StatelessWidget {
+  const _PhraseScreen({required this.name, required this.phrase});
+
+  final String name;
+  final String phrase;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return PrivateScreen(
+      child: NarrowPage(
+        title: l.phraseTitle,
+        backButton: true,
+        content: [
+          Text(
+            l.savedPhraseLead(name),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: LumenColors.of(context).text2, height: 1.5),
+          ),
+          const SizedBox(height: 20),
+          PhraseWords(phrase.split(' ')),
+        ],
+        bottom: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l.done),
+          ),
+        ],
+      ),
     );
   }
 }

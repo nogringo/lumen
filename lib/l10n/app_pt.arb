@@ -297,5 +297,10 @@
   "transactionPending": "Pendente",
   "detailConfirmations": "Confirmações",
   "viewOnExplorer": "Ver em {site}",
-  "explorerFailed": "O Lumen não conseguiu abrir {site}. Copie o ID da transação e procure-o lá."
+  "explorerFailed": "O Lumen não conseguiu abrir {site}. Copie o ID da transação e procure-o lá.",
+  "showRecoveryPhrase": "Mostrar frase de recuperação",
+  "showPhraseTitle": "Mostrar a frase de recuperação?",
+  "showPhraseBody": "Quem vir ou ouvir estas palavras pode gastar os fundos desta carteira. Confirme que ninguém consegue ver o seu ecrã nem ouvir o seu leitor de ecrã.",
+  "show": "Mostrar",
+  "savedPhraseLead": "Estas palavras restauram {name} no Lumen ou noutra app Liquid. Guarde-as em papel, por esta ordem."
 }

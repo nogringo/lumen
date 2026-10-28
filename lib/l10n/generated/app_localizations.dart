@@ -1902,6 +1902,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Lumen could not open {site}. Copy the transaction ID and look it up there.'**
   String explorerFailed(String site);
+
+  /// Wallet menu item that shows the recovery phrase of a wallet whose keys live in Lumen.
+  ///
+  /// In en, this message translates to:
+  /// **'Show recovery phrase'**
+  String get showRecoveryPhrase;
+
+  /// Title of the dialog shown before the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the recovery phrase?'**
+  String get showPhraseTitle;
+
+  /// Warning in the dialog shown before the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone who sees or hears these words can spend this wallet\'s funds. Check that no one can see your screen or hear your screen reader.'**
+  String get showPhraseBody;
+
+  /// Button that confirms showing the recovery phrase.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get show;
+
+  /// Lead text above the recovery phrase of a saved wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'These words restore {name} in Lumen or another Liquid app. Keep them on paper, in this order.'**
+  String savedPhraseLead(String name);
 }
 
 class _AppLocalizationsDelegate

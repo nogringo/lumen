@@ -261,6 +261,10 @@ abstract interface class Wallet {
   /// grants, so it is a secret.
   Future<String?> connectionString();
 
+  /// The words that restore this wallet, in Lumen or another app, or null
+  /// when its keys live elsewhere. Anyone who has them can spend its funds.
+  Future<String?> recoveryPhrase();
+
   /// Methods outside these throw an [UnsupportedError].
   Set<WalletCapability> get capabilities;
 

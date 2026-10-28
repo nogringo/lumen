@@ -1134,4 +1134,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String explorerFailed(String site) {
     return 'Lumen konnte $site nicht öffnen. Kopiere die Transaktions-ID und suche sie dort.';
   }
+
+  @override
+  String get showRecoveryPhrase => 'Wiederherstellungsphrase anzeigen';
+
+  @override
+  String get showPhraseTitle => 'Wiederherstellungsphrase anzeigen?';
+
+  @override
+  String get showPhraseBody =>
+      'Wer diese Wörter sieht oder hört, kann das Guthaben dieser Wallet ausgeben. Achte darauf, dass niemand deinen Bildschirm sieht oder deinen Screenreader hört.';
+
+  @override
+  String get show => 'Anzeigen';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'Diese Wörter stellen $name in Lumen oder einer anderen Liquid-App wieder her. Bewahre sie auf Papier auf, in dieser Reihenfolge.';
+  }
 }

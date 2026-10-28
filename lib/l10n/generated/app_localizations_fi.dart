@@ -1131,4 +1131,22 @@ class AppLocalizationsFi extends AppLocalizations {
   String explorerFailed(String site) {
     return 'Lumen ei voinut avata sivustoa $site. Kopioi transaktion tunniste ja hae sitä siellä.';
   }
+
+  @override
+  String get showRecoveryPhrase => 'Näytä palautuslause';
+
+  @override
+  String get showPhraseTitle => 'Näytetäänkö palautuslause?';
+
+  @override
+  String get showPhraseBody =>
+      'Kuka tahansa, joka näkee tai kuulee nämä sanat, voi käyttää tämän lompakon varat. Varmista, ettei kukaan näe näyttöäsi tai kuule ruudunlukuohjelmaasi.';
+
+  @override
+  String get show => 'Näytä';
+
+  @override
+  String savedPhraseLead(String name) {
+    return 'Näillä sanoilla voit palauttaa lompakon $name Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä.';
+  }
 }

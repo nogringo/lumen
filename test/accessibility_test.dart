@@ -568,6 +568,66 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  Future<void> openPhraseDialog(WidgetTester tester) async {
+    await tester.tap(find.text('Savings').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Savings options'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show recovery phrase'));
+    await tester.pumpAndSettle();
+  }
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets(
+        'the recovery phrase meets the guidelines, $name, ${brightness.name}',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          await pumpLumen(
+            tester,
+            sources,
+            wallets: [FakeWallet.liquid('savings', 'Savings')],
+            size: size,
+            brightness: brightness,
+          );
+          await openPhraseDialog(tester);
+          await expectGuidelines(tester);
+          await tester.tap(find.text('Show'));
+          await tester.pumpAndSettle();
+          expect(find.text('Recovery phrase'), findsOneWidget);
+          await expectGuidelines(tester);
+          handle.dispose();
+        },
+        variant: _platformFor(size),
+      );
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('the recovery phrase lays out at 200% text, $name', (
+      tester,
+    ) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: [FakeWallet.liquid('savings', 'Savings')],
+        size: size,
+        textScale: 2,
+      );
+      await openPhraseDialog(tester);
+      expect(tester.takeException(), isNull, reason: 'dialog');
+      await tester.tap(find.text('Show'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'phrase');
+      await tester.ensureVisible(find.text('Done'));
+      await tester.pumpAndSettle();
+      expect(find.text('Done'), findsOneWidget);
+    }, variant: _platformFor(size));
+  }
+
   testWidgets('the review reads the amount with its heading', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpLumen(tester, sources, wallets: twoWallets());
