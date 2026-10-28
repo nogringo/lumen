@@ -36,24 +36,31 @@ final class LiquidWalletSource implements WalletSource {
     required this._secrets,
     required this._chainState,
     this.networks = const {ChainNetwork.liquid},
-    this._esploraUrls = defaultEsploraUrls,
+    this._servers = defaultServers,
     this._retryDelays = const [Duration(seconds: 1), Duration(seconds: 3)],
     this._now = DateTime.now,
     this._watchInterval = const Duration(seconds: 10),
   });
 
-  /// mempool.space's Esplora: it answers browsers, and has no hourly cap
-  /// low enough for a full sync to hit it.
-  static const defaultEsploraUrls = {
-    ChainNetwork.liquid: 'https://liquid.network/api',
-    ChainNetwork.liquidTestnet: 'https://liquid.network/liquidtestnet/api',
+  /// The Liquid Web Wallet's Waterfalls, then mempool.space's Esplora, whose
+  /// hourly cap is not low enough for a full sync to hit it. Both answer
+  /// browsers.
+  static const defaultServers = {
+    ChainNetwork.liquid: LiquidServers(
+      waterfalls: 'https://waterfalls.liquidwebwallet.org/liquid/api',
+      esplora: 'https://liquid.network/api',
+    ),
+    ChainNetwork.liquidTestnet: LiquidServers(
+      waterfalls: 'https://waterfalls.liquidwebwallet.org/liquidtestnet/api',
+      esplora: 'https://liquid.network/liquidtestnet/api',
+    ),
   };
 
   final Set<ChainNetwork> networks;
   final LiquidEngine _engine;
   final KeyValueStore _secrets;
   final KeyValueStore _chainState;
-  final Map<ChainNetwork, String> _esploraUrls;
+  final Map<ChainNetwork, LiquidServers> _servers;
   final List<Duration> _retryDelays;
   final DateTime Function() _now;
   final Duration _watchInterval;
@@ -115,7 +122,7 @@ final class LiquidWalletSource implements WalletSource {
         phrase: normalized,
         network: network,
         script: script,
-        esploraUrl: _esploraUrls[network]!,
+        servers: _servers[network]!,
         state: const [],
       );
       await _retrying(chain.sync);
@@ -251,7 +258,7 @@ final class LiquidWalletSource implements WalletSource {
       phrase: phrase,
       network: record.network,
       script: record.script,
-      esploraUrl: _esploraUrls[record.network]!,
+      servers: _servers[record.network]!,
       state: state,
     );
     try {

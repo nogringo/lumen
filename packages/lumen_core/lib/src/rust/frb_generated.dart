@@ -105,6 +105,7 @@ abstract class RustLibApi extends BaseApi {
     required String phrase,
     required LiquidNetwork network,
     required ScriptKind script,
+    String? waterfallsUrl,
     required String esploraUrl,
     required List<String> state,
   });
@@ -378,6 +379,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     required String phrase,
     required LiquidNetwork network,
     required ScriptKind script,
+    String? waterfallsUrl,
     required String esploraUrl,
     required List<String> state,
   }) {
@@ -388,6 +390,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           sse_encode_String(phrase, serializer);
           sse_encode_liquid_network(network, serializer);
           sse_encode_script_kind(script, serializer);
+          sse_encode_opt_String(waterfallsUrl, serializer);
           sse_encode_String(esploraUrl, serializer);
           sse_encode_list_String(state, serializer);
           pdeCallFfi(
@@ -403,7 +406,7 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
           decodeErrorData: sse_decode_liquid_error,
         ),
         constMeta: kCrateApiLiquidLiquidWalletOpenConstMeta,
-        argValues: [phrase, network, script, esploraUrl, state],
+        argValues: [phrase, network, script, waterfallsUrl, esploraUrl, state],
         apiImpl: this,
       ),
     );
@@ -412,7 +415,14 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   TaskConstMeta get kCrateApiLiquidLiquidWalletOpenConstMeta =>
       const TaskConstMeta(
         debugName: "LiquidWallet_open",
-        argNames: ["phrase", "network", "script", "esploraUrl", "state"],
+        argNames: [
+          "phrase",
+          "network",
+          "script",
+          "waterfallsUrl",
+          "esploraUrl",
+          "state",
+        ],
       );
 
   @override
@@ -944,6 +954,12 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
   }
 
   @protected
+  String? dco_decode_opt_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
   PhraseProblem? dco_decode_opt_box_autoadd_phrase_problem(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw == null ? null : dco_decode_box_autoadd_phrase_problem(raw);
@@ -1222,6 +1238,17 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     var len_ = sse_decode_i_32(deserializer);
     return deserializer.buffer.getUint8List(len_);
+  }
+
+  @protected
+  String? sse_decode_opt_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_String(deserializer));
+    } else {
+      return null;
+    }
   }
 
   @protected
@@ -1516,6 +1543,16 @@ class RustLibApiImpl extends RustLibApiImplPlatform implements RustLibApi {
     // Codec=Sse (Serialization based), see doc to use other codecs
     sse_encode_i_32(self.length, serializer);
     serializer.buffer.putUint8List(self);
+  }
+
+  @protected
+  void sse_encode_opt_String(String? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_String(self, serializer);
+    }
   }
 
   @protected

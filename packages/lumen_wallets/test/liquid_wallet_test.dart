@@ -113,7 +113,7 @@ final class _FakeEngine implements LiquidEngine {
     required String phrase,
     required ChainNetwork network,
     required LiquidScript script,
-    required String esploraUrl,
+    required LiquidServers servers,
     required List<String> state,
   }) async {
     openedWith.add(state);

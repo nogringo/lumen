@@ -44,7 +44,7 @@ final class LwkEngine implements LiquidEngine {
     required String phrase,
     required ChainNetwork network,
     required LiquidScript script,
-    required String esploraUrl,
+    required LiquidServers servers,
     required List<String> state,
   }) async {
     try {
@@ -64,7 +64,8 @@ final class LwkEngine implements LiquidEngine {
             LiquidScript.nativeSegwit => core.ScriptKind.nativeSegwit,
             LiquidScript.nestedSegwit => core.ScriptKind.nestedSegwit,
           },
-          esploraUrl: esploraUrl,
+          waterfallsUrl: servers.waterfalls,
+          esploraUrl: servers.esplora,
           state: state,
         ),
       ),

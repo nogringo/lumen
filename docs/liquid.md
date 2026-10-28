@@ -41,9 +41,11 @@ Decided: our own crate. The spike (step 0) ran it on every platform the `lwk` pa
 
 ### Which chain backend
 
-Decided: Esplora. Electrum speaks raw TCP, which browsers cannot open, so the backend has to be HTTP. Waterfalls syncs faster, but the server receives the wallet descriptor and can follow every past and future transaction. Lumen favors privacy over sync speed. The user can set their own Esplora server.
+Decided: Waterfalls, with Esplora as the fallback. Electrum speaks raw TCP, which browsers cannot open, so the backend has to be HTTP. Waterfalls scans the whole wallet in one request, where Esplora needs one per address: an empty wallet syncs in about 0.25 s, against 6 to 8 s on Blockstream's Esplora, and a testnet wallet of 561 transactions syncs in 37 s, where liquid.network kept dropping the connection and then stopped answering for a while. In exchange, the Waterfalls server receives the wallet descriptor and can follow every past and future transaction. LWK encrypts the descriptor to the server's key, which keeps it out of URLs and logs on the way, but the server itself reads it.
 
-Default server: `liquid.network` (mempool.space's Esplora for Liquid). It answers browsers (CORS) and the spike synced through it in about 1 to 2 seconds. Blockstream's public Esplora caps unauthenticated use at 700 requests per hour per IP, and one sync costs 85 to 180 requests, so it cannot be the default without an API key.
+Each sync and each broadcast goes to Waterfalls first, and to Esplora when Waterfalls fails. Sending a transaction to both is safe: a server that already has it counts as a success. A Waterfalls server that hangs instead of failing delays the fallback, since requests have no timeout and LWK retries a 429 or 503 for about a minute.
+
+Default servers, on mainnet and testnet: `waterfalls.liquidwebwallet.org` (the Liquid Web Wallet's Waterfalls), then `liquid.network` (mempool.space's Esplora for Liquid). Both answer browsers (CORS). Blockstream's public Esplora caps unauthenticated use at 700 requests per hour per IP, and one sync costs 85 to 180 requests, so it cannot be the fallback without an API key.
 
 ### When to check the backup
 
@@ -205,7 +207,7 @@ Done when: sending on testnet works end to end and the send tests cover each err
 
 - Show the recovery phrase again, behind the App lock passphrase when one is set.
 - Removing a Liquid wallet warns that the funds go with it unless the phrase is saved, and asks for confirmation.
-- The chain server URL, with a reset to the default.
+- The Waterfalls and Esplora URLs, with a reset to the defaults. Leaving Waterfalls empty syncs through Esplora only.
 
 ### 9. Build, CI and release
 

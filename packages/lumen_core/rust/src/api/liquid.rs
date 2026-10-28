@@ -5,9 +5,11 @@ use flutter_rust_bridge::frb;
 use lwk_common::{singlesig_desc, DescriptorBlindingKey, Signer, Singlesig};
 use lwk_signer::bip39::{Error as Bip39Error, Language, Mnemonic};
 use lwk_signer::SwSigner;
-use lwk_wollet::asyncr::{EsploraClient, EsploraClientBuilder};
+use lwk_wollet::asyncr::{
+    EsploraClient, EsploraClientBuilder, WaterfallsClient, WaterfallsClientBuilder,
+};
 use lwk_wollet::elements::pset::PartiallySignedTransaction;
-use lwk_wollet::elements::{Address, Transaction};
+use lwk_wollet::elements::{Address, Transaction, Txid};
 use lwk_wollet::{
     Chain, MemoryStore, Network, Update, Wollet, WolletBuilder, WolletDescriptor,
 };
@@ -179,16 +181,19 @@ pub struct LiquidWallet {
     signer: SwSigner,
     descriptor: WolletDescriptor,
     wollet: Mutex<Wollet>,
-    client: Mutex<EsploraClient>,
+    waterfalls: Option<Mutex<WaterfallsClient>>,
+    esplora: Mutex<EsploraClient>,
 }
 
 impl LiquidWallet {
     /// [state] is what [LiquidWallet::state] returned last time, so the next
-    /// sync only fetches what changed.
+    /// sync only fetches what changed. [waterfalls_url] is tried first, and
+    /// [esplora_url] when it fails.
     pub async fn open(
         phrase: String,
         network: LiquidNetwork,
         script: ScriptKind,
+        waterfalls_url: Option<String>,
         esplora_url: String,
         state: Vec<String>,
     ) -> Result<LiquidWallet, LiquidError> {
@@ -206,7 +211,15 @@ impl LiquidWallet {
             wollet.apply_update(update)?;
         }
         // More than 4 requests at a time gets rate limited.
-        let client = EsploraClientBuilder::new(&esplora_url, network.clone())
+        let waterfalls = match waterfalls_url {
+            Some(url) => Some(Mutex::new(
+                WaterfallsClientBuilder::new(&url, network.clone())
+                    .concurrency(4)
+                    .build()?,
+            )),
+            None => None,
+        };
+        let esplora = EsploraClientBuilder::new(&esplora_url, network.clone())
             .concurrency(4)
             .build()?;
         Ok(LiquidWallet {
@@ -214,7 +227,8 @@ impl LiquidWallet {
             signer,
             descriptor,
             wollet: Mutex::new(wollet),
-            client: Mutex::new(client),
+            waterfalls,
+            esplora: Mutex::new(esplora),
         })
     }
 
@@ -225,9 +239,16 @@ impl LiquidWallet {
 
     /// Returns whether anything changed.
     pub async fn sync(&self) -> Result<bool, LiquidError> {
-        let mut client = self.client.lock().await;
         let mut wollet = self.wollet.lock().await;
-        match client.full_scan(&wollet).await? {
+        let scanned = match &self.waterfalls {
+            Some(client) => client.lock().await.full_scan(&wollet).await.ok(),
+            None => None,
+        };
+        let update = match scanned {
+            Some(update) => update,
+            None => self.esplora.lock().await.full_scan(&wollet).await?,
+        };
+        match update {
             Some(update) => {
                 wollet.apply_update(update)?;
                 Ok(true)
@@ -337,20 +358,30 @@ impl LiquidWallet {
     /// Sends [signed] and adds it to the wallet. Sending it again is safe:
     /// a server that already has it counts as a success.
     pub async fn broadcast(&self, signed: &LiquidSigned) -> Result<(), LiquidError> {
-        let result = self.client.lock().await.broadcast(&signed.tx).await;
-        if let Err(error) = result {
-            let error = LiquidError::from(error);
-            let known = error.kind == LiquidErrorKind::Rejected
-                && error.message.to_lowercase().contains("already");
-            if !known {
-                return Err(error);
-            }
+        let sent = match &self.waterfalls {
+            Some(client) => accepted(client.lock().await.broadcast(&signed.tx).await).is_ok(),
+            None => false,
+        };
+        if !sent {
+            accepted(self.esplora.lock().await.broadcast(&signed.tx).await)?;
         }
         self.wollet
             .lock()
             .await
             .apply_transaction(signed.tx.clone())?;
         Ok(())
+    }
+}
+
+fn accepted(result: Result<Txid, lwk_wollet::Error>) -> Result<(), LiquidError> {
+    let Err(error) = result else { return Ok(()) };
+    let error = LiquidError::from(error);
+    let known = error.kind == LiquidErrorKind::Rejected
+        && error.message.to_lowercase().contains("already");
+    if known {
+        Ok(())
+    } else {
+        Err(error)
     }
 }
 
@@ -394,6 +425,7 @@ mod tests {
             ABANDON.into(),
             LiquidNetwork::Mainnet,
             ScriptKind::NativeSegwit,
+            None,
             "http://127.0.0.1:9".into(),
             vec![],
         )
@@ -451,6 +483,7 @@ mod tests {
             ABANDON.into(),
             LiquidNetwork::Mainnet,
             ScriptKind::NativeSegwit,
+            None,
             "http://127.0.0.1:9".into(),
             vec![],
         )
@@ -469,11 +502,12 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn an_unreachable_server_is_reported_as_such() {
+    async fn unreachable_servers_are_reported_as_such() {
         let wallet = LiquidWallet::open(
             ABANDON.into(),
             LiquidNetwork::Mainnet,
             ScriptKind::NativeSegwit,
+            Some("http://127.0.0.1:9".into()),
             "http://127.0.0.1:9".into(),
             vec![],
         )

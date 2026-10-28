@@ -44,6 +44,18 @@ class LiquidChainException implements Exception {
   String toString() => 'LiquidChainException(${error.name}: $message)';
 }
 
+/// Where a Liquid wallet reads the chain and sends its transactions.
+final class LiquidServers {
+  const LiquidServers({this.waterfalls, required this.esplora});
+
+  /// Tried first. It scans the whole wallet in one request instead of one
+  /// per address, but learns the wallet's descriptor to do so.
+  final String? waterfalls;
+
+  /// Used when [waterfalls] is null or fails.
+  final String esplora;
+}
+
 /// Creates and opens Liquid wallets: LWK in Lumen, a fake in tests.
 abstract interface class LiquidEngine {
   /// Completes once the engine can be used, which may mean loading a library.
@@ -60,7 +72,7 @@ abstract interface class LiquidEngine {
     required String phrase,
     required ChainNetwork network,
     required LiquidScript script,
-    required String esploraUrl,
+    required LiquidServers servers,
     required List<String> state,
   });
 }

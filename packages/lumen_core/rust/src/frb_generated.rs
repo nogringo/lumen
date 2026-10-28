@@ -404,6 +404,7 @@ fn wire__crate__api__liquid__LiquidWallet_open_impl(
             let api_phrase = <String>::sse_decode(&mut deserializer);
             let api_network = <crate::api::liquid::LiquidNetwork>::sse_decode(&mut deserializer);
             let api_script = <crate::api::liquid::ScriptKind>::sse_decode(&mut deserializer);
+            let api_waterfalls_url = <Option<String>>::sse_decode(&mut deserializer);
             let api_esplora_url = <String>::sse_decode(&mut deserializer);
             let api_state = <Vec<String>>::sse_decode(&mut deserializer);
             deserializer.end();
@@ -414,6 +415,7 @@ fn wire__crate__api__liquid__LiquidWallet_open_impl(
                             api_phrase,
                             api_network,
                             api_script,
+                            api_waterfalls_url,
                             api_esplora_url,
                             api_state,
                         )
@@ -1122,6 +1124,17 @@ impl SseDecode for Vec<u8> {
     }
 }
 
+impl SseDecode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
+        if (<bool>::sse_decode(deserializer)) {
+            return Some(<String>::sse_decode(deserializer));
+        } else {
+            return None;
+        }
+    }
+}
+
 impl SseDecode for Option<crate::api::liquid::PhraseProblem> {
     // Codec=Sse (Serialization based), see doc to use other codecs
     fn sse_decode(deserializer: &mut flutter_rust_bridge::for_generated::SseDeserializer) -> Self {
@@ -1636,6 +1649,16 @@ impl SseEncode for Vec<u8> {
         <i32>::sse_encode(self.len() as _, serializer);
         for item in self {
             <u8>::sse_encode(item, serializer);
+        }
+    }
+}
+
+impl SseEncode for Option<String> {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    fn sse_encode(self, serializer: &mut flutter_rust_bridge::for_generated::SseSerializer) {
+        <bool>::sse_encode(self.is_some(), serializer);
+        if let Some(value) = self {
+            <String>::sse_encode(value, serializer);
         }
     }
 }

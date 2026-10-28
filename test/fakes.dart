@@ -272,7 +272,7 @@ final class FakeLiquidEngine implements LiquidEngine {
     required String phrase,
     required ChainNetwork network,
     required LiquidScript script,
-    required String esploraUrl,
+    required LiquidServers servers,
     required List<String> state,
   }) async => chain;
 }

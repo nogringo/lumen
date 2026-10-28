@@ -7,13 +7,14 @@ import '../frb_generated.dart';
 
 import 'package:flutter_rust_bridge/flutter_rust_bridge_for_generated.dart';
 
-// These functions are ignored because they are not marked as `pub`: `descriptor_of`, `other`, `signer`
+// These functions are ignored because they are not marked as `pub`: `accepted`, `descriptor_of`, `other`, `signer`
 // These function are ignored because they are on traits that is not defined in current crate (put an empty `#[frb]` on it to unignore): `eq`, `fmt`, `fmt`, `from`
 
 /// A new 12-word recovery phrase.
 String generatePhrase() => RustLib.instance.api.crateApiLiquidGeneratePhrase();
 
-/// What is wrong with [phrase], or None when it is a valid 12-word phrase.
+/// What is wrong with [phrase], or None when it is a valid phrase of 12 or
+/// 24 words, the lengths Liquid wallets create.
 PhraseProblem? phraseProblem({required String phrase}) =>
     RustLib.instance.api.crateApiLiquidPhraseProblem(phrase: phrase);
 
@@ -53,17 +54,20 @@ abstract class LiquidWallet implements RustOpaqueInterface {
   String descriptor();
 
   /// [state] is what [LiquidWallet::state] returned last time, so the next
-  /// sync only fetches what changed.
+  /// sync only fetches what changed. [waterfalls_url] is tried first, and
+  /// [esplora_url] when it fails.
   static Future<LiquidWallet> open({
     required String phrase,
     required LiquidNetwork network,
     required ScriptKind script,
+    String? waterfallsUrl,
     required String esploraUrl,
     required List<String> state,
   }) => RustLib.instance.api.crateApiLiquidLiquidWalletOpen(
     phrase: phrase,
     network: network,
     script: script,
+    waterfallsUrl: waterfallsUrl,
     esploraUrl: esploraUrl,
     state: state,
   );
