@@ -624,7 +624,15 @@
   },
   "sendToHint": "Lightning invoice or Lightning address",
   "@sendToHint": {
-    "description": "Hint under the To field."
+    "description": "Hint under the To field when the wallets pay Lightning only."
+  },
+  "sendToHintLiquid": "Liquid address",
+  "@sendToHintLiquid": {
+    "description": "Hint under the To field when every wallet pays Liquid addresses only."
+  },
+  "sendToHintAll": "Lightning invoice, Lightning address or Liquid address",
+  "@sendToHintAll": {
+    "description": "Hint under the To field when the wallets can pay both Lightning and Liquid."
   },
   "paste": "Paste",
   "@paste": {
@@ -674,6 +682,10 @@
   "@detailNetwork": {
     "description": "Row label: the network the payment uses."
   },
+  "detailFee": "Fee",
+  "@detailFee": {
+    "description": "Row label on the review step: the fee the payment will cost."
+  },
   "detailFeePaid": "Fee paid",
   "@detailFeePaid": {
     "description": "Row label: the routing fee the payment cost."
@@ -693,6 +705,18 @@
   "paymentHashCopied": "Payment hash copied",
   "@paymentHashCopied": {
     "description": "Announced by screen readers once the payment hash is copied."
+  },
+  "detailTxid": "Transaction ID",
+  "@detailTxid": {
+    "description": "Label of the chain transaction ID (txid) on the payment result."
+  },
+  "copyTxid": "Copy transaction ID",
+  "@copyTxid": {
+    "description": "Button that copies the transaction ID."
+  },
+  "txidCopied": "Transaction ID copied",
+  "@txidCopied": {
+    "description": "Announced by screen readers once the transaction ID is copied."
   },
   "paymentTitle": "Payment",
   "@paymentTitle": {
@@ -782,11 +806,27 @@
   },
   "errorToEmpty": "Paste a Lightning invoice or a Lightning address.",
   "@errorToEmpty": {
-    "description": "Error when the To field is empty."
+    "description": "Error when the To field is empty and the wallets pay Lightning only."
+  },
+  "errorToEmptyLiquid": "Paste a Liquid address.",
+  "@errorToEmptyLiquid": {
+    "description": "Error when the To field is empty and every wallet pays Liquid addresses only."
+  },
+  "errorToEmptyAll": "Paste a Lightning invoice, a Lightning address or a Liquid address.",
+  "@errorToEmptyAll": {
+    "description": "Error when the To field is empty and the wallets can pay both Lightning and Liquid."
   },
   "errorToUnrecognized": "This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.",
   "@errorToUnrecognized": {
-    "description": "Error when the To field holds something Lumen cannot pay. Keep lnbc as is."
+    "description": "Error when the To field holds something Lumen cannot pay, and the wallets pay Lightning only. Keep lnbc as is."
+  },
+  "errorToUnrecognizedLiquid": "This is not a Liquid address. Copy it again from the recipient, in full.",
+  "@errorToUnrecognizedLiquid": {
+    "description": "Error when the To field holds something that is not a Liquid address, and every wallet pays Liquid addresses only."
+  },
+  "errorToUnrecognizedAll": "This is not an invoice or an address Lumen can pay. An invoice starts with lnbc, a Lightning address looks like name@example.com, a Liquid address starts with lq1.",
+  "@errorToUnrecognizedAll": {
+    "description": "Error when the To field holds something Lumen cannot pay, and the wallets can pay both Lightning and Liquid. Keep lnbc and lq1 as is."
   },
   "errorInvoiceNoAmount": "This invoice leaves the amount open, which Lumen cannot pay yet. Ask the recipient for an invoice with an amount.",
   "@errorInvoiceNoAmount": {
@@ -899,6 +939,23 @@
   "sendUnconfirmed": "{name} did not confirm the payment in time. It may still go through: check its recent activity before you try again.",
   "@sendUnconfirmed": {
     "description": "Shown when the wallet did not answer after the payment was sent.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sendChainUnreachable": "Lumen could not reach the Liquid server, so nothing was sent. Check your connection, then try again.",
+  "@sendChainUnreachable": {
+    "description": "Error when the Liquid server did not answer before a Liquid payment was sent."
+  },
+  "sendChainFailed": "The Liquid network did not accept this payment, so nothing was sent. Try again later, or pay from another wallet.",
+  "@sendChainFailed": {
+    "description": "Error when a Liquid payment could not be built or the network refused it."
+  },
+  "sendChainUnconfirmed": "The Liquid server did not confirm that it received the payment. It may still go through: check the recent activity of {name} before you try again.",
+  "@sendChainUnconfirmed": {
+    "description": "Shown when a Liquid payment was sent but the server did not answer.",
     "placeholders": {
       "name": {
         "type": "String"
@@ -1372,7 +1429,7 @@
   },
   "waitingForConfirmation": "Waiting for confirmation",
   "@waitingForConfirmation": {
-    "description": "Status of a payment received on chain until a block confirms it."
+    "description": "Status of a payment received or sent on chain until a block confirms it."
   },
   "confirmsSoon": "Usually within 2 minutes",
   "@confirmsSoon": {
@@ -1380,11 +1437,11 @@
   },
   "paymentConfirmed": "Confirmed",
   "@paymentConfirmed": {
-    "description": "Status of a payment received on chain once a block confirms it."
+    "description": "Status of a payment received or sent on chain once a block confirms it."
   },
   "paymentConfirmedAnnouncement": "Payment confirmed",
   "@paymentConfirmedAnnouncement": {
-    "description": "Announced to screen readers when the payment received confirms."
+    "description": "Announced to screen readers when the payment received or sent on chain confirms."
   },
   "transactionPending": "Pending",
   "@transactionPending": {

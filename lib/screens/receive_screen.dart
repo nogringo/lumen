@@ -447,7 +447,7 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       const SizedBox(height: 8),
       _AddressLine(address),
       const SizedBox(height: 16),
-      _StatusLine(icon: Icons.schedule, title: l.waitingForPayment),
+      StatusLine(icon: Icons.schedule, title: l.waitingForPayment),
     ];
   }
 
@@ -519,13 +519,13 @@ class _ReceiveFlowState extends State<_ReceiveFlow> {
       if (payment.confirmations != null) ...[
         const SizedBox(height: 20),
         if (payment.isPending)
-          _StatusLine(
+          StatusLine(
             icon: Icons.schedule,
             title: l.waitingForConfirmation,
             detail: l.confirmsSoon,
           )
         else
-          _StatusLine(
+          StatusLine(
             icon: Icons.check_circle_outline,
             title: l.paymentConfirmed,
           ),
@@ -595,8 +595,7 @@ class _CopyLine extends StatelessWidget {
   }
 }
 
-/// The whole address in groups of four, so it can be compared by eye and is
-/// read aloud a group at a time.
+/// The whole address, with buttons to copy and share it.
 class _AddressLine extends StatelessWidget {
   const _AddressLine(this.address);
 
@@ -608,10 +607,6 @@ class _AddressLine extends StatelessWidget {
     final c = LumenColors.of(context);
     final raised = IconButton.styleFrom(backgroundColor: c.surface3);
     final request = liquidRequest(address);
-    final groups = [
-      for (final match in RegExp('.{1,4}').allMatches(address.address))
-        match[0]!,
-    ];
     return Container(
       padding: const EdgeInsetsDirectional.fromSTEB(16, 14, 6, 6),
       decoration: BoxDecoration(
@@ -623,15 +618,9 @@ class _AddressLine extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 10),
-            child: Text(
-              groups.join(' '),
-              semanticsLabel: l.addressText(groups.join(', ')),
-              style: TextStyle(
-                fontFamily: monoFamily,
-                fontSize: 14,
-                height: 1.5,
-                color: c.text,
-              ),
+            child: GroupedAddress(
+              address.address,
+              style: TextStyle(fontSize: 14, height: 1.5, color: c.text),
             ),
           ),
           Row(
@@ -653,43 +642,6 @@ class _AddressLine extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// A status with its icon and an optional detail, read as one.
-class _StatusLine extends StatelessWidget {
-  const _StatusLine({required this.icon, required this.title, this.detail});
-
-  final IconData icon;
-  final String title;
-  final String? detail;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = LumenColors.of(context);
-    return MergeSemantics(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: Icon(icon, size: 16, color: c.text2),
-          ),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(fontSize: 15, color: c.text)),
-                if (detail case final detail?)
-                  Text(detail, style: TextStyle(fontSize: 13, color: c.text2)),
-              ],
-            ),
           ),
         ],
       ),
@@ -749,7 +701,7 @@ class _InvoiceStatusState extends State<_InvoiceStatus> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    return _StatusLine(
+    return StatusLine(
       icon: Icons.schedule,
       title: l.waitingForPayment,
       detail: _timeLeft(l),

@@ -459,6 +459,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sendToHint => 'Lightning 发票或 Lightning 地址';
 
   @override
+  String get sendToHintLiquid => 'Liquid 地址';
+
+  @override
+  String get sendToHintAll => 'Lightning 发票、Lightning 地址或 Liquid 地址';
+
+  @override
   String get paste => '粘贴';
 
   @override
@@ -495,6 +501,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get detailNetwork => '网络';
 
   @override
+  String get detailFee => '手续费';
+
+  @override
   String get detailFeePaid => '已付手续费';
 
   @override
@@ -508,6 +517,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get paymentHashCopied => '已复制支付哈希';
+
+  @override
+  String get detailTxid => '交易 ID';
+
+  @override
+  String get copyTxid => '复制交易 ID';
+
+  @override
+  String get txidCopied => '已复制交易 ID';
 
   @override
   String get paymentTitle => '付款';
@@ -566,8 +584,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorToEmpty => '请粘贴 Lightning 发票或 Lightning 地址。';
 
   @override
+  String get errorToEmptyLiquid => '请粘贴 Liquid 地址。';
+
+  @override
+  String get errorToEmptyAll => '请粘贴 Lightning 发票、Lightning 地址或 Liquid 地址。';
+
+  @override
   String get errorToUnrecognized =>
       '这不是 Lightning 发票或地址。发票以 lnbc 开头，地址形如 name@example.com。';
+
+  @override
+  String get errorToUnrecognizedLiquid => '这不是 Liquid 地址。请从收款方那里重新完整复制。';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      '这不是 Lumen 能支付的发票或地址。发票以 lnbc 开头，Lightning 地址形如 name@example.com，Liquid 地址以 lq1 开头。';
 
   @override
   String get errorInvoiceNoAmount => '此发票未指定金额，Lumen 暂不支持支付。请向收款方索取带金额的发票。';
@@ -637,6 +668,18 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return '$name 未能及时确认付款。付款可能仍会完成：重试前请先查看其最近活动。';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen 无法连接 Liquid 服务器，因此未发送任何款项。请检查网络连接，然后重试。';
+
+  @override
+  String get sendChainFailed => 'Liquid 网络未接受这笔付款，因此未发送任何款项。请稍后重试，或换用其他钱包付款。';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'Liquid 服务器未确认收到这笔付款。付款可能仍会完成：重试前请先查看 $name 的最近活动。';
   }
 
   @override

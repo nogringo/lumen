@@ -394,6 +394,7 @@ final class LiquidWallet implements Wallet {
   @override
   String get name => _name;
 
+  @override
   ChainNetwork get network => _record.network;
 
   @override
@@ -504,10 +505,28 @@ final class LiquidWallet implements Wallet {
       ChainAddress(:final address) => address,
       Invoice() => throw UnsupportedError('Liquid wallets have no invoices'),
     };
+    return _follow(
+      (tx, payment) => tx.received.contains(address) && payment.isIncoming,
+    );
+  }
+
+  /// Syncs every few seconds, as [watchPayment] does.
+  @override
+  Stream<Transaction> watchConfirmation(String txid) =>
+      _follow((tx, _) => false, txid: txid);
+
+  /// Syncs every few seconds. Emits the oldest transaction that [matches]
+  /// accepts, then follows it: emitted again once it confirms, then closed.
+  /// A [txid] already known is followed from the start and only emitted
+  /// once confirmed.
+  Stream<Transaction> _follow(
+    bool Function(ChainTx tx, Transaction payment) matches, {
+    String? txid,
+  }) {
     late final StreamController<Transaction> controller;
     Timer? timer;
     var checking = false;
-    String? seen;
+    var seen = txid;
 
     Future<void> check() async {
       if (checking || controller.isClosed) return;
@@ -517,8 +536,9 @@ final class LiquidWallet implements Wallet {
         final tip = await chain.tipHeight();
         final payment = [
           for (final tx in await chain.transactions())
-            if (seen == null ? tx.received.contains(address) : tx.txid == seen)
-              if (_transaction(tx, tip) case final t? when t.isIncoming) t,
+            if (_transaction(tx, tip) case final t?
+                when seen == null ? matches(tx, t) : tx.txid == seen)
+              t,
         ].lastOrNull;
         if (payment == null || controller.isClosed) return;
         if (seen == null || !payment.isPending) {

@@ -480,6 +480,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get sendToHint => 'Fatura Lightning ou endereço Lightning';
 
   @override
+  String get sendToHintLiquid => 'Endereço Liquid';
+
+  @override
+  String get sendToHintAll =>
+      'Fatura Lightning, endereço Lightning ou endereço Liquid';
+
+  @override
   String get paste => 'Colar';
 
   @override
@@ -516,6 +523,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get detailNetwork => 'Rede';
 
   @override
+  String get detailFee => 'Taxa';
+
+  @override
   String get detailFeePaid => 'Taxa paga';
 
   @override
@@ -529,6 +539,15 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get paymentHashCopied => 'Hash do pagamento copiado';
+
+  @override
+  String get detailTxid => 'ID da transação';
+
+  @override
+  String get copyTxid => 'Copiar ID da transação';
+
+  @override
+  String get txidCopied => 'ID da transação copiado';
 
   @override
   String get paymentTitle => 'Pagamento';
@@ -588,8 +607,23 @@ class AppLocalizationsPt extends AppLocalizations {
       'Cole uma fatura Lightning ou um endereço Lightning.';
 
   @override
+  String get errorToEmptyLiquid => 'Cole um endereço Liquid.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Cole uma fatura Lightning, um endereço Lightning ou um endereço Liquid.';
+
+  @override
   String get errorToUnrecognized =>
       'Isto não é uma fatura nem um endereço Lightning. Uma fatura começa por lnbc, um endereço tem o formato nome@exemplo.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Isto não é um endereço Liquid. Copie-o de novo a partir do destinatário, por inteiro.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Isto não é uma fatura nem um endereço que o Lumen consiga pagar. Uma fatura começa por lnbc, um endereço Lightning tem o formato nome@exemplo.com, um endereço Liquid começa por lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -665,6 +699,19 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return '$name não confirmou o pagamento a tempo. Ainda pode ser concluído: verifique a atividade recente da carteira antes de tentar novamente.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'O Lumen não conseguiu contactar o servidor Liquid, por isso nada foi enviado. Verifique a ligação e tente novamente.';
+
+  @override
+  String get sendChainFailed =>
+      'A rede Liquid não aceitou este pagamento, por isso nada foi enviado. Tente novamente mais tarde ou pague a partir de outra carteira.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'O servidor Liquid não confirmou que recebeu o pagamento. Ainda pode ser concluído: verifique a atividade recente de $name antes de tentar novamente.';
   }
 
   @override
@@ -1544,6 +1591,13 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get sendToHint => 'Fatura Lightning ou endereço Lightning';
 
   @override
+  String get sendToHintLiquid => 'Endereço Liquid';
+
+  @override
+  String get sendToHintAll =>
+      'Fatura Lightning, endereço Lightning ou endereço Liquid';
+
+  @override
   String get paste => 'Colar';
 
   @override
@@ -1580,6 +1634,9 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   String get detailNetwork => 'Rede';
 
   @override
+  String get detailFee => 'Taxa';
+
+  @override
   String get detailFeePaid => 'Taxa paga';
 
   @override
@@ -1593,6 +1650,15 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
 
   @override
   String get paymentHashCopied => 'Hash do pagamento copiado';
+
+  @override
+  String get detailTxid => 'ID da transação';
+
+  @override
+  String get copyTxid => 'Copiar ID da transação';
+
+  @override
+  String get txidCopied => 'ID da transação copiado';
 
   @override
   String get paymentTitle => 'Pagamento';
@@ -1652,8 +1718,23 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
       'Cole uma fatura Lightning ou um endereço Lightning.';
 
   @override
+  String get errorToEmptyLiquid => 'Cole um endereço Liquid.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Cole uma fatura Lightning, um endereço Lightning ou um endereço Liquid.';
+
+  @override
   String get errorToUnrecognized =>
       'Isto não é uma fatura nem um endereço Lightning. Uma fatura começa com lnbc, um endereço é parecido com nome@exemplo.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Isto não é um endereço Liquid. Copie-o de novo do destinatário, por inteiro.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Isto não é uma fatura nem um endereço que o Lumen consiga pagar. Uma fatura começa com lnbc, um endereço Lightning é parecido com nome@exemplo.com, um endereço Liquid começa com lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -1729,6 +1810,19 @@ class AppLocalizationsPtBr extends AppLocalizationsPt {
   @override
   String sendUnconfirmed(String name) {
     return '$name não confirmou o pagamento a tempo. Ele ainda pode ser concluído: confira a atividade recente dela antes de tentar novamente.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'O Lumen não conseguiu acessar o servidor Liquid, então nada foi enviado. Confira sua conexão e tente novamente.';
+
+  @override
+  String get sendChainFailed =>
+      'A rede Liquid não aceitou este pagamento, então nada foi enviado. Tente novamente mais tarde ou pague com outra carteira.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'O servidor Liquid não confirmou que recebeu o pagamento. Ele ainda pode ser concluído: confira a atividade recente de $name antes de tentar novamente.';
   }
 
   @override

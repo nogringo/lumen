@@ -478,6 +478,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get sendToHint => 'Lightning-lasku tai Lightning-osoite';
 
   @override
+  String get sendToHintLiquid => 'Liquid-osoite';
+
+  @override
+  String get sendToHintAll =>
+      'Lightning-lasku, Lightning-osoite tai Liquid-osoite';
+
+  @override
   String get paste => 'Liitä';
 
   @override
@@ -514,6 +521,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get detailNetwork => 'Verkko';
 
   @override
+  String get detailFee => 'Kulu';
+
+  @override
   String get detailFeePaid => 'Maksettu kulu';
 
   @override
@@ -527,6 +537,15 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get paymentHashCopied => 'Maksun tiiviste kopioitu';
+
+  @override
+  String get detailTxid => 'Transaktion tunniste';
+
+  @override
+  String get copyTxid => 'Kopioi transaktion tunniste';
+
+  @override
+  String get txidCopied => 'Transaktion tunniste kopioitu';
 
   @override
   String get paymentTitle => 'Maksu';
@@ -585,8 +604,23 @@ class AppLocalizationsFi extends AppLocalizations {
   String get errorToEmpty => 'Liitä Lightning-lasku tai Lightning-osoite.';
 
   @override
+  String get errorToEmptyLiquid => 'Liitä Liquid-osoite.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Liitä Lightning-lasku, Lightning-osoite tai Liquid-osoite.';
+
+  @override
   String get errorToUnrecognized =>
       'Tämä ei ole Lightning-lasku eikä Lightning-osoite. Lasku alkaa lnbc, osoite näyttää tältä: nimi@example.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Tämä ei ole Liquid-osoite. Kopioi se uudelleen vastaanottajalta kokonaan.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Tämä ei ole lasku eikä osoite, jonka Lumen voi maksaa. Lasku alkaa lnbc, Lightning-osoite näyttää tältä: nimi@example.com, Liquid-osoite alkaa lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -662,6 +696,19 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return 'Lompakko $name ei vahvistanut maksua ajoissa. Maksu voi vielä mennä läpi: tarkista lompakon viimeaikainen toiminta ennen kuin yrität uudelleen.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen ei tavoittanut Liquid-palvelinta, joten mitään ei lähetetty. Tarkista yhteytesi ja yritä uudelleen.';
+
+  @override
+  String get sendChainFailed =>
+      'Liquid-verkko ei hyväksynyt tätä maksua, joten mitään ei lähetetty. Yritä myöhemmin uudelleen tai maksa toisesta lompakosta.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'Liquid-palvelin ei vahvistanut saaneensa maksua. Maksu voi vielä mennä läpi: tarkista lompakon $name viimeaikainen toiminta ennen kuin yrität uudelleen.';
   }
 
   @override

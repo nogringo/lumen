@@ -859,11 +859,23 @@ abstract class AppLocalizations {
   /// **'To'**
   String get sendTo;
 
-  /// Hint under the To field.
+  /// Hint under the To field when the wallets pay Lightning only.
   ///
   /// In en, this message translates to:
   /// **'Lightning invoice or Lightning address'**
   String get sendToHint;
+
+  /// Hint under the To field when every wallet pays Liquid addresses only.
+  ///
+  /// In en, this message translates to:
+  /// **'Liquid address'**
+  String get sendToHintLiquid;
+
+  /// Hint under the To field when the wallets can pay both Lightning and Liquid.
+  ///
+  /// In en, this message translates to:
+  /// **'Lightning invoice, Lightning address or Liquid address'**
+  String get sendToHintAll;
 
   /// Button that pastes the clipboard into the To field.
   ///
@@ -937,6 +949,12 @@ abstract class AppLocalizations {
   /// **'Network'**
   String get detailNetwork;
 
+  /// Row label on the review step: the fee the payment will cost.
+  ///
+  /// In en, this message translates to:
+  /// **'Fee'**
+  String get detailFee;
+
   /// Row label: the routing fee the payment cost.
   ///
   /// In en, this message translates to:
@@ -966,6 +984,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment hash copied'**
   String get paymentHashCopied;
+
+  /// Label of the chain transaction ID (txid) on the payment result.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID'**
+  String get detailTxid;
+
+  /// Button that copies the transaction ID.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy transaction ID'**
+  String get copyTxid;
+
+  /// Announced by screen readers once the transaction ID is copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction ID copied'**
+  String get txidCopied;
 
   /// Title of the screen with the details of one payment.
   ///
@@ -1057,17 +1093,41 @@ abstract class AppLocalizations {
   /// **'Payment sent: {amount} sats from {name}'**
   String sentAnnouncement(String amount, String name);
 
-  /// Error when the To field is empty.
+  /// Error when the To field is empty and the wallets pay Lightning only.
   ///
   /// In en, this message translates to:
   /// **'Paste a Lightning invoice or a Lightning address.'**
   String get errorToEmpty;
 
-  /// Error when the To field holds something Lumen cannot pay. Keep lnbc as is.
+  /// Error when the To field is empty and every wallet pays Liquid addresses only.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a Liquid address.'**
+  String get errorToEmptyLiquid;
+
+  /// Error when the To field is empty and the wallets can pay both Lightning and Liquid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste a Lightning invoice, a Lightning address or a Liquid address.'**
+  String get errorToEmptyAll;
+
+  /// Error when the To field holds something Lumen cannot pay, and the wallets pay Lightning only. Keep lnbc as is.
   ///
   /// In en, this message translates to:
   /// **'This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.'**
   String get errorToUnrecognized;
+
+  /// Error when the To field holds something that is not a Liquid address, and every wallet pays Liquid addresses only.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a Liquid address. Copy it again from the recipient, in full.'**
+  String get errorToUnrecognizedLiquid;
+
+  /// Error when the To field holds something Lumen cannot pay, and the wallets can pay both Lightning and Liquid. Keep lnbc and lq1 as is.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not an invoice or an address Lumen can pay. An invoice starts with lnbc, a Lightning address looks like name@example.com, a Liquid address starts with lq1.'**
+  String get errorToUnrecognizedAll;
 
   /// Error for an invoice without amount.
   ///
@@ -1170,6 +1230,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} did not confirm the payment in time. It may still go through: check its recent activity before you try again.'**
   String sendUnconfirmed(String name);
+
+  /// Error when the Liquid server did not answer before a Liquid payment was sent.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not reach the Liquid server, so nothing was sent. Check your connection, then try again.'**
+  String get sendChainUnreachable;
+
+  /// Error when a Liquid payment could not be built or the network refused it.
+  ///
+  /// In en, this message translates to:
+  /// **'The Liquid network did not accept this payment, so nothing was sent. Try again later, or pay from another wallet.'**
+  String get sendChainFailed;
+
+  /// Shown when a Liquid payment was sent but the server did not answer.
+  ///
+  /// In en, this message translates to:
+  /// **'The Liquid server did not confirm that it received the payment. It may still go through: check the recent activity of {name} before you try again.'**
+  String sendChainUnconfirmed(String name);
 
   /// Title of the Settings screen, and label of the button that opens it.
   ///
@@ -1765,7 +1843,7 @@ abstract class AppLocalizations {
   /// **'Show QR code'**
   String get showQrCode;
 
-  /// Status of a payment received on chain until a block confirms it.
+  /// Status of a payment received or sent on chain until a block confirms it.
   ///
   /// In en, this message translates to:
   /// **'Waiting for confirmation'**
@@ -1777,13 +1855,13 @@ abstract class AppLocalizations {
   /// **'Usually within 2 minutes'**
   String get confirmsSoon;
 
-  /// Status of a payment received on chain once a block confirms it.
+  /// Status of a payment received or sent on chain once a block confirms it.
   ///
   /// In en, this message translates to:
   /// **'Confirmed'**
   String get paymentConfirmed;
 
-  /// Announced to screen readers when the payment received confirms.
+  /// Announced to screen readers when the payment received or sent on chain confirms.
   ///
   /// In en, this message translates to:
   /// **'Payment confirmed'**

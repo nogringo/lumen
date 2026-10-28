@@ -479,6 +479,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get sendToHint => 'Fattura Lightning o indirizzo Lightning';
 
   @override
+  String get sendToHintLiquid => 'Indirizzo Liquid';
+
+  @override
+  String get sendToHintAll =>
+      'Fattura Lightning, indirizzo Lightning o indirizzo Liquid';
+
+  @override
   String get paste => 'Incolla';
 
   @override
@@ -515,6 +522,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get detailNetwork => 'Rete';
 
   @override
+  String get detailFee => 'Commissione';
+
+  @override
   String get detailFeePaid => 'Commissione pagata';
 
   @override
@@ -528,6 +538,15 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get paymentHashCopied => 'Hash del pagamento copiato';
+
+  @override
+  String get detailTxid => 'ID transazione';
+
+  @override
+  String get copyTxid => 'Copia ID transazione';
+
+  @override
+  String get txidCopied => 'ID transazione copiato';
 
   @override
   String get paymentTitle => 'Pagamento';
@@ -587,8 +606,23 @@ class AppLocalizationsIt extends AppLocalizations {
       'Incolla una fattura Lightning o un indirizzo Lightning.';
 
   @override
+  String get errorToEmptyLiquid => 'Incolla un indirizzo Liquid.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Incolla una fattura Lightning, un indirizzo Lightning o un indirizzo Liquid.';
+
+  @override
   String get errorToUnrecognized =>
       'Questa non è una fattura né un indirizzo Lightning. Una fattura inizia con lnbc, un indirizzo ha la forma nome@esempio.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Questo non è un indirizzo Liquid. Copialo di nuovo dal destinatario, per intero.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Questa non è una fattura né un indirizzo che Lumen può pagare. Una fattura inizia con lnbc, un indirizzo Lightning ha la forma nome@esempio.com, un indirizzo Liquid inizia con lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -664,6 +698,19 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return '$name non ha confermato il pagamento in tempo. Potrebbe ancora andare a buon fine: controlla la sua attività recente prima di riprovare.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen non è riuscito a raggiungere il server Liquid, quindi non è stato inviato nulla. Controlla la connessione, poi riprova.';
+
+  @override
+  String get sendChainFailed =>
+      'La rete Liquid non ha accettato questo pagamento, quindi non è stato inviato nulla. Riprova più tardi, o paga da un altro portafoglio.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'Il server Liquid non ha confermato di aver ricevuto il pagamento. Potrebbe ancora andare a buon fine: controlla l\'attività recente di $name prima di riprovare.';
   }
 
   @override

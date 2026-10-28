@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import '../l10n/generated/app_localizations.dart';
 import '../layout/layout.dart';
 import '../theme/lumen_colors.dart';
+import '../theme/lumen_theme.dart';
 import 'screen_parts.dart';
 
 /// What a transaction flow needs from the screen or dialog that holds it.
@@ -192,6 +193,72 @@ class SuccessMark extends StatelessWidget {
           child: Icon(Icons.check, size: 36, color: c.positive),
         ),
       ),
+    );
+  }
+}
+
+/// A status with its icon and an optional detail, read as one.
+class StatusLine extends StatelessWidget {
+  const StatusLine({
+    super.key,
+    required this.icon,
+    required this.title,
+    this.detail,
+  });
+
+  final IconData icon;
+  final String title;
+  final String? detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = LumenColors.of(context);
+    return MergeSemantics(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Icon(icon, size: 16, color: c.text2),
+          ),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(fontSize: 15, color: c.text)),
+                if (detail case final detail?)
+                  Text(detail, style: TextStyle(fontSize: 13, color: c.text2)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// A whole chain address in groups of four, so it can be compared by eye
+/// and is read aloud a group at a time.
+class GroupedAddress extends StatelessWidget {
+  const GroupedAddress(this.address, {super.key, this.style, this.textAlign});
+
+  final String address;
+  final TextStyle? style;
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) {
+    final groups = [
+      for (final match in RegExp('.{1,4}').allMatches(address)) match[0]!,
+    ];
+    return Text(
+      groups.join(' '),
+      semanticsLabel: AppLocalizations.of(context)
+          .addressText(groups.join(', ')),
+      style: const TextStyle(fontFamily: monoFamily).merge(style),
+      textAlign: textAlign,
     );
   }
 }

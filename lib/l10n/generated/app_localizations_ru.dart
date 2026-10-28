@@ -487,6 +487,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sendToHint => 'Счёт Lightning или адрес Lightning';
 
   @override
+  String get sendToHintLiquid => 'Адрес Liquid';
+
+  @override
+  String get sendToHintAll =>
+      'Счёт Lightning, адрес Lightning или адрес Liquid';
+
+  @override
   String get paste => 'Вставить';
 
   @override
@@ -523,6 +530,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get detailNetwork => 'Сеть';
 
   @override
+  String get detailFee => 'Комиссия';
+
+  @override
   String get detailFeePaid => 'Комиссия';
 
   @override
@@ -536,6 +546,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get paymentHashCopied => 'Хеш платежа скопирован';
+
+  @override
+  String get detailTxid => 'ID транзакции';
+
+  @override
+  String get copyTxid => 'Скопировать ID транзакции';
+
+  @override
+  String get txidCopied => 'ID транзакции скопирован';
 
   @override
   String get paymentTitle => 'Платёж';
@@ -594,8 +613,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get errorToEmpty => 'Вставьте счёт Lightning или адрес Lightning.';
 
   @override
+  String get errorToEmptyLiquid => 'Вставьте адрес Liquid.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Вставьте счёт Lightning, адрес Lightning или адрес Liquid.';
+
+  @override
   String get errorToUnrecognized =>
       'Это не счёт и не адрес Lightning. Счёт начинается с lnbc, адрес выглядит как name@example.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Это не адрес Liquid. Скопируйте его у получателя ещё раз, целиком.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Это не счёт и не адрес, который Lumen может оплатить. Счёт начинается с lnbc, адрес Lightning выглядит как name@example.com, адрес Liquid начинается с lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -671,6 +705,19 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return 'Кошелёк $name не подтвердил платёж вовремя. Платёж ещё может пройти: проверьте недавнюю активность кошелька, прежде чем повторять.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen не удалось связаться с сервером Liquid, поэтому ничего не отправлено. Проверьте подключение и попробуйте снова.';
+
+  @override
+  String get sendChainFailed =>
+      'Сеть Liquid не приняла этот платёж, поэтому ничего не отправлено. Попробуйте позже или оплатите с другого кошелька.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'Сервер Liquid не подтвердил, что получил платёж. Платёж ещё может пройти: проверьте недавнюю активность кошелька $name, прежде чем повторять.';
   }
 
   @override

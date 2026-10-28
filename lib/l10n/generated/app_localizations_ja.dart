@@ -469,6 +469,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get sendToHint => 'Lightning インボイスまたは Lightning アドレス';
 
   @override
+  String get sendToHintLiquid => 'Liquid アドレス';
+
+  @override
+  String get sendToHintAll => 'Lightning インボイス、Lightning アドレス、または Liquid アドレス';
+
+  @override
   String get paste => '貼り付け';
 
   @override
@@ -505,6 +511,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get detailNetwork => 'ネットワーク';
 
   @override
+  String get detailFee => '手数料';
+
+  @override
   String get detailFeePaid => '支払った手数料';
 
   @override
@@ -518,6 +527,15 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get paymentHashCopied => '支払いハッシュをコピーしました';
+
+  @override
+  String get detailTxid => 'トランザクション ID';
+
+  @override
+  String get copyTxid => 'トランザクション ID をコピー';
+
+  @override
+  String get txidCopied => 'トランザクション ID をコピーしました';
 
   @override
   String get paymentTitle => '支払い';
@@ -576,8 +594,23 @@ class AppLocalizationsJa extends AppLocalizations {
   String get errorToEmpty => 'Lightning インボイスまたは Lightning アドレスを貼り付けてください。';
 
   @override
+  String get errorToEmptyLiquid => 'Liquid アドレスを貼り付けてください。';
+
+  @override
+  String get errorToEmptyAll =>
+      'Lightning インボイス、Lightning アドレス、または Liquid アドレスを貼り付けてください。';
+
+  @override
   String get errorToUnrecognized =>
       'Lightning インボイスでもアドレスでもありません。インボイスは lnbc で始まり、アドレスは name@example.com のような形式です。';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'Liquid アドレスではありません。受取人からもう一度、全体をコピーしてください。';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'Lumen が支払えるインボイスでもアドレスでもありません。インボイスは lnbc で始まり、Lightning アドレスは name@example.com のような形式で、Liquid アドレスは lq1 で始まります。';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -652,6 +685,19 @@ class AppLocalizationsJa extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return '$name が時間内に支払いを確認しませんでした。支払いはまだ完了する可能性があります。もう一度試す前に、最近のアクティビティを確認してください。';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen は Liquid サーバーに接続できなかったため、何も送金されていません。接続を確認して、もう一度お試しください。';
+
+  @override
+  String get sendChainFailed =>
+      'Liquid ネットワークがこの支払いを受け付けなかったため、何も送金されていません。あとでもう一度試すか、別のウォレットから支払ってください。';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'Liquid サーバーが支払いの受信を確認しませんでした。支払いはまだ完了する可能性があります。もう一度試す前に、$name の最近のアクティビティを確認してください。';
   }
 
   @override

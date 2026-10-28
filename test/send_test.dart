@@ -16,8 +16,16 @@ const _maxSats = 1000000;
 const _liquid =
     'lq1qqvp9g33gw9y05xava3dvcpq8pnkv82yj3tdnzp547eyp9yrztz2lkyxrhscd55ev4p7lj2n72jtkn5u4xnj4v577c42jhf3ww';
 
+const _testnet =
+    'tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m';
+
+/// Tether's USDt on Liquid.
+const _usdt =
+    'ce091c998b83c78bb71a632313ba3760f1763d9cfcffae02258ffa9865a37bd2';
+
 void main() {
   late WalletSources sources;
+  late WalletSources testnetSources;
   final asked = <int>[];
 
   setUpAll(() {
@@ -48,7 +56,13 @@ void main() {
       }),
     );
   });
+  setUpAll(
+    () => testnetSources = memorySources(
+      liquidNetworks: const {ChainNetwork.liquid, ChainNetwork.liquidTestnet},
+    ),
+  );
   tearDownAll(() => sources.dispose());
+  tearDownAll(() => testnetSources.dispose());
   setUp(asked.clear);
 
   Future<void> openSend(WidgetTester tester) async {
@@ -107,24 +121,7 @@ void main() {
   });
 
   testWidgets('the receipt can be shared and its hash copied', (tester) async {
-    String? shared;
-    String? copied;
-    final messenger = tester.binding.defaultBinaryMessenger;
-    const share = MethodChannel('dev.fluttercommunity.plus/share');
-    messenger.setMockMethodCallHandler(share, (call) async {
-      shared = (call.arguments as Map)['text'] as String;
-      return 'dev.fluttercommunity.plus/share/success';
-    });
-    messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
-      if (call.method == 'Clipboard.setData') {
-        copied = (call.arguments as Map)['text'] as String;
-      }
-      return null;
-    });
-    addTearDown(() {
-      messenger.setMockMethodCallHandler(share, null);
-      messenger.setMockMethodCallHandler(SystemChannels.platform, null);
-    });
+    final out = _watchSharing(tester);
     final wallet = FakeWallet('home', 'Home node', balance: 10000)..feeSats = 1;
     await pumpLumen(tester, sources, wallets: [wallet]);
     await openSend(tester);
@@ -136,18 +133,18 @@ void main() {
 
     await tester.tap(find.byTooltip('Copy payment hash'));
     await tester.pumpAndSettle();
-    expect(copied, _fakeHash(2100));
+    expect(out.copied, _fakeHash(2100));
 
     await tester.tap(find.byTooltip('Share receipt'));
     await tester.pumpAndSettle();
     expect(
-      shared,
+      out.shared,
       startsWith('Payment sent\n2,100 sats\nTo barista@example.com\nDate: '),
     );
-    expect(shared, contains('\nFee paid: 1 sats\n'));
-    expect(shared, contains('\nPayment hash: ${_fakeHash(2100)}\n'));
-    expect(shared, endsWith('\nPreimage: preimage'));
-    expect(shared, isNot(contains('Home node')));
+    expect(out.shared, contains('\nFee paid: 1 sats\n'));
+    expect(out.shared, contains('\nPayment hash: ${_fakeHash(2100)}\n'));
+    expect(out.shared, endsWith('\nPreimage: preimage'));
+    expect(out.shared, isNot(contains('Home node')));
   });
 
   testWidgets('pays a Lightning address the amount typed', (tester) async {
@@ -277,10 +274,7 @@ void main() {
       findsOneWidget,
     );
 
-    await fillTo(
-      tester,
-      'tlq1qq02egjncr8g4qn890mrw3jhgupwqymekv383lwpmsfghn36hac5ptpmeewtnftluqyaraa56ung7wf47crkn5fjuhk422d68m',
-    );
+    await fillTo(tester, _testnet);
     await review(tester);
     expect(
       find.text(
@@ -296,17 +290,21 @@ void main() {
   ) async {
     final handle = tester.ensureSemantics();
     final home = FakeWallet('home', 'Home node', balance: 100000);
-    final savings = FakeWallet(
-      'savings',
-      'Savings',
-      balance: 50000,
-      capabilities: const {
-        WalletCapability.receiveAddress,
-        WalletCapability.payAddress,
-      },
-    );
+    final savings = FakeWallet.liquid('savings', 'Savings', balance: 50000);
     await pumpLumen(tester, sources, wallets: [home, savings]);
     await openSend(tester);
+    expect(
+      find.text('Lightning invoice, Lightning address or Liquid address'),
+      findsOneWidget,
+    );
+    await fillTo(tester, 'hello');
+    await review(tester);
+    expect(
+      find.text(
+        'This is not an invoice or an address Lumen can pay. An invoice starts with lnbc, a Lightning address looks like name@example.com, a Liquid address starts with lq1.',
+      ),
+      findsOneWidget,
+    );
 
     await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0002');
     expect(find.text('Amount set by the link'), findsOneWidget);
@@ -315,7 +313,7 @@ void main() {
     await review(tester);
     expect(find.text('Savings'), findsOneWidget);
     expect(find.text('Liquid'), findsOneWidget);
-    expect(find.bySemanticsLabel('To\nLiquid address'), findsOneWidget);
+    expect(find.bySemanticsLabel('To\n${_readAloud(_liquid)}'), findsOneWidget);
 
     await tester.tap(find.text('Send 20,000 sats'));
     await tester.pumpAndSettle();
@@ -324,6 +322,227 @@ void main() {
     expect(home.paid, isEmpty);
     handle.dispose();
   });
+
+  testWidgets('pays a Liquid address, with the fee quoted before sending', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final wallet = FakeWallet.liquid('savings', 'Savings', balance: 50000)
+      ..quotedFeeSats = 26;
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openSend(tester);
+
+    await fillTo(tester, _liquid);
+    await tester.enterText(find.byType(TextField).last, '10000');
+    await review(tester);
+    expect(find.bySemanticsLabel('Fee\n26 sats'), findsOneWidget);
+    expect(find.bySemanticsLabel('To\n${_readAloud(_liquid)}'), findsOneWidget);
+
+    await tester.tap(find.text('Send 10,000 sats'));
+    await tester.pumpAndSettle();
+    final sent = wallet.paid.single;
+    expect((sent.sats, sent.feeSats), (10000, 26));
+    expect(find.text('Payment sent'), findsOneWidget);
+    expect(
+      find.bySemanticsLabel(
+        'Waiting for confirmation\nUsually within 2 minutes',
+      ),
+      findsOneWidget,
+    );
+    expect(find.bySemanticsLabel('Fee paid\n26 sats'), findsOneWidget);
+    expect(find.text('Transaction ID'), findsOneWidget);
+    expect(find.text('Payment hash'), findsNothing);
+
+    final fetchesBefore = wallet.fetchCount;
+    wallet.confirmSent();
+    await tester.pumpAndSettle();
+    expect(find.text('Confirmed'), findsOneWidget);
+    expect(find.text('Waiting for confirmation'), findsNothing);
+    expect(wallet.fetchCount, fetchesBefore + 1);
+    handle.dispose();
+  });
+
+  testWidgets('a Liquid receipt names the transaction, which can be copied', (
+    tester,
+  ) async {
+    final out = _watchSharing(tester);
+    final wallet = FakeWallet.liquid('savings', 'Savings', balance: 50000)
+      ..quotedFeeSats = 26;
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openSend(tester);
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0001');
+    await review(tester);
+    await tester.tap(find.text('Send 10,000 sats'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Copy transaction ID'));
+    await tester.pumpAndSettle();
+    expect(out.copied, FakeWallet.sentTxid);
+
+    await tester.tap(find.byTooltip('Share receipt'));
+    await tester.pumpAndSettle();
+    expect(out.shared, startsWith('Payment sent\n10,000 sats\nDate: '));
+    expect(
+      out.shared,
+      endsWith('\nFee paid: 26 sats\nTransaction ID: ${FakeWallet.sentTxid}'),
+    );
+    expect(out.shared, isNot(contains('Savings')));
+  });
+
+  testWidgets('with only Liquid wallets, the To field asks for an address', (
+    tester,
+  ) async {
+    await pumpLumen(
+      tester,
+      sources,
+      wallets: [FakeWallet.liquid('savings', 'Savings', balance: 1000)],
+    );
+    await openSend(tester);
+    expect(find.text('Liquid address'), findsOneWidget);
+
+    await review(tester);
+    expect(find.text('Paste a Liquid address.'), findsOneWidget);
+
+    await fillTo(tester, 'hello');
+    await review(tester);
+    expect(
+      find.text(
+        'This is not a Liquid address. Copy it again from the recipient, in full.',
+      ),
+      findsOneWidget,
+    );
+
+    await fillTo(tester, fakeBolt11(100));
+    await review(tester);
+    expect(
+      find.text(
+        'None of your wallets can pay a Lightning invoice or address. Ask the recipient for a Liquid address instead.',
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a Liquid address is paid from a wallet on its network', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    final savings = FakeWallet.liquid('savings', 'Savings', balance: 50000);
+    final coins = FakeWallet.liquid(
+      'coins',
+      'Test coins',
+      balance: 50000,
+      network: ChainNetwork.liquidTestnet,
+    );
+    await pumpLumen(tester, testnetSources, wallets: [savings, coins]);
+    await openSend(tester);
+
+    await fillTo(tester, _testnet);
+    await tester.enterText(find.byType(TextField).last, '1000');
+    await review(tester);
+    expect(find.bySemanticsLabel('From\nTest coins'), findsOneWidget);
+
+    await tester.tap(find.text('Send 1,000 sats'));
+    await tester.pumpAndSettle();
+    expect(coins.paid, hasLength(1));
+    expect(savings.paid, isEmpty);
+    handle.dispose();
+  });
+
+  testWidgets('a testnet address needs a testnet wallet', (tester) async {
+    await pumpLumen(
+      tester,
+      testnetSources,
+      wallets: [FakeWallet.liquid('savings', 'Savings', balance: 50000)],
+    );
+    await openSend(tester);
+
+    await fillTo(tester, _testnet);
+    await tester.enterText(find.byType(TextField).last, '1000');
+    await review(tester);
+    expect(
+      find.text(
+        'This is a Liquid testnet address. Ask the recipient for a Liquid mainnet address.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('You are sending'), findsNothing);
+  });
+
+  testWidgets('a Liquid payment that cannot be made stops before review', (
+    tester,
+  ) async {
+    final wallet = FakeWallet.liquid('savings', 'Savings', balance: 50000)
+      ..prepareError = SendError.insufficientBalance;
+    await pumpLumen(tester, sources, wallets: [wallet]);
+    await openSend(tester);
+
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0005');
+    await review(tester);
+    expect(
+      find.text(
+        'Savings does not hold enough sats for this payment and its fee. Pay from another wallet or lower the amount.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('You are sending'), findsNothing);
+
+    wallet.prepareError = SendError.unreachable;
+    await review(tester);
+    expect(
+      find.text(
+        'Lumen could not reach the Liquid server, so nothing was sent. Check your connection, then try again.',
+      ),
+      findsOneWidget,
+    );
+
+    await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0001&assetid=$_usdt');
+    await review(tester);
+    expect(
+      find.text(
+        'This request is for a Liquid asset other than L-BTC, which Lumen cannot send yet. Ask the recipient for an L-BTC address.',
+      ),
+      findsOneWidget,
+    );
+    expect(wallet.paid, isEmpty);
+  });
+
+  testWidgets(
+    'a refused Liquid payment can be retried, an unanswered one not',
+    (tester) async {
+      final haptics = watchHaptics(tester);
+      final wallet = FakeWallet.liquid('savings', 'Savings', balance: 50000)
+        ..sendError = SendError.failed;
+      await pumpLumen(tester, sources, wallets: [wallet]);
+      await openSend(tester);
+      await fillTo(tester, 'liquidnetwork:$_liquid?amount=0.0001');
+      await review(tester);
+
+      await tester.tap(find.text('Send 10,000 sats'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'The Liquid network did not accept this payment, so nothing was sent. Try again later, or pay from another wallet.',
+        ),
+        findsOneWidget,
+      );
+
+      wallet.sendError = SendError.unconfirmed;
+      await tester.tap(find.text('Send 10,000 sats'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          'The Liquid server did not confirm that it received the payment. It may still go through: check the recent activity of Savings before you try again.',
+        ),
+        findsOneWidget,
+      );
+      expect(haptics, [
+        'HapticFeedbackType.errorNotification',
+        'HapticFeedbackType.warningNotification',
+      ]);
+      expect(find.text('Send 10,000 sats'), findsNothing);
+      expect(find.text('Done'), findsOneWidget);
+    },
+  );
 
   testWidgets('an invoice is not paid from a wallet that only pays addresses', (
     tester,
@@ -523,3 +742,34 @@ String _fakeHash(int sats) => [
   for (var i = 0; i < 32; i++)
     ((sats + i) % 256).toRadixString(16).padLeft(2, '0'),
 ].join();
+
+/// How a screen reader reads [address]: four characters at a time.
+String _readAloud(String address) =>
+    'Address ${[for (final match in RegExp('.{1,4}').allMatches(address)) match[0]!].join(', ')}';
+
+/// What Lumen hands to the share sheet and the clipboard.
+final class _Outbox {
+  String? shared;
+  String? copied;
+}
+
+_Outbox _watchSharing(WidgetTester tester) {
+  final out = _Outbox();
+  final messenger = tester.binding.defaultBinaryMessenger;
+  const share = MethodChannel('dev.fluttercommunity.plus/share');
+  messenger.setMockMethodCallHandler(share, (call) async {
+    out.shared = (call.arguments as Map)['text'] as String;
+    return 'dev.fluttercommunity.plus/share/success';
+  });
+  messenger.setMockMethodCallHandler(SystemChannels.platform, (call) async {
+    if (call.method == 'Clipboard.setData') {
+      out.copied = (call.arguments as Map)['text'] as String;
+    }
+    return null;
+  });
+  addTearDown(() {
+    messenger.setMockMethodCallHandler(share, null);
+    messenger.setMockMethodCallHandler(SystemChannels.platform, null);
+  });
+  return out;
+}

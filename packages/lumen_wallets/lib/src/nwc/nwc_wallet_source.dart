@@ -420,6 +420,9 @@ final class _NwcWallet implements Wallet {
   };
 
   @override
+  ChainNetwork? get network => null;
+
+  @override
   Future<String> connectionString() async => (await _source._saved(id)).nwcUrl;
 
   @override
@@ -437,6 +440,10 @@ final class _NwcWallet implements Wallet {
     Invoice() => _source._watchPayment(id, request),
     ChainAddress() => throw UnsupportedError('NWC wallets have no address'),
   };
+
+  @override
+  Stream<Transaction> watchConfirmation(String txid) =>
+      throw UnsupportedError('NWC wallets have no chain transactions');
 
   /// NWC quotes no fee, so this only checks the request.
   @override

@@ -34,15 +34,19 @@ class FakeWallet implements Wallet {
       WalletCapability.receiveInvoice,
       WalletCapability.payInvoice,
     },
-  });
+  }) : network = null;
 
   /// Receives on an address and pays addresses, as a Liquid wallet does.
-  FakeWallet.liquid(this.id, this.name, {this.balance = 0})
-    : lightningAddress = null,
-      capabilities = const {
-        WalletCapability.receiveAddress,
-        WalletCapability.payAddress,
-      };
+  FakeWallet.liquid(
+    this.id,
+    this.name, {
+    this.balance = 0,
+    this.network = ChainNetwork.liquid,
+  }) : lightningAddress = null,
+       capabilities = const {
+         WalletCapability.receiveAddress,
+         WalletCapability.payAddress,
+       };
 
   @override
   final String id;
@@ -60,6 +64,9 @@ class FakeWallet implements Wallet {
 
   @override
   final Set<WalletCapability> capabilities;
+
+  @override
+  final ChainNetwork? network;
 
   String? connection = 'nostr+walletconnect://wallet?secret=fake';
 
@@ -157,15 +164,28 @@ class FakeWallet implements Wallet {
       );
 
   SendError? sendError;
+
+  /// Thrown while preparing, before anything is sent.
+  SendError? prepareError;
   int feeSats = 0;
+
+  /// The fee quoted before sending, as a Liquid wallet does.
+  int? quotedFeeSats;
   final List<SendQuote> paid = [];
 
   /// When set, payments wait for it to complete.
   Completer<void>? paymentGate;
 
   @override
-  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async =>
-      SendQuote(request: request, sats: request.sats ?? sats!);
+  Future<SendQuote> prepareSend(PaymentRequest request, {int? sats}) async {
+    await Future<void>.delayed(Duration.zero);
+    if (prepareError case final error?) throw SendException(error);
+    return SendQuote(
+      request: request,
+      sats: request.sats ?? sats!,
+      feeSats: quotedFeeSats,
+    );
+  }
 
   @override
   Future<Payment> confirmSend(SendQuote quote) async {
@@ -173,9 +193,41 @@ class FakeWallet implements Wallet {
     await paymentGate?.future;
     if (sendError case final error?) throw SendException(error);
     paid.add(quote);
-    balance -= quote.sats + feeSats;
-    return Payment(feeSats: feeSats, preimage: 'preimage');
+    final fee = quote.feeSats ?? feeSats;
+    balance -= quote.sats + fee;
+    return quote.request is ChainAddress
+        ? Payment(feeSats: fee, txid: sentTxid)
+        : Payment(feeSats: fee, preimage: 'preimage');
   }
+
+  StreamController<Transaction>? _sent;
+
+  @override
+  Stream<Transaction> watchConfirmation(String txid) {
+    _sent = StreamController<Transaction>();
+    return _sent!.stream;
+  }
+
+  /// Confirms the chain payment sent last, being watched.
+  void confirmSent() {
+    final quote = paid.last;
+    _sent!
+      ..add(
+        Transaction(
+          id: sentTxid,
+          direction: TransactionDirection.outgoing,
+          sats: quote.sats,
+          at: DateTime.now(),
+          feeSats: quote.feeSats,
+          txid: sentTxid,
+          confirmations: 1,
+        ),
+      )
+      ..close();
+  }
+
+  static const sentTxid =
+      'c3a1f00dfeedbeefc3a1f00dfeedbeefc3a1f00dfeedbeefc3a1f00dfeed5e7d';
 
   @override
   Future<TransactionPage> fetchTransactions({
@@ -345,11 +397,13 @@ WalletSources memorySources({
   http.Client? httpClient,
   MemWalletsRepo? repo,
   LiquidEngine? liquidEngine,
+  Set<ChainNetwork> liquidNetworks = const {ChainNetwork.liquid},
 }) => WalletSources.create(
   repo: repo ?? MemWalletsRepo(),
   eventVerifier: Bip340EventVerifier(),
   liquidSecrets: MemoryKeyValueStore(),
   liquidChainState: MemoryKeyValueStore(),
+  liquidNetworks: liquidNetworks,
   liquidEngine: liquidEngine ?? FakeLiquidEngine(),
   httpClient: httpClient,
 );

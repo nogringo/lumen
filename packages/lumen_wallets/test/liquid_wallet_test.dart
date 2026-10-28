@@ -409,6 +409,26 @@ void main() {
       expect(chain.broadcasts, 1);
     });
 
+    test('a sent transaction is followed until it confirms', () async {
+      final wallet = await source().add(phrase: _phrase, name: 'Savings');
+      final payment = await wallet.confirmSend(
+        await wallet.prepareSend(_elsewhere, sats: 5000),
+      );
+      chain.txs = [ChainTx(txid: payment.txid!, balance: -5030, fee: 30)];
+
+      final confirmed = wallet.watchConfirmation(payment.txid!).toList();
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      chain.txs = [
+        ChainTx(txid: payment.txid!, balance: -5030, fee: 30, height: 100),
+      ];
+
+      final [sent] = await confirmed.timeout(const Duration(seconds: 5));
+      expect(
+        (sent.txid, sent.sats, sent.isIncoming, sent.confirmations),
+        ('tx9', 5000, false, 1),
+      );
+    });
+
     test('a link amount wins over the typed one', () async {
       final wallet = await source().add(phrase: _phrase, name: 'Savings');
       final quote = await wallet.prepareSend(

@@ -248,6 +248,10 @@ abstract interface class Wallet {
   /// Methods outside these throw an [UnsupportedError].
   Set<WalletCapability> get capabilities;
 
+  /// The chain the wallet holds its funds on, null for a Lightning wallet.
+  /// It pays and receives addresses on this network only.
+  ChainNetwork? get network;
+
   /// Balance in sats. Throws a [BalanceException] when it cannot be read.
   Future<int> fetchBalance();
 
@@ -262,6 +266,11 @@ abstract interface class Wallet {
   /// once a pending one confirms, then closes. Cancelling the subscription
   /// stops watching.
   Stream<Transaction> watchPayment(PaymentRequest request);
+
+  /// Emits the chain transaction [txid], sent from this wallet, once it
+  /// confirms, then closes. Cancelling the subscription stops watching.
+  /// Throws an [UnsupportedError] on a wallet without a [network].
+  Stream<Transaction> watchConfirmation(String txid);
 
   /// Checks that [request] can be paid and quotes the fee, without sending
   /// anything. [sats] is the amount for a request that sets none. Throws a

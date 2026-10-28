@@ -477,6 +477,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendToHint => 'Lightning invoice or Lightning address';
 
   @override
+  String get sendToHintLiquid => 'Liquid address';
+
+  @override
+  String get sendToHintAll =>
+      'Lightning invoice, Lightning address or Liquid address';
+
+  @override
   String get paste => 'Paste';
 
   @override
@@ -513,6 +520,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailNetwork => 'Network';
 
   @override
+  String get detailFee => 'Fee';
+
+  @override
   String get detailFeePaid => 'Fee paid';
 
   @override
@@ -526,6 +536,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentHashCopied => 'Payment hash copied';
+
+  @override
+  String get detailTxid => 'Transaction ID';
+
+  @override
+  String get copyTxid => 'Copy transaction ID';
+
+  @override
+  String get txidCopied => 'Transaction ID copied';
 
   @override
   String get paymentTitle => 'Payment';
@@ -585,8 +604,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Paste a Lightning invoice or a Lightning address.';
 
   @override
+  String get errorToEmptyLiquid => 'Paste a Liquid address.';
+
+  @override
+  String get errorToEmptyAll =>
+      'Paste a Lightning invoice, a Lightning address or a Liquid address.';
+
+  @override
   String get errorToUnrecognized =>
       'This is not a Lightning invoice or address. An invoice starts with lnbc, an address looks like name@example.com.';
+
+  @override
+  String get errorToUnrecognizedLiquid =>
+      'This is not a Liquid address. Copy it again from the recipient, in full.';
+
+  @override
+  String get errorToUnrecognizedAll =>
+      'This is not an invoice or an address Lumen can pay. An invoice starts with lnbc, a Lightning address looks like name@example.com, a Liquid address starts with lq1.';
 
   @override
   String get errorInvoiceNoAmount =>
@@ -662,6 +696,19 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String sendUnconfirmed(String name) {
     return '$name did not confirm the payment in time. It may still go through: check its recent activity before you try again.';
+  }
+
+  @override
+  String get sendChainUnreachable =>
+      'Lumen could not reach the Liquid server, so nothing was sent. Check your connection, then try again.';
+
+  @override
+  String get sendChainFailed =>
+      'The Liquid network did not accept this payment, so nothing was sent. Try again later, or pay from another wallet.';
+
+  @override
+  String sendChainUnconfirmed(String name) {
+    return 'The Liquid server did not confirm that it received the payment. It may still go through: check the recent activity of $name before you try again.';
   }
 
   @override

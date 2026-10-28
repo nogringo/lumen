@@ -210,6 +210,20 @@ How receiving came out:
 
 Done when: sending on testnet works end to end and the send tests cover each error.
 
+Done in two commits: sending, then "send everything".
+
+How sending came out:
+
+- Wallets say which chain holds their funds (`Wallet.network`, null for Lightning), which step 7 can use for the explorer link. Send only offers wallets on the address's network, so a testnet address, read in debug builds, is paid from a testnet wallet. Without one, Send says the address is on testnet, as release builds do.
+- Review now quotes the payment: `prepareSend` moved from the Send button to Review, for invoices and addresses alike, and Send sends that very quote. A Liquid quote shows its fee in a Fee row. A Lightning address still gets its invoice on sending, so no invoice is asked for a payment that is never confirmed.
+- What cannot be paid stops before the review: not enough for the amount and its fee, or a server that does not answer. An asset other than L-BTC and an address from another network are caught when the To field is read.
+- The review shows the whole address in groups of four, in columns, read aloud a group at a time, so it can be checked against the recipient's copy.
+- Once sent: "Waiting for confirmation" with its usual delay, the fee paid, and the transaction ID, which can be copied and is in the shared receipt. The screen follows the transaction as Receive does, with a sync every 10 s (`Wallet.watchConfirmation`), then says "Confirmed", announced, and refreshes the wallet.
+- Errors on a Liquid payment name the Liquid server or network, not the wallet: unreachable, refused, or sent without an answer. The last one offers no retry, as for Lightning.
+- The To field's hint and errors name what the wallets can pay: Lightning, Liquid or both.
+- Sending again after the network refused a payment sends the same reviewed transaction, which it will likely refuse again. Edit payment builds a new one.
+- Not tried in the running app on testnet yet.
+
 ### 7. Payment details
 
 - For Liquid: txid, confirmations, fee and date, plus a link to a block explorer that includes the unblinding data, since Liquid amounts are confidential.

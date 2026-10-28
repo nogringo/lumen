@@ -433,6 +433,80 @@ void main() {
     }, variant: _platformFor(size));
   }
 
+  Future<void> reviewLiquidPayment(WidgetTester tester) async {
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.byType(TextField).first,
+      'liquidnetwork:$liquidAddress?amount=0.0001',
+    );
+    await tester.pump();
+    await tester.ensureVisible(find.text('Review'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Review'));
+    await tester.pumpAndSettle();
+  }
+
+  FakeWallet liquidWallet() =>
+      FakeWallet.liquid('savings', 'Savings', balance: 50000)
+        ..quotedFeeSats = 26;
+
+  for (final brightness in Brightness.values) {
+    for (final (name, size) in [
+      ('phone', phoneSize),
+      ('desktop', desktopSize),
+    ]) {
+      testWidgets(
+        'Liquid send meets the guidelines, $name, ${brightness.name}',
+        (tester) async {
+          final handle = tester.ensureSemantics();
+          await pumpLumen(
+            tester,
+            sources,
+            wallets: [liquidWallet()],
+            size: size,
+            brightness: brightness,
+          );
+
+          await reviewLiquidPayment(tester);
+          expect(find.text('Fee'), findsOneWidget);
+          await expectGuidelines(tester);
+
+          await tester.ensureVisible(find.text('Send 10,000 sats'));
+          await tester.pumpAndSettle();
+          await tester.tap(find.text('Send 10,000 sats'));
+          await tester.pumpAndSettle();
+          expect(find.text('Waiting for confirmation'), findsOneWidget);
+          await expectGuidelines(tester);
+          handle.dispose();
+        },
+        variant: _platformFor(size),
+      );
+    }
+  }
+
+  for (final (name, size) in [('phone', phoneSize), ('desktop', desktopSize)]) {
+    testWidgets('Liquid send lays out at 200% text, $name', (tester) async {
+      await pumpLumen(
+        tester,
+        sources,
+        wallets: [liquidWallet()],
+        size: size,
+        textScale: 2,
+      );
+
+      await reviewLiquidPayment(tester);
+      expect(tester.takeException(), isNull, reason: 'review');
+
+      await tester.ensureVisible(find.text('Send 10,000 sats'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Send 10,000 sats'));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: 'sent');
+      expect(find.text('Transaction ID'), findsOneWidget);
+    }, variant: _platformFor(size));
+  }
+
   testWidgets('the review reads the amount with its heading', (tester) async {
     final handle = tester.ensureSemantics();
     await pumpLumen(tester, sources, wallets: twoWallets());

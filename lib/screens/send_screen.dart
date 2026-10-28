@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -80,11 +82,16 @@ class _SendFlowState extends State<_SendFlow> {
   // Fixed once the payment is reviewed.
   Recipient? _recipient;
   PayTerms? _terms;
+
+  /// Null for a Lightning address, whose invoice is asked for on sending.
+  SendQuote? _quote;
   var _sats = 0;
   Wallet? _payer;
   Payment? _payment;
   Invoice? _paid;
   DateTime? _sentAt;
+  StreamSubscription<Transaction>? _confirmation;
+  var _confirmed = false;
 
   @override
   void initState() {
@@ -98,6 +105,7 @@ class _SendFlowState extends State<_SendFlow> {
 
   @override
   void dispose() {
+    _confirmation?.cancel();
     _to.dispose();
     _amount.dispose();
     _toFocus.dispose();
@@ -119,11 +127,10 @@ class _SendFlowState extends State<_SendFlow> {
   /// The wallets that can pay [recipient], or all of them when none can, so
   /// that the picker still shows one while the error says why.
   List<Wallet> _payersOf(Recipient? recipient, WalletsController wallets) {
-    final needed = _neededFor(recipient);
-    if (needed == null) return wallets.wallets;
+    if (recipient == null) return wallets.wallets;
     final payers = [
       for (final wallet in wallets.wallets)
-        if (wallet.capabilities.contains(needed)) wallet,
+        if (_pays(wallet, recipient)) wallet,
     ];
     return payers.isEmpty ? wallets.wallets : payers;
   }
@@ -145,21 +152,31 @@ class _SendFlowState extends State<_SendFlow> {
 
   /// Why no wallet can pay [recipient], or null when one can.
   String? _unpayable(Recipient recipient, AppLocalizations l) {
-    final needed = _neededFor(recipient)!;
     final wallets = LumenScope.readWallets(context).wallets;
-    if (wallets.any((wallet) => wallet.capabilities.contains(needed))) {
-      return null;
-    }
-    return switch (needed) {
-      WalletCapability.payAddress => l.errorNoWalletPaysAddress,
-      _ => l.errorNoWalletPaysInvoice,
+    if (wallets.any((wallet) => _pays(wallet, recipient))) return null;
+    return switch (recipient) {
+      AddressRecipient(
+        address: ChainAddress(network: ChainNetwork.liquidTestnet),
+      ) =>
+        l.errorWrongNetwork,
+      AddressRecipient() => l.errorNoWalletPaysAddress,
+      InvoiceRecipient() || LnurlRecipient() => l.errorNoWalletPaysInvoice,
     };
   }
+
+  /// What the To field's hint and errors offer to pay.
+  _Pays get _payable => _paysOf(LumenScope.readWallets(context).wallets);
+
+  /// Testnet addresses are read where testnet wallets are enabled.
+  Recipient _parse(String text) => parseRecipient(
+    text,
+    networks: LumenScope.sourcesOf(context).liquid.networks,
+  );
 
   void _onToChanged(String text) {
     Recipient? typed;
     try {
-      typed = parseRecipient(text);
+      typed = _parse(text);
     } on RecipientException {
       typed = null;
     }
@@ -196,9 +213,9 @@ class _SendFlowState extends State<_SendFlow> {
       _announce('$kind, ${l.amountSats(formatSats(context, sats))}');
     } else if (scanned && typed == null) {
       try {
-        parseRecipient(text);
+        _parse(text);
       } on RecipientException catch (e) {
-        _fieldError(to: _recipientMessage(l, e.error, ''));
+        _fieldError(to: _recipientMessage(l, e.error, '', _payable));
       }
     } else if (scanned && unpayable != null) {
       _fieldError(to: unpayable);
@@ -210,14 +227,23 @@ class _SendFlowState extends State<_SendFlow> {
   Future<void> _review() async {
     if (_busy) return;
     final l = AppLocalizations.of(context);
+    final payable = _payable;
     final input = _to.text.trim();
-    if (input.isEmpty) return _fieldError(to: l.errorToEmpty);
+    if (input.isEmpty) {
+      return _fieldError(
+        to: switch (payable) {
+          _Pays.lightning => l.errorToEmpty,
+          _Pays.liquid => l.errorToEmptyLiquid,
+          _Pays.both => l.errorToEmptyAll,
+        },
+      );
+    }
 
     final Recipient recipient;
     try {
-      recipient = parseRecipient(input);
+      recipient = _parse(input);
     } on RecipientException catch (e) {
-      return _fieldError(to: _recipientMessage(l, e.error, ''));
+      return _fieldError(to: _recipientMessage(l, e.error, '', payable));
     }
     if (_unpayable(recipient, l) case final error?) {
       return _fieldError(to: error);
@@ -247,36 +273,49 @@ class _SendFlowState extends State<_SendFlow> {
       );
     }
 
+    final lnurlPay = LumenScope.sourcesOf(context).lnurlPay;
+    final onChain = recipient is AddressRecipient;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
     PayTerms? terms;
-    if (recipient is LnurlRecipient) {
-      final lnurlPay = LumenScope.sourcesOf(context).lnurlPay;
-      setState(() {
-        _busy = true;
-        _error = null;
-      });
-      try {
-        terms = await lnurlPay.terms(recipient);
-      } on RecipientException catch (e) {
-        if (!mounted) return;
-        setState(() => _busy = false);
-        return _showError(_recipientMessage(l, e.error, recipient.label));
+    SendQuote? quote;
+    String? error;
+    try {
+      switch (recipient) {
+        case LnurlRecipient():
+          terms = await lnurlPay.terms(recipient);
+        case InvoiceRecipient(:final invoice):
+          quote = await wallet.prepareSend(invoice);
+        case AddressRecipient(:final address):
+          quote = await wallet.prepareSend(address, sats: sats);
       }
-      if (!mounted) return;
-      setState(() => _busy = false);
-      if (!terms.accepts(sats)) {
-        return _fieldError(
-          amount: l.errorAmountRange(
-            recipient.label,
-            formatSats(context, terms.minSats),
-            formatSats(context, terms.maxSats),
-          ),
-        );
-      }
+    } on RecipientException catch (e) {
+      error = _recipientMessage(l, e.error, _label(recipient), payable);
+    } on SendException catch (e) {
+      error = _sendMessage(l, e.error, wallet.name, onChain: onChain);
+    } catch (_) {
+      error = _sendMessage(l, SendError.failed, wallet.name, onChain: onChain);
+    }
+    if (!mounted) return;
+    setState(() => _busy = false);
+    if (error != null) return _showError(error);
+    if (recipient case LnurlRecipient(:final label)
+        when !terms!.accepts(sats)) {
+      return _fieldError(
+        amount: l.errorAmountRange(
+          label,
+          formatSats(context, terms.minSats),
+          formatSats(context, terms.maxSats),
+        ),
+      );
     }
 
     setState(() {
       _recipient = recipient;
       _terms = terms;
+      _quote = quote;
       _sats = sats;
       _payer = wallet;
       _error = null;
@@ -292,6 +331,8 @@ class _SendFlowState extends State<_SendFlow> {
     final l = AppLocalizations.of(context);
     final lnurlPay = LumenScope.sourcesOf(context).lnurlPay;
     final wallets = LumenScope.readWallets(context);
+    final payable = _payable;
+    final onChain = recipient is AddressRecipient;
     setState(() {
       _busy = true;
       _error = null;
@@ -300,27 +341,30 @@ class _SendFlowState extends State<_SendFlow> {
     String? error;
     var attempted = false;
     try {
-      final PaymentRequest request = switch (recipient) {
-        InvoiceRecipient(:final invoice) => invoice,
-        LnurlRecipient() => await lnurlPay.invoice(_terms!, _sats),
-        AddressRecipient(:final address) => address,
-      };
+      final quote =
+          _quote ??
+          await wallet.prepareSend(await lnurlPay.invoice(_terms!, _sats));
+      final request = quote.request;
       if (request is Invoice && request.isExpiredAt(DateTime.now())) {
         error = l.errorInvoiceExpired;
       } else {
-        final quote = await wallet.prepareSend(request, sats: _sats);
         attempted = true;
         _payment = await wallet.confirmSend(quote);
         _paid = request is Invoice ? request : null;
         _sentAt = DateTime.now();
       }
     } on RecipientException catch (e) {
-      error = _recipientMessage(l, e.error, _label(recipient));
+      error = _recipientMessage(l, e.error, _label(recipient), payable);
     } on SendException catch (e) {
-      error = _sendMessage(l, e.error, wallet.name);
+      error = _sendMessage(l, e.error, wallet.name, onChain: onChain);
       _unconfirmed = e.error == SendError.unconfirmed;
     } catch (_) {
-      error = l.sendUnconfirmed(wallet.name);
+      error = _sendMessage(
+        l,
+        SendError.unconfirmed,
+        wallet.name,
+        onChain: onChain,
+      );
       _unconfirmed = true;
     }
     if (attempted) wallets.refresh(wallet);
@@ -340,7 +384,19 @@ class _SendFlowState extends State<_SendFlow> {
       HapticFeedback.successNotification();
       _announce(l.sentAnnouncement(formatSats(context, _sats), wallet.name));
       _focusStep();
+      if (_payment?.txid case final txid?) {
+        _confirmation = wallet
+            .watchConfirmation(txid)
+            .listen((_) => _onConfirmed(wallet));
+      }
     }
+  }
+
+  void _onConfirmed(Wallet wallet) {
+    if (!mounted) return;
+    setState(() => _confirmed = true);
+    LumenScope.readWallets(context).refresh(wallet);
+    _announce(AppLocalizations.of(context).paymentConfirmedAnnouncement);
   }
 
   void _edit() {
@@ -439,7 +495,11 @@ class _SendFlowState extends State<_SendFlow> {
           onSubmitted: (_) =>
               fixedSats == null ? _amountFocus.requestFocus() : _review(),
           decoration: InputDecoration(
-            helperText: l.sendToHint,
+            helperText: switch (_paysOf(wallets.wallets)) {
+              _Pays.lightning => l.sendToHint,
+              _Pays.liquid => l.sendToHintLiquid,
+              _Pays.both => l.sendToHintAll,
+            },
             helperMaxLines: 2,
             errorText: _toError,
             errorMaxLines: 4,
@@ -586,6 +646,8 @@ class _SendFlowState extends State<_SendFlow> {
           l.detailNetwork,
           Text(recipient is AddressRecipient ? l.kindLiquid : l.kindLightning),
         ),
+        if (_quote?.feeSats case final fee?)
+          (l.detailFee, Text(l.amountSats(formatSats(context, fee)))),
       ]),
       if (_error case final error?) ...[
         const SizedBox(height: 16),
@@ -643,6 +705,20 @@ class _SendFlowState extends State<_SendFlow> {
           style: TextStyle(fontSize: 15, color: LumenColors.of(context).text2),
         ),
       ],
+      if (_payment?.txid != null) ...[
+        const SizedBox(height: 20),
+        if (_confirmed)
+          StatusLine(
+            icon: Icons.check_circle_outline,
+            title: l.paymentConfirmed,
+          )
+        else
+          StatusLine(
+            icon: Icons.schedule,
+            title: l.waitingForConfirmation,
+            detail: l.confirmsSoon,
+          ),
+      ],
       const SizedBox(height: 24),
       DetailsCard([
         if (_sentAt case final at?)
@@ -661,6 +737,11 @@ class _SendFlowState extends State<_SendFlow> {
               tooltip: l.copyPaymentHash,
               copied: l.paymentHashCopied,
             ),
+          ),
+        if (_payment?.txid case final txid?)
+          (
+            l.detailTxid,
+            CopyableValue(txid, tooltip: l.copyTxid, copied: l.txidCopied),
           ),
       ]),
       widget.frame.bottomGap,
@@ -693,18 +774,32 @@ class _SendFlowState extends State<_SendFlow> {
         ),
       if (_paid?.paymentHash case final hash?)
         l.receiptLine(l.detailPaymentHash, hash),
+      if (_payment?.txid case final txid?) l.receiptLine(l.detailTxid, txid),
       if (_payment?.preimage case final preimage? when preimage.isNotEmpty)
         l.receiptLine(l.receiptPreimage, preimage),
     ].join('\n');
   }
 }
 
-/// What a wallet must do to pay [recipient], or null before one is typed.
-WalletCapability? _neededFor(Recipient? recipient) => switch (recipient) {
-  null => null,
-  AddressRecipient() => WalletCapability.payAddress,
-  InvoiceRecipient() || LnurlRecipient() => WalletCapability.payInvoice,
+/// Whether [wallet] can pay [recipient]: an invoice, or an address on the
+/// wallet's own network.
+bool _pays(Wallet wallet, Recipient recipient) => switch (recipient) {
+  AddressRecipient(:final address) =>
+    wallet.capabilities.contains(WalletCapability.payAddress) &&
+        wallet.network == address.network,
+  InvoiceRecipient() ||
+  LnurlRecipient() => wallet.capabilities.contains(WalletCapability.payInvoice),
 };
+
+/// What the user's wallets can pay, all networks together.
+enum _Pays { lightning, liquid, both }
+
+_Pays _paysOf(List<Wallet> wallets) {
+  bool any(WalletCapability capability) =>
+      wallets.any((wallet) => wallet.capabilities.contains(capability));
+  if (!any(WalletCapability.payAddress)) return _Pays.lightning;
+  return any(WalletCapability.payInvoice) ? _Pays.both : _Pays.liquid;
+}
 
 String _label(Recipient recipient) => switch (recipient) {
   LnurlRecipient(:final label) => label,
@@ -715,8 +810,13 @@ String _recipientMessage(
   AppLocalizations l,
   RecipientError error,
   String label,
+  _Pays payable,
 ) => switch (error) {
-  RecipientError.unrecognized => l.errorToUnrecognized,
+  RecipientError.unrecognized => switch (payable) {
+    _Pays.lightning => l.errorToUnrecognized,
+    _Pays.liquid => l.errorToUnrecognizedLiquid,
+    _Pays.both => l.errorToUnrecognizedAll,
+  },
   RecipientError.invoiceWithoutAmount => l.errorInvoiceNoAmount,
   RecipientError.unreachable => l.recipientUnreachable(label),
   RecipientError.refused => l.recipientRefused(label),
@@ -725,16 +825,24 @@ String _recipientMessage(
   RecipientError.unsupportedAsset => l.errorUnsupportedAsset,
 };
 
-String _sendMessage(AppLocalizations l, SendError error, String name) =>
-    switch (error) {
-      SendError.unreachable => l.sendUnreachable(name),
-      SendError.noPermission => l.sendNoPermission,
-      SendError.insufficientBalance => l.sendInsufficientBalance(name),
-      SendError.budgetExceeded => l.sendBudgetExceeded,
-      SendError.failed => l.sendFailed,
-      SendError.unconfirmed => l.sendUnconfirmed(name),
-      SendError.wrongNetwork => l.errorWrongNetwork,
-    };
+/// [onChain] for a payment to an address, which a chain server relays.
+String _sendMessage(
+  AppLocalizations l,
+  SendError error,
+  String name, {
+  bool onChain = false,
+}) => switch (error) {
+  SendError.unreachable when onChain => l.sendChainUnreachable,
+  SendError.failed when onChain => l.sendChainFailed,
+  SendError.unconfirmed when onChain => l.sendChainUnconfirmed(name),
+  SendError.unreachable => l.sendUnreachable(name),
+  SendError.noPermission => l.sendNoPermission,
+  SendError.insufficientBalance => l.sendInsufficientBalance(name),
+  SendError.budgetExceeded => l.sendBudgetExceeded,
+  SendError.failed => l.sendFailed,
+  SendError.unconfirmed => l.sendUnconfirmed(name),
+  SendError.wrongNetwork => l.errorWrongNetwork,
+};
 
 /// The amount set by a pasted invoice or link, in place of the amount field.
 class _FixedAmount extends StatelessWidget {
@@ -788,10 +896,11 @@ class _RecipientText extends StatelessWidget {
         semanticsLabel: AppLocalizations.of(context).lightningInvoice,
         style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
       ),
-      AddressRecipient(:final address) => Text(
-        shortInvoice(address.address),
-        semanticsLabel: AppLocalizations.of(context).liquidAddress,
-        style: const TextStyle(fontFamily: monoFamily, fontSize: 13),
+      // Whole, in columns, so it can be checked against the recipient's copy.
+      AddressRecipient(:final address) => GroupedAddress(
+        address.address,
+        style: const TextStyle(fontSize: 13),
+        textAlign: TextAlign.start,
       ),
     };
   }
