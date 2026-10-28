@@ -26,7 +26,8 @@ jobs:
       - run: flutter pub get
 
       - name: Format
-        run: dart format --output=none --set-exit-if-changed lib test tool packages
+        # Not `packages`: the vendored Cargokit build_tool has no pub get here, so it parses at the wrong language version.
+        run: dart format --output=none --set-exit-if-changed lib test tool packages/lumen_core/lib packages/lumen_wallets
 
       - name: Analyze
         run: flutter analyze

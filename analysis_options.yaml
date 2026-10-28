@@ -9,3 +9,4 @@ analyzer:
     - windows/**
     - macos/**
     - linux/**
+    - packages/lumen_core/cargokit/**
