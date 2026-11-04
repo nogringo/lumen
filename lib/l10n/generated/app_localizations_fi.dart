@@ -934,11 +934,12 @@ class AppLocalizationsFi extends AppLocalizations {
       'Lumen näyttää 12 sanaa. Ne ovat ainoa tapa saada tämä lompakko takaisin, jos kadotat tai nollaat tämän laitteen, ja kuka tahansa, jolla ne ovat, voi käyttää sen varat.';
 
   @override
-  String get phrasePointPaper => 'Kirjoita ne paperille järjestyksessä';
+  String get phrasePointPaper =>
+      'Kirjoita ne paperille järjestyksessä tai tallenna ne tiedostoon';
 
   @override
   String get phrasePointOffline =>
-      'Pidä ne poissa verkosta: ei kuvakaappausta, valokuvaa eikä pilvimuistiinpanoa';
+      'Pidä ne poissa verkosta: ei kuvakaappausta, valokuvaa eikä pilvitallennusta';
 
   @override
   String get phrasePointNeverAsked =>
@@ -956,7 +957,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get phraseLead =>
-      'Kirjoita nämä 12 sanaa paperille tässä järjestyksessä. Seuraavaksi kirjoitat niistä kolme.';
+      'Kirjoita nämä 12 sanaa paperille tässä järjestyksessä tai tallenna ne tiedostoon. Seuraavaksi kirjoitat niistä kolme.';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -964,14 +965,14 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => 'Kirjoitin ne muistiin';
+  String get phraseHaveCopy => 'Minulla on oma kopio';
 
   @override
   String get checkPhraseTitle => 'Tarkista lauseesi';
 
   @override
   String get checkPhraseLead =>
-      'Kirjoita nämä sanat paperiltasi varmistaaksesi, että ne ovat oikein.';
+      'Kirjoita nämä sanat kopiostasi varmistaaksesi, että ne ovat oikein.';
 
   @override
   String wordLabel(int number, int total) {
@@ -980,12 +981,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return 'Kirjoita sana $number paperiltasi.';
+    return 'Kirjoita sana $number kopiostasi.';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return 'Tämä ei ole sana $number. Tarkista paperisi ja kirjoita se uudelleen.';
+    return 'Tämä ei ole sana $number. Tarkista kopiosi ja kirjoita se uudelleen.';
   }
 
   @override
@@ -1032,7 +1033,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Nämä sanat eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista paperiisi.';
+      'Nämä sanat eivät muodosta palautuslausetta. Jokin niistä voi olla väärin tai väärässä kohdassa: vertaa jokaista kopioosi.';
 
   @override
   String get restoreScanning =>
@@ -1147,8 +1148,28 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return 'Näillä sanoilla voit palauttaa lompakon $name Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tässä järjestyksessä.';
+    return 'Näillä sanoilla voit palauttaa lompakon $name Lumenissa tai muussa Liquid-sovelluksessa. Säilytä ne paperilla tai tiedostossa tässä järjestyksessä.';
   }
+
+  @override
+  String get savePhraseFile => 'Tallenna tiedostoon';
+
+  @override
+  String phraseFileName(String name) {
+    return 'Palautuslause $name';
+  }
+
+  @override
+  String get phraseFileSaved =>
+      'Tiedosto tallennettu. Kuka tahansa, joka avaa sen, voi käyttää tämän lompakon varat: pidä se poissa verkosta, esimerkiksi USB-tikulla.';
+
+  @override
+  String get phraseFileDownloaded =>
+      'Tiedosto lähetetty latauksiisi. Kuka tahansa, joka avaa sen, voi käyttää tämän lompakon varat: pidä se poissa verkosta, esimerkiksi USB-tikulla.';
+
+  @override
+  String get errorPhraseFile =>
+      'Lumen ei voinut tallentaa tiedostoa. Yritä uudelleen tai valitse toinen kansio.';
 
   @override
   String get removeLiquidBody =>

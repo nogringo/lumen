@@ -911,10 +911,10 @@ class AppLocalizationsJa extends AppLocalizations {
       'Lumen が 12 個の単語を表示します。このデバイスを紛失したりリセットしたりしたとき、ウォレットを取り戻す唯一の方法です。単語を知っている人は誰でも資金を使えます。';
 
   @override
-  String get phrasePointPaper => '順番どおりに紙に書き留める';
+  String get phrasePointPaper => '順番どおりに紙に書き留めるか、ファイルに保存する';
 
   @override
-  String get phrasePointOffline => 'オフラインで保管する。スクリーンショット、写真、クラウドのメモは使わない';
+  String get phrasePointOffline => 'オフラインで保管する。スクリーンショット、写真、クラウドストレージは使わない';
 
   @override
   String get phrasePointNeverAsked => 'Lumen が単語を求めるのはウォレットの復元時だけです';
@@ -929,7 +929,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get phraseTitle => 'リカバリーフレーズ';
 
   @override
-  String get phraseLead => 'この 12 個の単語を、この順番で紙に書き留めてください。次にそのうち 3 つを入力します。';
+  String get phraseLead =>
+      'この 12 個の単語を、この順番で紙に書き留めるか、ファイルに保存してください。次にそのうち 3 つを入力します。';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -937,13 +938,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => '書き留めました';
+  String get phraseHaveCopy => '控えを用意しました';
 
   @override
   String get checkPhraseTitle => 'フレーズの確認';
 
   @override
-  String get checkPhraseLead => '紙に書いた単語を入力して、正しいか確認してください。';
+  String get checkPhraseLead => '控えを見ながら単語を入力して、正しいか確認してください。';
 
   @override
   String wordLabel(int number, int total) {
@@ -952,12 +953,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return '紙に書いた $number 番目の単語を入力してください。';
+    return '控えにある $number 番目の単語を入力してください。';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return '$number 番目の単語ではありません。紙を確認して、もう一度入力してください。';
+    return '$number 番目の単語ではありません。控えを確認して、もう一度入力してください。';
   }
 
   @override
@@ -1000,7 +1001,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'これらの単語はリカバリーフレーズになっていません。どれかが間違っているか、順番が違う可能性があります。紙と 1 つずつ照らし合わせてください。';
+      'これらの単語はリカバリーフレーズになっていません。どれかが間違っているか、順番が違う可能性があります。控えと 1 つずつ照らし合わせてください。';
 
   @override
   String get restoreScanning => 'このウォレットの支払いを探しています。1 分ほどかかることがあります。';
@@ -1110,8 +1111,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return 'これらの単語で、Lumen または他の Liquid アプリで $name を復元できます。この順番どおりに紙に書いて保管してください。';
+    return 'これらの単語で、Lumen または他の Liquid アプリで $name を復元できます。この順番どおりに紙かファイルで保管してください。';
   }
+
+  @override
+  String get savePhraseFile => 'ファイルに保存';
+
+  @override
+  String phraseFileName(String name) {
+    return '$name のリカバリーフレーズ';
+  }
+
+  @override
+  String get phraseFileSaved =>
+      'ファイルを保存しました。このファイルを開いた人は誰でも、このウォレットの資金を使えます。USB メモリなど、オフラインで保管してください。';
+
+  @override
+  String get phraseFileDownloaded =>
+      'ファイルをダウンロードフォルダに送りました。このファイルを開いた人は誰でも、このウォレットの資金を使えます。USB メモリなど、オフラインで保管してください。';
+
+  @override
+  String get errorPhraseFile => 'ファイルを保存できませんでした。もう一度試すか、別のフォルダを選んでください。';
 
   @override
   String get removeLiquidBody =>

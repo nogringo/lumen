@@ -1,4 +1,5 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
@@ -78,7 +79,7 @@ void main() {
     expect(find.bySemanticsLabel('Word 1 of 12, abandon'), findsOneWidget);
     expect(find.bySemanticsLabel('Word 12 of 12, about'), findsOneWidget);
 
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
     expect(find.text('Check your phrase'), findsOneWidget);
     expect(asked(tester), hasLength(3));
@@ -105,7 +106,7 @@ void main() {
     await openPhrase(tester);
     expect(calls, [true]);
 
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
     expect(calls, [true]);
 
@@ -119,7 +120,7 @@ void main() {
     tester,
   ) async {
     await openPhrase(tester);
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
     final first = asked(tester).first;
 
@@ -128,12 +129,88 @@ void main() {
     await settle(tester);
 
     expect(
-      find.text('This is not word $first. Check your paper and type it again.'),
+      find.text('This is not word $first. Check your copy and type it again.'),
       findsOneWidget,
     );
     expect(await tester.runAsync(sources.liquid.load), isEmpty);
     final focused = FocusManager.instance.primaryFocus?.context;
     expect(focused?.findAncestorWidgetOfExactType<TextField>(), isNotNull);
+  });
+
+  const fileSaved =
+      "File saved. Anyone who opens it can spend this wallet's funds: keep "
+      'it offline, on a USB key for example.';
+
+  Future<void> saveToFile(WidgetTester tester) async {
+    await tester.ensureVisible(find.text('Save to a file'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save to a file'));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('the phrase saves to a file, on one line', (tester) async {
+    final handle = tester.ensureSemantics();
+    final picker = FakeFilePicker.install();
+    await openPhrase(tester);
+
+    tester.takeAnnouncements();
+    await saveToFile(tester);
+
+    expect(picker.saved, [
+      (
+        fileName: 'Liquid recovery phrase.txt',
+        text: '$liquidPhrase\n',
+        mimeType: 'text/plain',
+      ),
+    ]);
+    expect(find.text(fileSaved), findsOneWidget);
+    expect(
+      [for (final a in tester.takeAnnouncements()) a.message],
+      [fileSaved],
+    );
+    expect(picker.cleared, 0);
+    await expectGuidelines(tester);
+    handle.dispose();
+  });
+
+  testWidgets('iOS clears the copy it exports the file from', (tester) async {
+    final picker = FakeFilePicker.install();
+    await openPhrase(tester);
+    await saveToFile(tester);
+    expect(picker.cleared, 1);
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
+
+  testWidgets('a canceled save says nothing', (tester) async {
+    final picker = FakeFilePicker.install()..result = () => null;
+    await openPhrase(tester);
+    await saveToFile(tester);
+
+    expect(picker.saved, hasLength(1));
+    expect(find.text(fileSaved), findsNothing);
+    expect(find.textContaining('could not save'), findsNothing);
+  });
+
+  testWidgets('a failed save is shown inline and announced', (tester) async {
+    final handle = tester.ensureSemantics();
+    FakeFilePicker.install().result = () =>
+        throw PlatformException(code: 'save_file_error');
+    await openPhrase(tester);
+
+    tester.takeAnnouncements();
+    await saveToFile(tester);
+
+    const error =
+        'Lumen could not save the file. Try again, or pick another folder.';
+    expect(find.text(error), findsOneWidget);
+    final [announcement] = tester.takeAnnouncements();
+    expect(announcement.message, error);
+    expect(announcement.assertiveness, Assertiveness.assertive);
+
+    FakeFilePicker.install();
+    await saveToFile(tester);
+    expect(find.text(error), findsNothing);
+    expect(find.text(fileSaved), findsOneWidget);
+    handle.dispose();
   });
 
   testWidgets('screen readers read the words in order, one column first', (
@@ -155,7 +232,7 @@ void main() {
   testWidgets('typing a word offers the list words, announced', (tester) async {
     final handle = tester.ensureSemantics();
     await openPhrase(tester);
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
 
     tester.takeAnnouncements();
@@ -189,7 +266,7 @@ void main() {
     tester,
   ) async {
     await openPhrase(tester, size: desktopSize);
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byType(TextField).first);
@@ -212,7 +289,7 @@ void main() {
 
   testWidgets('a suggestion can be reached with the keyboard', (tester) async {
     await openPhrase(tester);
-    await tester.tap(find.text('I wrote them down'));
+    await tester.tap(find.text('I have my copy'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.byType(TextField).first);
@@ -275,7 +352,7 @@ void main() {
         await tester.tap(find.text('Show the 12 words'));
         await settle(tester);
         await expectGuidelines(tester);
-        await tester.tap(find.text('I wrote them down'));
+        await tester.tap(find.text('I have my copy'));
         await tester.pumpAndSettle();
         await tester.enterText(find.byType(TextField).first, 'ab');
         await tester.pump();
@@ -293,7 +370,7 @@ void main() {
         find.textContaining('Fast, confidential transfers'),
         find.text('Create a new wallet'),
         find.text('Show the 12 words'),
-        find.text('I wrote them down'),
+        find.text('I have my copy'),
       ]) {
         await tester.ensureVisible(step);
         await tester.pumpAndSettle();

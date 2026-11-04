@@ -13,6 +13,7 @@ import '../widgets/flow_parts.dart';
 import '../widgets/phrase_word_field.dart';
 import '../widgets/phrase_words.dart';
 import '../widgets/private_screen.dart';
+import '../widgets/save_phrase_button.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/switch_row.dart';
 import '../widgets/tappable.dart';
@@ -151,8 +152,10 @@ class _PhraseScreen extends StatelessWidget {
           FilledButton(
             onPressed: () =>
                 pushStep<void>(context, (_) => _CheckScreen(phrase)),
-            child: Text(l.phraseWrittenDown),
+            child: Text(l.phraseHaveCopy),
           ),
+          const SizedBox(height: 12),
+          SavePhraseButton(name: l.kindLiquid, phrase: phrase),
         ],
       ),
     );

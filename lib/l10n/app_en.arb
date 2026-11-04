@@ -1226,11 +1226,11 @@
   "@phraseIntroBody": {
     "description": "Explains what the recovery phrase is, before it is shown."
   },
-  "phrasePointPaper": "Write them on paper, in order",
+  "phrasePointPaper": "Write them on paper in order, or save them to a file",
   "@phrasePointPaper": {
     "description": "Advice about the recovery phrase, after a check mark."
   },
-  "phrasePointOffline": "Keep them offline: no screenshot, photo or cloud note",
+  "phrasePointOffline": "Keep them offline: no screenshot, photo or cloud storage",
   "@phrasePointOffline": {
     "description": "Advice about the recovery phrase, after a check mark."
   },
@@ -1250,7 +1250,7 @@
   "@phraseTitle": {
     "description": "Title of the screen that shows the 12 words."
   },
-  "phraseLead": "Write these 12 words on paper, in this order. You will type three of them next.",
+  "phraseLead": "Write these 12 words on paper in this order, or save them to a file. You will type three of them next.",
   "@phraseLead": {
     "description": "Lead text above the 12 words of the recovery phrase."
   },
@@ -1269,15 +1269,15 @@
       }
     }
   },
-  "phraseWrittenDown": "I wrote them down",
-  "@phraseWrittenDown": {
-    "description": "Button under the recovery phrase, to go on to the check."
+  "phraseHaveCopy": "I have my copy",
+  "@phraseHaveCopy": {
+    "description": "Button under the recovery phrase, to go on to the check once the words are written down or saved to a file."
   },
   "checkPhraseTitle": "Check your phrase",
   "@checkPhraseTitle": {
     "description": "Title of the screen that asks for some words of the recovery phrase back."
   },
-  "checkPhraseLead": "Type these words from your paper, to make sure they are right.",
+  "checkPhraseLead": "Type these words from your copy, to make sure they are right.",
   "@checkPhraseLead": {
     "description": "Lead text of the recovery phrase check."
   },
@@ -1293,7 +1293,7 @@
       }
     }
   },
-  "errorWordEmpty": "Type word {number} from your paper.",
+  "errorWordEmpty": "Type word {number} from your copy.",
   "@errorWordEmpty": {
     "description": "Error when a word of the recovery phrase check is empty.",
     "placeholders": {
@@ -1302,7 +1302,7 @@
       }
     }
   },
-  "errorWordMismatch": "This is not word {number}. Check your paper and type it again.",
+  "errorWordMismatch": "This is not word {number}. Check your copy and type it again.",
   "@errorWordMismatch": {
     "description": "Error when a word typed in the recovery phrase check is wrong.",
     "placeholders": {
@@ -1356,7 +1356,7 @@
   "@errorWordUnknown": {
     "description": "Error under a restore field whose word is not a BIP39 word."
   },
-  "errorPhraseChecksum": "These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.",
+  "errorPhraseChecksum": "These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your copy.",
   "@errorPhraseChecksum": {
     "description": "Error when every word is valid but the phrase checksum fails."
   },
@@ -1498,7 +1498,7 @@
   "@show": {
     "description": "Button that confirms showing the recovery phrase."
   },
-  "savedPhraseLead": "These words restore {name} in Lumen or another Liquid app. Keep them on paper, in this order.",
+  "savedPhraseLead": "These words restore {name} in Lumen or another Liquid app. Keep them on paper or in a file, in this order.",
   "@savedPhraseLead": {
     "description": "Lead text above the recovery phrase of a saved wallet.",
     "placeholders": {
@@ -1506,6 +1506,31 @@
         "type": "String"
       }
     }
+  },
+  "savePhraseFile": "Save to a file",
+  "@savePhraseFile": {
+    "description": "Button that saves the recovery phrase to a text file the user picks."
+  },
+  "phraseFileName": "{name} recovery phrase",
+  "@phraseFileName": {
+    "description": "Name of the text file the recovery phrase is saved to, without its extension.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "phraseFileSaved": "File saved. Anyone who opens it can spend this wallet's funds: keep it offline, on a USB key for example.",
+  "@phraseFileSaved": {
+    "description": "Shown under the save button once the recovery phrase file is saved."
+  },
+  "phraseFileDownloaded": "File sent to your downloads. Anyone who opens it can spend this wallet's funds: keep it offline, on a USB key for example.",
+  "@phraseFileDownloaded": {
+    "description": "Shown under the save button on the web, where the browser downloads the recovery phrase file."
+  },
+  "errorPhraseFile": "Lumen could not save the file. Try again, or pick another folder.",
+  "@errorPhraseFile": {
+    "description": "Error under the save button when the recovery phrase file could not be written."
   },
   "removeLiquidBody": "Lumen deletes this wallet's recovery phrase from this device. Without your own copy of the words, its funds are lost for good.",
   "@removeLiquidBody": {

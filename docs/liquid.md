@@ -281,6 +281,16 @@ How the servers came out:
 - Saving does not check that the servers answer: a wrong URL shows as an unreachable balance, and the defaults are one button away.
 - Not tried in the running app yet.
 
+How saving the phrase to a file came out:
+
+- Both phrase screens, at creation and from the wallet menu, have "Save to a file" under the main button. It opens the system save dialog (`file_picker`, already in the build through `ndk_flutter`) on a `.txt` named after the wallet, "Liquid recovery phrase" at creation. On the web, the browser downloads it.
+- The file holds the words on one line, so it pastes whole into a restore screen, Lumen's or another wallet's. Single-line fields drop line breaks on paste, so one word per line would arrive glued together.
+- A note under the button, also announced, says the file is saved and that anyone who opens it can spend the funds. A failure shows there as an error. A canceled dialog says nothing.
+- iOS exports the file from a copy in the app's temporary folder, which `file_picker` leaves behind, so Lumen clears that folder after each save.
+- macOS needs the `com.apple.security.files.user-selected.read-write` entitlement for the save panel.
+- The text that said "your paper" now says "your copy", since the words may be in a file.
+- Not tried in the running app yet.
+
 ### 9. Build, CI and release
 
 - Install Rust and the needed targets in [ci.yml](../.github/workflows/ci.yml), [release.yml](../.github/workflows/release.yml) and the Pages workflow, with caching so builds stay fast. The Pages build needs nightly and the single-threaded wasm build.

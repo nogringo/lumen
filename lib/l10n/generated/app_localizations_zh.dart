@@ -887,10 +887,10 @@ class AppLocalizationsZh extends AppLocalizations {
       'Lumen 将显示 12 个单词。如果您丢失或重置此设备，它们是找回此钱包的唯一方式，任何拥有它们的人都可以花费其中的资金。';
 
   @override
-  String get phrasePointPaper => '按顺序写在纸上';
+  String get phrasePointPaper => '按顺序写在纸上，或保存到文件中';
 
   @override
-  String get phrasePointOffline => '离线保存：不要截图、拍照或存在云笔记中';
+  String get phrasePointOffline => '离线保存：不要截图、拍照或存到云端';
 
   @override
   String get phrasePointNeverAsked => 'Lumen 只在恢复钱包时才会要求输入';
@@ -905,7 +905,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get phraseTitle => '恢复短语';
 
   @override
-  String get phraseLead => '请按此顺序将这 12 个单词写在纸上。接下来您需要输入其中三个。';
+  String get phraseLead => '请按此顺序将这 12 个单词写在纸上，或保存到文件中。接下来您需要输入其中三个。';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -913,13 +913,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => '我已写下';
+  String get phraseHaveCopy => '我已保存副本';
 
   @override
   String get checkPhraseTitle => '核对短语';
 
   @override
-  String get checkPhraseLead => '根据您的纸张输入这些单词，确认它们无误。';
+  String get checkPhraseLead => '根据您的副本输入这些单词，确认它们无误。';
 
   @override
   String wordLabel(int number, int total) {
@@ -928,12 +928,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return '请输入纸上的第 $number 个单词。';
+    return '请输入副本中的第 $number 个单词。';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return '这不是第 $number 个单词。请核对纸张后重新输入。';
+    return '这不是第 $number 个单词。请核对副本后重新输入。';
   }
 
   @override
@@ -974,7 +974,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get errorWordUnknown => '此单词不在恢复短语的词表中。请检查拼写。';
 
   @override
-  String get errorPhraseChecksum => '这些单词无法组成恢复短语。其中某个可能有误或位置不对：请对照纸张逐一核对。';
+  String get errorPhraseChecksum => '这些单词无法组成恢复短语。其中某个可能有误或位置不对：请对照副本逐一核对。';
 
   @override
   String get restoreScanning => '正在查找此钱包的付款记录。这可能需要一分钟。';
@@ -1083,8 +1083,26 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return '这些单词可在 Lumen 或其他 Liquid 应用中恢复 $name。请按此顺序写在纸上保存。';
+    return '这些单词可在 Lumen 或其他 Liquid 应用中恢复 $name。请按此顺序写在纸上或保存在文件中。';
   }
+
+  @override
+  String get savePhraseFile => '保存到文件';
+
+  @override
+  String phraseFileName(String name) {
+    return '$name 恢复短语';
+  }
+
+  @override
+  String get phraseFileSaved => '文件已保存。任何打开它的人都能花掉这个钱包里的资金：请离线保存，例如存在 U 盘中。';
+
+  @override
+  String get phraseFileDownloaded =>
+      '文件已发送到您的下载文件夹。任何打开它的人都能花掉这个钱包里的资金：请离线保存，例如存在 U 盘中。';
+
+  @override
+  String get errorPhraseFile => 'Lumen 无法保存文件。请重试或选择其他文件夹。';
 
   @override
   String get removeLiquidBody =>

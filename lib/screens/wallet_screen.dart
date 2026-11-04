@@ -18,6 +18,7 @@ import '../widgets/flow_parts.dart';
 import '../widgets/passphrase_field.dart';
 import '../widgets/phrase_words.dart';
 import '../widgets/private_screen.dart';
+import '../widgets/save_phrase_button.dart';
 import '../widgets/screen_parts.dart';
 import '../widgets/wallet_actions.dart';
 import '../widgets/wallet_kind_style.dart';
@@ -620,6 +621,8 @@ class _PhraseScreen extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l.done),
           ),
+          const SizedBox(height: 12),
+          SavePhraseButton(name: name, phrase: phrase),
         ],
       ),
     );

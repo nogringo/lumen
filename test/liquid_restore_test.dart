@@ -223,7 +223,7 @@ void main() {
 
     await tapRestore(tester);
 
-    expect(find.text('Type word 12 from your paper.'), findsOneWidget);
+    expect(find.text('Type word 12 from your copy.'), findsOneWidget);
   });
 
   testWidgets('words that do not form a phrase say so', (tester) async {
@@ -237,7 +237,7 @@ void main() {
     expect(
       find.text(
         'These words do not form a recovery phrase. One of them may be '
-        'wrong or out of place: check each one against your paper.',
+        'wrong or out of place: check each one against your copy.',
       ),
       findsOneWidget,
     );

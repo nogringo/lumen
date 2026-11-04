@@ -1618,13 +1618,13 @@ abstract class AppLocalizations {
   /// Advice about the recovery phrase, after a check mark.
   ///
   /// In en, this message translates to:
-  /// **'Write them on paper, in order'**
+  /// **'Write them on paper in order, or save them to a file'**
   String get phrasePointPaper;
 
   /// Advice about the recovery phrase, after a check mark.
   ///
   /// In en, this message translates to:
-  /// **'Keep them offline: no screenshot, photo or cloud note'**
+  /// **'Keep them offline: no screenshot, photo or cloud storage'**
   String get phrasePointOffline;
 
   /// Advice about the recovery phrase, after a check mark.
@@ -1654,7 +1654,7 @@ abstract class AppLocalizations {
   /// Lead text above the 12 words of the recovery phrase.
   ///
   /// In en, this message translates to:
-  /// **'Write these 12 words on paper, in this order. You will type three of them next.'**
+  /// **'Write these 12 words on paper in this order, or save them to a file. You will type three of them next.'**
   String get phraseLead;
 
   /// Read by screen readers for one word of the recovery phrase.
@@ -1663,11 +1663,11 @@ abstract class AppLocalizations {
   /// **'Word {number} of {total}, {word}'**
   String phraseWord(int number, int total, String word);
 
-  /// Button under the recovery phrase, to go on to the check.
+  /// Button under the recovery phrase, to go on to the check once the words are written down or saved to a file.
   ///
   /// In en, this message translates to:
-  /// **'I wrote them down'**
-  String get phraseWrittenDown;
+  /// **'I have my copy'**
+  String get phraseHaveCopy;
 
   /// Title of the screen that asks for some words of the recovery phrase back.
   ///
@@ -1678,7 +1678,7 @@ abstract class AppLocalizations {
   /// Lead text of the recovery phrase check.
   ///
   /// In en, this message translates to:
-  /// **'Type these words from your paper, to make sure they are right.'**
+  /// **'Type these words from your copy, to make sure they are right.'**
   String get checkPhraseLead;
 
   /// Label of the field for one word of a recovery phrase.
@@ -1690,13 +1690,13 @@ abstract class AppLocalizations {
   /// Error when a word of the recovery phrase check is empty.
   ///
   /// In en, this message translates to:
-  /// **'Type word {number} from your paper.'**
+  /// **'Type word {number} from your copy.'**
   String errorWordEmpty(int number);
 
   /// Error when a word typed in the recovery phrase check is wrong.
   ///
   /// In en, this message translates to:
-  /// **'This is not word {number}. Check your paper and type it again.'**
+  /// **'This is not word {number}. Check your copy and type it again.'**
   String errorWordMismatch(int number);
 
   /// Announced to screen readers when word suggestions appear under a recovery phrase field.
@@ -1762,7 +1762,7 @@ abstract class AppLocalizations {
   /// Error when every word is valid but the phrase checksum fails.
   ///
   /// In en, this message translates to:
-  /// **'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.'**
+  /// **'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your copy.'**
   String get errorPhraseChecksum;
 
   /// Shown and announced while Lumen scans the chain for a restored wallet.
@@ -1930,8 +1930,38 @@ abstract class AppLocalizations {
   /// Lead text above the recovery phrase of a saved wallet.
   ///
   /// In en, this message translates to:
-  /// **'These words restore {name} in Lumen or another Liquid app. Keep them on paper, in this order.'**
+  /// **'These words restore {name} in Lumen or another Liquid app. Keep them on paper or in a file, in this order.'**
   String savedPhraseLead(String name);
+
+  /// Button that saves the recovery phrase to a text file the user picks.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to a file'**
+  String get savePhraseFile;
+
+  /// Name of the text file the recovery phrase is saved to, without its extension.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} recovery phrase'**
+  String phraseFileName(String name);
+
+  /// Shown under the save button once the recovery phrase file is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'File saved. Anyone who opens it can spend this wallet\'s funds: keep it offline, on a USB key for example.'**
+  String get phraseFileSaved;
+
+  /// Shown under the save button on the web, where the browser downloads the recovery phrase file.
+  ///
+  /// In en, this message translates to:
+  /// **'File sent to your downloads. Anyone who opens it can spend this wallet\'s funds: keep it offline, on a USB key for example.'**
+  String get phraseFileDownloaded;
+
+  /// Error under the save button when the recovery phrase file could not be written.
+  ///
+  /// In en, this message translates to:
+  /// **'Lumen could not save the file. Try again, or pick another folder.'**
+  String get errorPhraseFile;
 
   /// Body of the remove confirmation dialog for a wallet whose recovery phrase lives in Lumen.
   ///

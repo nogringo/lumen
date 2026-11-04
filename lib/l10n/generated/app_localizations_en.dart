@@ -932,11 +932,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Lumen will show 12 words. They are the only way to get this wallet back if you lose or reset this device, and anyone who has them can spend its funds.';
 
   @override
-  String get phrasePointPaper => 'Write them on paper, in order';
+  String get phrasePointPaper =>
+      'Write them on paper in order, or save them to a file';
 
   @override
   String get phrasePointOffline =>
-      'Keep them offline: no screenshot, photo or cloud note';
+      'Keep them offline: no screenshot, photo or cloud storage';
 
   @override
   String get phrasePointNeverAsked =>
@@ -954,7 +955,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phraseLead =>
-      'Write these 12 words on paper, in this order. You will type three of them next.';
+      'Write these 12 words on paper in this order, or save them to a file. You will type three of them next.';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -962,14 +963,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => 'I wrote them down';
+  String get phraseHaveCopy => 'I have my copy';
 
   @override
   String get checkPhraseTitle => 'Check your phrase';
 
   @override
   String get checkPhraseLead =>
-      'Type these words from your paper, to make sure they are right.';
+      'Type these words from your copy, to make sure they are right.';
 
   @override
   String wordLabel(int number, int total) {
@@ -978,12 +979,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return 'Type word $number from your paper.';
+    return 'Type word $number from your copy.';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return 'This is not word $number. Check your paper and type it again.';
+    return 'This is not word $number. Check your copy and type it again.';
   }
 
   @override
@@ -1028,7 +1029,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your paper.';
+      'These words do not form a recovery phrase. One of them may be wrong or out of place: check each one against your copy.';
 
   @override
   String get restoreScanning =>
@@ -1143,8 +1144,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return 'These words restore $name in Lumen or another Liquid app. Keep them on paper, in this order.';
+    return 'These words restore $name in Lumen or another Liquid app. Keep them on paper or in a file, in this order.';
   }
+
+  @override
+  String get savePhraseFile => 'Save to a file';
+
+  @override
+  String phraseFileName(String name) {
+    return '$name recovery phrase';
+  }
+
+  @override
+  String get phraseFileSaved =>
+      'File saved. Anyone who opens it can spend this wallet\'s funds: keep it offline, on a USB key for example.';
+
+  @override
+  String get phraseFileDownloaded =>
+      'File sent to your downloads. Anyone who opens it can spend this wallet\'s funds: keep it offline, on a USB key for example.';
+
+  @override
+  String get errorPhraseFile =>
+      'Lumen could not save the file. Try again, or pick another folder.';
 
   @override
   String get removeLiquidBody =>

@@ -937,11 +937,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'Lumen te mostrará 12 palabras. Son la única forma de recuperar esta billetera si pierdes o restableces este dispositivo, y cualquiera que las tenga puede gastar sus fondos.';
 
   @override
-  String get phrasePointPaper => 'Escríbelas en papel, en orden';
+  String get phrasePointPaper =>
+      'Escríbelas en papel, en orden, o guárdalas en un archivo';
 
   @override
   String get phrasePointOffline =>
-      'Guárdalas sin conexión: ni capturas de pantalla, ni fotos, ni notas en la nube';
+      'Guárdalas sin conexión: ni capturas de pantalla, ni fotos, ni almacenamiento en la nube';
 
   @override
   String get phrasePointNeverAsked =>
@@ -959,7 +960,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get phraseLead =>
-      'Escribe estas 12 palabras en papel, en este orden. Después escribirás tres de ellas.';
+      'Escribe estas 12 palabras en papel, en este orden, o guárdalas en un archivo. Después escribirás tres de ellas.';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -967,14 +968,14 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => 'Ya las escribí';
+  String get phraseHaveCopy => 'Ya tengo mi copia';
 
   @override
   String get checkPhraseTitle => 'Comprueba tu frase';
 
   @override
   String get checkPhraseLead =>
-      'Escribe estas palabras desde tu papel, para asegurarte de que son correctas.';
+      'Escribe estas palabras desde tu copia, para asegurarte de que son correctas.';
 
   @override
   String wordLabel(int number, int total) {
@@ -983,12 +984,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return 'Escribe la palabra $number de tu papel.';
+    return 'Escribe la palabra $number de tu copia.';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return 'Esta no es la palabra $number. Revisa tu papel y vuelve a escribirla.';
+    return 'Esta no es la palabra $number. Revisa tu copia y vuelve a escribirla.';
   }
 
   @override
@@ -1035,7 +1036,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Estas palabras no forman una frase de recuperación. Puede que una sea incorrecta o esté fuera de lugar: compara cada una con tu papel.';
+      'Estas palabras no forman una frase de recuperación. Puede que una sea incorrecta o esté fuera de lugar: compara cada una con tu copia.';
 
   @override
   String get restoreScanning =>
@@ -1150,8 +1151,28 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return 'Estas palabras restauran $name en Lumen o en otra app de Liquid. Guárdalas en papel, en este orden.';
+    return 'Estas palabras restauran $name en Lumen o en otra app de Liquid. Guárdalas en papel o en un archivo, en este orden.';
   }
+
+  @override
+  String get savePhraseFile => 'Guardar en un archivo';
+
+  @override
+  String phraseFileName(String name) {
+    return 'Frase de recuperación $name';
+  }
+
+  @override
+  String get phraseFileSaved =>
+      'Archivo guardado. Quien lo abra puede gastar los fondos de esta billetera: guárdalo sin conexión, por ejemplo en una memoria USB.';
+
+  @override
+  String get phraseFileDownloaded =>
+      'Archivo enviado a tus descargas. Quien lo abra puede gastar los fondos de esta billetera: guárdalo sin conexión, por ejemplo en una memoria USB.';
+
+  @override
+  String get errorPhraseFile =>
+      'Lumen no pudo guardar el archivo. Inténtalo de nuevo o elige otra carpeta.';
 
   @override
   String get removeLiquidBody =>

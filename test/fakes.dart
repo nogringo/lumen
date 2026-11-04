@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:bech32/bech32.dart';
 import 'package:clock/clock.dart';
 import 'package:cryptography/cryptography.dart' show Sha256;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -528,6 +529,47 @@ AppGate testGate(
   storage: SealedStorage(),
   openSession: () async => LumenSession(sources, wallets),
 );
+
+/// Answers save dialogs as [result] says, keeping what was asked to save.
+class FakeFilePicker extends FilePickerPlatform {
+  /// Returns the saved file, or null for a canceled dialog.
+  Uri? Function() result = () => Uri.file('/saved.txt');
+  final saved = <({String fileName, String text, String mimeType})>[];
+  var cleared = 0;
+
+  /// Makes [FakeFilePicker] the platform for the current test.
+  static FakeFilePicker install() {
+    final previous = FilePickerPlatform.instance;
+    final fake = FakeFilePicker();
+    FilePickerPlatform.instance = fake;
+    addTearDown(() => FilePickerPlatform.instance = previous);
+    return fake;
+  }
+
+  @override
+  Future<Uri?> saveFile({
+    required String fileName,
+    required Uint8List bytes,
+    required String mimeType,
+    String? dialogTitle,
+    String? initialDirectory,
+    Function(FilePickerStatus)? onFileSaving,
+    WindowsOptions windowsOptions = const WindowsOptions(),
+    LinuxOptions linuxOptions = const LinuxOptions(),
+    WebOptions webOptions = const WebOptions(),
+  }) async {
+    final uri = result();
+    saved.add((
+      fileName: fileName,
+      text: utf8.decode(bytes),
+      mimeType: mimeType,
+    ));
+    return uri;
+  }
+
+  @override
+  Future<void> clearTemporaryFiles() async => cleared++;
+}
 
 const phoneSize = Size(390, 844);
 const desktopSize = Size(1440, 900);

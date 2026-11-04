@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:lumen/wallets/history_store.dart';
 import 'package:lumen/wallets/wallet_cache.dart';
 import 'package:lumen/wallets/wallets_controller.dart';
+import 'package:lumen/widgets/save_phrase_button.dart';
 import 'package:lumen_wallets/liquid_engine.dart';
 import 'package:lumen_wallets/lumen_wallets.dart';
 
@@ -176,7 +177,7 @@ void main() {
     expect(
       find.text(
         'These words restore Savings in Lumen or another Liquid app. '
-        'Keep them on paper, in this order.',
+        'Keep them on paper or in a file, in this order.',
       ),
       findsOneWidget,
     );
@@ -190,6 +191,44 @@ void main() {
     expect(find.byTooltip('Savings options'), findsOneWidget);
     expect(calls, [true, false]);
     handle.dispose();
+  });
+
+  testWidgets('a saved phrase saves to a file named after its wallet', (
+    tester,
+  ) async {
+    final picker = FakeFilePicker.install();
+    final wallet = await tester.runAsync(
+      () => sources.liquid.add(phrase: liquidPhrase, name: 'Savings'),
+    );
+    await pumpLumen(tester, sources, wallets: [wallet!]);
+    await openMenu(tester, 'Savings');
+    await tester.tap(find.text('Show recovery phrase'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Show'));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Save to a file'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save to a file'));
+    await tester.pumpAndSettle();
+
+    expect(picker.saved.single.fileName, 'Savings recovery phrase.txt');
+    expect(picker.saved.single.text, '$liquidPhrase\n');
+    expect(find.textContaining('File saved.'), findsOneWidget);
+  });
+
+  test('a phrase file name keeps to what file systems accept', () {
+    expect(
+      phraseFileName('Savings recovery phrase'),
+      'Savings recovery phrase.txt',
+    );
+    expect(
+      phraseFileName('a/b: c?* recovery phrase'),
+      'a b c recovery phrase.txt',
+    );
+    expect(
+      phraseFileName('..hidden recovery phrase'),
+      'hidden recovery phrase.txt',
+    );
   });
 
   testWidgets('a restored 24-word phrase shows every word', (tester) async {

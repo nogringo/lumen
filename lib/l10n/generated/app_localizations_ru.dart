@@ -953,11 +953,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Lumen покажет 12 слов. Только с ними можно вернуть этот кошелёк, если вы потеряете или сбросите это устройство, и любой, у кого они есть, может потратить его средства.';
 
   @override
-  String get phrasePointPaper => 'Запишите их на бумаге по порядку';
+  String get phrasePointPaper =>
+      'Запишите их на бумаге по порядку или сохраните в файл';
 
   @override
   String get phrasePointOffline =>
-      'Храните их офлайн: без снимков экрана, фото и заметок в облаке';
+      'Храните их офлайн: без снимков экрана, фото и облачных хранилищ';
 
   @override
   String get phrasePointNeverAsked =>
@@ -975,7 +976,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get phraseLead =>
-      'Запишите эти 12 слов на бумаге в этом порядке. Затем вы введёте три из них.';
+      'Запишите эти 12 слов на бумаге в этом порядке или сохраните их в файл. Затем вы введёте три из них.';
 
   @override
   String phraseWord(int number, int total, String word) {
@@ -983,14 +984,14 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get phraseWrittenDown => 'Я записал слова';
+  String get phraseHaveCopy => 'У меня есть копия';
 
   @override
   String get checkPhraseTitle => 'Проверка фразы';
 
   @override
   String get checkPhraseLead =>
-      'Введите эти слова со своей бумаги, чтобы убедиться, что они записаны верно.';
+      'Введите эти слова из своей копии, чтобы убедиться, что они записаны верно.';
 
   @override
   String wordLabel(int number, int total) {
@@ -999,12 +1000,12 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String errorWordEmpty(int number) {
-    return 'Введите слово $number со своей бумаги.';
+    return 'Введите слово $number из своей копии.';
   }
 
   @override
   String errorWordMismatch(int number) {
-    return 'Это не слово $number. Проверьте запись и введите его снова.';
+    return 'Это не слово $number. Проверьте копию и введите его снова.';
   }
 
   @override
@@ -1053,7 +1054,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorPhraseChecksum =>
-      'Эти слова не образуют фразу восстановления. Возможно, одно из них неверно или стоит не на своём месте: сверьте каждое с записью.';
+      'Эти слова не образуют фразу восстановления. Возможно, одно из них неверно или стоит не на своём месте: сверьте каждое со своей копией.';
 
   @override
   String get restoreScanning =>
@@ -1172,8 +1173,28 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String savedPhraseLead(String name) {
-    return 'Эти слова восстанавливают кошелёк $name в Lumen или другом приложении Liquid. Храните их на бумаге в этом порядке.';
+    return 'Эти слова восстанавливают кошелёк $name в Lumen или другом приложении Liquid. Храните их на бумаге или в файле в этом порядке.';
   }
+
+  @override
+  String get savePhraseFile => 'Сохранить в файл';
+
+  @override
+  String phraseFileName(String name) {
+    return 'Фраза восстановления $name';
+  }
+
+  @override
+  String get phraseFileSaved =>
+      'Файл сохранён. Любой, кто его откроет, сможет потратить средства этого кошелька: храните его офлайн, например на USB-флешке.';
+
+  @override
+  String get phraseFileDownloaded =>
+      'Файл отправлен в загрузки. Любой, кто его откроет, сможет потратить средства этого кошелька: храните его офлайн, например на USB-флешке.';
+
+  @override
+  String get errorPhraseFile =>
+      'Lumen не удалось сохранить файл. Повторите попытку или выберите другую папку.';
 
   @override
   String get removeLiquidBody =>
